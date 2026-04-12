@@ -3,6 +3,7 @@ package com.ao8r.tasks_api.service;
 import com.ao8r.tasks_api.dto.SignupRequest;
 import com.ao8r.tasks_api.entity.Role;
 import com.ao8r.tasks_api.entity.User;
+import com.ao8r.tasks_api.exception.UserNotFoundException;
 import com.ao8r.tasks_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,5 +67,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findByRole(Role role) {
         return userRepository.findByRole(role);
+    }
+
+    @Override
+    @Transactional
+    public User updateUserEnabled(Long id, boolean enabled) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+        user.setEnabled(enabled);
+        User updatedUser = userRepository.save(user);
+        log.info("User {} enabled status updated to: {}", updatedUser.getUsername(), enabled);
+        return updatedUser;
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+        userRepository.delete(user);
+        log.info("User deleted: {}", user.getUsername());
     }
 }

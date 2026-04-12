@@ -1,5 +1,6 @@
 package com.ao8r.tasks_api.controller;
 
+import com.ao8r.tasks_api.dto.MessageResponse;
 import com.ao8r.tasks_api.entity.Role;
 import com.ao8r.tasks_api.entity.User;
 import com.ao8r.tasks_api.service.UserService;
@@ -28,5 +29,23 @@ public class UserController {
                 .map(User::getUsername)
                 .toList();
         return ResponseEntity.ok(userNames);
+    }
+
+    @PutMapping("/{id}/enable")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<MessageResponse> updateUserEnabled(
+            @PathVariable Long id,
+            @RequestParam boolean enabled) {
+        log.debug("Updating user {} enabled status to: {}", id, enabled);
+        userService.updateUserEnabled(id, enabled);
+        return ResponseEntity.ok(new MessageResponse("User enabled status updated successfully!"));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<MessageResponse> deleteUser(@PathVariable Long id) {
+        log.debug("Deleting user with id: {}", id);
+        userService.deleteUser(id);
+        return ResponseEntity.ok(new MessageResponse("User deleted successfully!"));
     }
 }

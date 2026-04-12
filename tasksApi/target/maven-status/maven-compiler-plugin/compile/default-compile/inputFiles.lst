@@ -17,3 +17,4 @@
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/SigninRequest.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/security/jwt/JwtUtils.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/security/jwt/AuthTokenFilter.java
+/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/exception/UserNotFoundException.java

@@ -16,4 +16,8 @@ public interface UserService {
     Boolean existsByUsername(String username);
 
     List<User> findByRole(Role role);
+
+    User updateUserEnabled(Long id, boolean enabled);
+
+    void deleteUser(Long id);
 }

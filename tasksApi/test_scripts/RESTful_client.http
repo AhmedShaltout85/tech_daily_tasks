@@ -99,6 +99,18 @@ Authorization: Bearer {{adminToken}}
 GET http://localhost:8080/api/users/role/ADMIN
 Authorization: Bearer {{adminToken}}
 
+### 13. Disable User (Set enabled=false)
+PUT http://localhost:8080/api/users/3/enable?enabled=false
+Authorization: Bearer {{adminToken}}
+
+### 14. Enable User (Set enabled=true)
+PUT http://localhost:8080/api/users/3/enable?enabled=true
+Authorization: Bearer {{adminToken}}
+
+### 15. Delete User by ID
+DELETE http://localhost:8080/api/users/3
+Authorization: Bearer {{adminToken}}
+
 ### ======================================================
 ### ENVIRONMENT VARIABLES
 ### ======================================================
@@ -107,3 +119,11 @@ Authorization: Bearer {{adminToken}}
 #   "managerToken": "eyJhbGciOiJIUzUxMiJ9...",
 #   "userToken": "eyJhbGciOiJIUzUxMiJ9..."
 # }
+
+### ======================================================
+### ERROR RESPONSES
+### ======================================================
+# Success (200): {"message": "..."}
+# Not Found (404): {"error": "User not found with id: X"}
+# Bad Request (400): {"error": "Error: Username is already taken!"}
+# Unauthorized (401): {"error": "Invalid username or password"}

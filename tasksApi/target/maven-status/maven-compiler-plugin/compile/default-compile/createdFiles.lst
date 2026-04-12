@@ -12,6 +12,7 @@ com/ao8r/tasks_api/security/services/UserDetailsImpl$UserDetailsImplBuilder.clas
 com/ao8r/tasks_api/security/services/UserDetailsImpl.class
 com/ao8r/tasks_api/dto/SigninRequest.class
 com/ao8r/tasks_api/dto/JwtResponse.class
+com/ao8r/tasks_api/exception/UserNotFoundException.class
 com/ao8r/tasks_api/dto/MessageResponse.class
 com/ao8r/tasks_api/security/jwt/JwtUtils.class
 com/ao8r/tasks_api/security/services/UserDetailsServiceImpl.class

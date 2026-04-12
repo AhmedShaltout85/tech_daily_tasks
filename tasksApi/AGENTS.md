@@ -57,6 +57,8 @@ mvn package -DskipTests
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
 | GET | `/api/users/role/{role}` | Get usernames by role | ADMIN/MANAGER |
+| PUT | `/api/users/{id}/enable?enabled=true` | Enable/disable user | ADMIN |
+| DELETE | `/api/users/{id}` | Delete user by ID | ADMIN |
 
 ---
 
@@ -144,8 +146,13 @@ mvn package -DskipTests
 ### Global Exception Handler
 - Use `@RestControllerAdvice` for centralized exception handling
 - Handle validation, authentication, JWT errors
-- Return user-friendly messages
-- Never expose internal stack traces
+- Handle custom exceptions (e.g., `UserNotFoundException`)
+- Return user-friendly messages with proper HTTP status codes:
+  - 400 Bad Request for validation errors
+  - 401 Unauthorized for auth failures
+  - 404 Not Found for missing resources
+  - 500 Internal Server Error for unexpected exceptions
+- Never expose internal stack traces to clients
 
 ---
 
