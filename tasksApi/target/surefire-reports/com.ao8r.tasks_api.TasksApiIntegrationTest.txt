@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.ao8r.tasks_api.TasksApiIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.236 s - in com.ao8r.tasks_api.TasksApiIntegrationTest

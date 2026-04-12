@@ -1,0 +1,109 @@
+# Tasks API - RESTful Client Tests
+# Copy this file to IntelliJ and run as HTTP Client, or import to Postman
+
+### ======================================================
+### AUTH CONTROLLER
+### ======================================================
+
+### 1. Signup Admin
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+
+{
+  "displayName": "System Administrator",
+  "username": "admin",
+  "password": "admin123",
+  "role": "ADMIN",
+  "department": "IT"
+}
+
+### 2. Signup Manager
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+
+{
+  "displayName": "Test Manager",
+  "username": "manager",
+  "password": "manager123",
+  "role": "MANAGER",
+  "department": "HR"
+}
+
+### 3. Signup User
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+
+{
+  "displayName": "Test User",
+  "username": "user",
+  "password": "user123",
+  "role": "USER",
+  "department": "Sales"
+}
+
+### 4. Signin Admin
+POST http://localhost:8080/api/auth/signin
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### 5. Signin Manager
+POST http://localhost:8080/api/auth/signin
+Content-Type: application/json
+
+{
+  "username": "manager",
+  "password": "manager123"
+}
+
+### 6. Signin User
+POST http://localhost:8080/api/auth/signin
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "user123"
+}
+
+### ======================================================
+### TEST CONTROLLER (Public Endpoints)
+### ======================================================
+
+### 7. Public Endpoint (No Auth Required)
+GET http://localhost:8080/api/test/public
+
+### 8. User Endpoint (Requires USER role)
+GET http://localhost:8080/api/test/user
+Authorization: Bearer {{adminToken}}
+
+### 9. Admin Endpoint (Requires ADMIN role)
+GET http://localhost:8080/api/test/admin
+Authorization: Bearer {{adminToken}}
+
+### ======================================================
+### USER CONTROLLER
+### ======================================================
+
+### 10. Get All Users by Role - USER
+GET http://localhost:8080/api/users/role/USER
+Authorization: Bearer {{adminToken}}
+
+### 11. Get All Users by Role - MANAGER
+GET http://localhost:8080/api/users/role/MANAGER
+Authorization: Bearer {{adminToken}}
+
+### 12. Get All Users by Role - ADMIN
+GET http://localhost:8080/api/users/role/ADMIN
+Authorization: Bearer {{adminToken}}
+
+### ======================================================
+### ENVIRONMENT VARIABLES
+### ======================================================
+# {
+#   "adminToken": "eyJhbGciOiJIUzUxMiJ9...",
+#   "managerToken": "eyJhbGciOiJIUzUxMiJ9...",
+#   "userToken": "eyJhbGciOiJIUzUxMiJ9..."
+# }

@@ -1,0 +1,101 @@
+tasks_api/
+├── src/main/java/com/ao8r/tasks_api/
+│   ├── TasksApiApplication.java
+│   ├── config/
+│   │   └── security/
+│   │       └── SecurityConfig.java
+│   ├── controller/
+│   │   ├── auth/
+│   │   │   └── AuthController.java
+│   │   └── test/
+│   │       └── TestController.java
+│   ├── dto/
+│   │   ├── SignupRequest.java
+│   │   ├── SigninRequest.java
+│   │   ├── JwtResponse.java
+│   │   └── MessageResponse.java
+│   ├── entity/
+│   │   └── User.java
+│   ├── enums/
+│   │   └── RoleEnum.java
+│   ├── exception/
+│   │   └── GlobalExceptionHandler.java
+│   ├── repository/
+│   │   └── UserRepository.java
+│   ├── security/
+│   │   ├── jwt/
+│   │   │   ├── JwtUtils.java
+│   │   │   └── AuthTokenFilter.java
+│   │   └── services/
+│   │       ├── UserDetailsServiceImpl.java
+│   │       └── UserDetailsImpl.java
+│   └── service/
+│       ├── UserService.java
+│       └── impl/
+│           └── UserServiceImpl.java
+├── src/main/resources/
+│   ├── application.properties
+│   └── data.sql (optional)
+├── pom.xml
+└── README.md
+
+
+
+
+<dependencies>
+    <!-- Spring Boot Starters -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    
+    <!-- Database -->
+    <dependency>
+        <groupId>com.microsoft.sqlserver</groupId>
+        <artifactId>mssql-jdbc</artifactId>
+        <scope>runtime</scope>
+    </dependency>
+    
+    <!-- Lombok -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+    
+    <!-- JJWT -->
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>0.11.5</version>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+</dependencies>

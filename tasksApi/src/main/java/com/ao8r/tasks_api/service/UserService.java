@@ -1,0 +1,19 @@
+package com.ao8r.tasks_api.service;
+
+import com.ao8r.tasks_api.dto.SignupRequest;
+import com.ao8r.tasks_api.entity.Role;
+import com.ao8r.tasks_api.entity.User;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface UserService {
+
+    User registerUser(SignupRequest request);
+
+    Optional<User> findByUsername(String username);
+
+    Boolean existsByUsername(String username);
+
+    List<User> findByRole(Role role);
+}
