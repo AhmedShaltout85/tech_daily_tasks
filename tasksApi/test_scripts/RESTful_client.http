@@ -119,6 +119,25 @@ Authorization: Bearer {{adminToken}}
 DELETE http://localhost:8080/api/users/3
 Authorization: Bearer {{adminToken}}
 
+### 16. Change Password
+PUT http://localhost:8080/api/users/change-password
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "currentPassword": "admin123",
+  "newPassword": "newpassword123"
+}
+
+### 17. Forgot Password (Reset Password)
+POST http://localhost:8080/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "newPassword": "resetpassword123"
+}
+
 ### ======================================================
 ### ENVIRONMENT VARIABLES
 ### ======================================================
