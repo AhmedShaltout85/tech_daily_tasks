@@ -99,7 +99,15 @@ Authorization: Bearer {{adminToken}}
 GET http://localhost:8080/api/users/role/ADMIN
 Authorization: Bearer {{adminToken}}
 
-### 13. Disable User (Set enabled=false)
+### 13. Get Enabled Users by Role - USER
+GET http://localhost:8080/api/users/role/USER/enabled/true
+Authorization: Bearer {{adminToken}}
+
+### 14. Get Disabled Users by Role - USER
+GET http://localhost:8080/api/users/role/USER/enabled/false
+Authorization: Bearer {{adminToken}}
+
+### 15. Disable User (Set enabled=false)
 PUT http://localhost:8080/api/users/3/enable?enabled=false
 Authorization: Bearer {{adminToken}}
 

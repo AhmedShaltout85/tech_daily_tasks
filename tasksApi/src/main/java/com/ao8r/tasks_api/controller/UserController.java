@@ -31,6 +31,19 @@ public class UserController {
         return ResponseEntity.ok(userNames);
     }
 
+    @GetMapping("/role/{role}/enabled/{enabled}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public ResponseEntity<List<String>> getUsersByRoleAndEnabled(
+            @PathVariable Role role,
+            @PathVariable boolean enabled) {
+        log.debug("Fetching {} users with role: {} and enabled: {}", enabled ? "enabled" : "disabled", role);
+        List<User> users = userService.findByRoleAndIsEnabled(role, enabled);
+        List<String> userNames = users.stream()
+                .map(User::getUsername)
+                .toList();
+        return ResponseEntity.ok(userNames);
+    }
+
     @PutMapping("/{id}/enable")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MessageResponse> updateUserEnabled(

@@ -12,16 +12,13 @@
 [INFO] Copying 0 resource from src/main/resources to target/classes
 [INFO] 
 [INFO] --- compiler:3.11.0:compile (default-compile) @ tasks_api ---
-[INFO] Changes detected - recompiling the module! :source
-[INFO] Compiling 19 source files with javac [debug release 17] to target/classes
-[WARNING] /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/JwtResponse.java:[15,20] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[INFO] Nothing to compile - all classes are up to date
 [INFO] 
 [INFO] --- resources:3.3.1:testResources (default-testResources) @ tasks_api ---
 [INFO] Copying 1 resource from src/test/resources to target/test-classes
 [INFO] 
 [INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ tasks_api ---
-[INFO] Changes detected - recompiling the module! :dependency
-[INFO] Compiling 2 source files with javac [debug release 17] to target/test-classes
+[INFO] Nothing to compile - all classes are up to date
 [INFO] 
 [INFO] <<< spring-boot:3.1.5:run (default-cli) < test-compile @ tasks_api <<<
 [INFO] 
@@ -37,145 +34,57 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.1.5)
 
-2026-04-12T13:08:39.460+02:00  INFO 6703 --- [  restartedMain] com.ao8r.tasks_api.TasksApiApplication   : Starting TasksApiApplication using Java 17.0.10 with PID 6703 (/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/target/classes started by ahmedshaltout in /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi)
-2026-04-12T13:08:39.463+02:00 DEBUG 6703 --- [  restartedMain] com.ao8r.tasks_api.TasksApiApplication   : Running with Spring Boot v3.1.5, Spring v6.0.13
-2026-04-12T13:08:39.464+02:00  INFO 6703 --- [  restartedMain] com.ao8r.tasks_api.TasksApiApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-04-12T13:08:39.515+02:00  INFO 6703 --- [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2026-04-12T13:08:39.515+02:00  INFO 6703 --- [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2026-04-12T13:08:40.222+02:00  INFO 6703 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-04-12T13:08:40.281+02:00  INFO 6703 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 52 ms. Found 1 JPA repository interfaces.
-2026-04-12T13:08:40.924+02:00  INFO 6703 --- [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
-2026-04-12T13:08:40.934+02:00  INFO 6703 --- [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-04-12T13:08:40.934+02:00  INFO 6703 --- [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
-2026-04-12T13:08:40.994+02:00  INFO 6703 --- [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-04-12T13:08:40.996+02:00  INFO 6703 --- [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1479 ms
-2026-04-12T13:08:41.151+02:00  INFO 6703 --- [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-04-12T13:08:41.193+02:00  INFO 6703 --- [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.2.13.Final
-2026-04-12T13:08:41.195+02:00  INFO 6703 --- [  restartedMain] org.hibernate.cfg.Environment            : HHH000406: Using bytecode reflection optimizer
-2026-04-12T13:08:41.415+02:00  INFO 6703 --- [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-04-12T13:08:41.435+02:00  INFO 6703 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-04-12T13:08:41.681+02:00  INFO 6703 --- [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: 63da67ed-3f0c-49e2-a77a-a1b8317a48a1
-2026-04-12T13:08:41.682+02:00  INFO 6703 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-04-12T13:08:41.705+02:00  WARN 6703 --- [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: SQLServerDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2026-04-12T13:08:42.456+02:00  INFO 6703 --- [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-04-12T13:08:42.458+02:00  INFO 6703 --- [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-04-12T13:08:42.779+02:00 DEBUG 6703 --- [  restartedMain] c.a.t.security.jwt.AuthTokenFilter       : Filter 'authTokenFilter' configured for use
-2026-04-12T13:08:42.923+02:00  WARN 6703 --- [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-04-12T13:08:43.205+02:00  INFO 6703 --- [  restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@5d20254c, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@33887199, org.springframework.security.web.context.SecurityContextHolderFilter@88961ac, org.springframework.security.web.header.HeaderWriterFilter@23cce5a1, org.springframework.security.web.authentication.logout.LogoutFilter@bce3629, com.ao8r.tasks_api.security.jwt.AuthTokenFilter@7e22bcf9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2373654f, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@38b0c155, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@69607e9c, org.springframework.security.web.session.SessionManagementFilter@135554ae, org.springframework.security.web.access.ExceptionTranslationFilter@31c02104, org.springframework.security.web.access.intercept.AuthorizationFilter@248949f8]
-2026-04-12T13:08:43.393+02:00  INFO 6703 --- [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
-2026-04-12T13:08:43.427+02:00  INFO 6703 --- [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
-2026-04-12T13:08:43.436+02:00  INFO 6703 --- [  restartedMain] com.ao8r.tasks_api.TasksApiApplication   : Started TasksApiApplication in 4.348 seconds (process running for 4.968)
-2026-04-12T13:08:56.473+02:00  INFO 6703 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-04-12T13:08:56.473+02:00  INFO 6703 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2026-04-12T13:08:56.474+02:00  INFO 6703 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
-2026-04-12T13:08:56.482+02:00 DEBUG 6703 --- [nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/test/public
-2026-04-12T13:08:56.487+02:00 DEBUG 6703 --- [nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
-2026-04-12T13:08:56.494+02:00 DEBUG 6703 --- [nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/test/public
-2026-04-12T13:08:56.505+02:00 DEBUG 6703 --- [nio-8080-exec-1] c.a.t.controller.test.TestController     : Public endpoint accessed
-2026-04-12T13:09:00.393+02:00 DEBUG 6703 --- [nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing POST /api/auth/signin
-2026-04-12T13:09:00.394+02:00 DEBUG 6703 --- [nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
-2026-04-12T13:09:00.395+02:00 DEBUG 6703 --- [nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured POST /api/auth/signin
-2026-04-12T13:09:00.545+02:00  INFO 6703 --- [nio-8080-exec-2] c.a.t.controller.auth.AuthController     : Signin request received for username: admin
-2026-04-12T13:09:00.850+02:00 DEBUG 6703 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
-    select
-        u1_0.id,
-        u1_0.created_at,
-        u1_0.department,
-        u1_0.display_name,
-        u1_0.is_enable,
-        u1_0.password,
-        u1_0.role,
-        u1_0.username 
-    from
-        task_users u1_0 
-    where
-        u1_0.username=?
-Hibernate: 
-    select
-        u1_0.id,
-        u1_0.created_at,
-        u1_0.department,
-        u1_0.display_name,
-        u1_0.is_enable,
-        u1_0.password,
-        u1_0.role,
-        u1_0.username 
-    from
-        task_users u1_0 
-    where
-        u1_0.username=?
-2026-04-12T13:09:00.988+02:00 DEBUG 6703 --- [nio-8080-exec-2] o.s.s.a.dao.DaoAuthenticationProvider    : Authenticated user
-2026-04-12T13:09:01.034+02:00 DEBUG 6703 --- [nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/users/role/USER
-2026-04-12T13:09:01.059+02:00 DEBUG 6703 --- [nio-8080-exec-3] org.hibernate.SQL                        : 
-    select
-        u1_0.id,
-        u1_0.created_at,
-        u1_0.department,
-        u1_0.display_name,
-        u1_0.is_enable,
-        u1_0.password,
-        u1_0.role,
-        u1_0.username 
-    from
-        task_users u1_0 
-    where
-        u1_0.username=?
-Hibernate: 
-    select
-        u1_0.id,
-        u1_0.created_at,
-        u1_0.department,
-        u1_0.display_name,
-        u1_0.is_enable,
-        u1_0.password,
-        u1_0.role,
-        u1_0.username 
-    from
-        task_users u1_0 
-    where
-        u1_0.username=?
-2026-04-12T13:09:01.065+02:00 DEBUG 6703 --- [nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/users/role/USER
-2026-04-12T13:09:01.068+02:00 DEBUG 6703 --- [nio-8080-exec-3] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.ao8r.tasks_api.controller.UserController.getUsersByRole(com.ao8r.tasks_api.entity.Role); target is of class [com.ao8r.tasks_api.controller.UserController]
-2026-04-12T13:09:01.093+02:00 DEBUG 6703 --- [nio-8080-exec-3] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.ao8r.tasks_api.controller.UserController.getUsersByRole(com.ao8r.tasks_api.entity.Role); target is of class [com.ao8r.tasks_api.controller.UserController]
-2026-04-12T13:09:01.093+02:00 DEBUG 6703 --- [nio-8080-exec-3] c.a.tasks_api.controller.UserController  : Fetching users with role: USER
-2026-04-12T13:09:01.095+02:00 DEBUG 6703 --- [nio-8080-exec-3] org.hibernate.SQL                        : 
-    select
-        u1_0.id,
-        u1_0.created_at,
-        u1_0.department,
-        u1_0.display_name,
-        u1_0.is_enable,
-        u1_0.password,
-        u1_0.role,
-        u1_0.username 
-    from
-        task_users u1_0 
-    where
-        u1_0.role=?
-Hibernate: 
-    select
-        u1_0.id,
-        u1_0.created_at,
-        u1_0.department,
-        u1_0.display_name,
-        u1_0.is_enable,
-        u1_0.password,
-        u1_0.role,
-        u1_0.username 
-    from
-        task_users u1_0 
-    where
-        u1_0.role=?
+2026-04-14T09:55:26.922+02:00  INFO 8348 --- [  restartedMain] com.ao8r.tasks_api.TasksApiApplication   : Starting TasksApiApplication using Java 17.0.10 with PID 8348 (/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/target/classes started by ahmedshaltout in /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi)
+2026-04-14T09:55:26.925+02:00 DEBUG 8348 --- [  restartedMain] com.ao8r.tasks_api.TasksApiApplication   : Running with Spring Boot v3.1.5, Spring v6.0.13
+2026-04-14T09:55:26.926+02:00  INFO 8348 --- [  restartedMain] com.ao8r.tasks_api.TasksApiApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-04-14T09:55:27.024+02:00  INFO 8348 --- [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-04-14T09:55:27.024+02:00  INFO 8348 --- [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-04-14T09:55:27.894+02:00  INFO 8348 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-14T09:55:27.945+02:00  INFO 8348 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 45 ms. Found 1 JPA repository interfaces.
+2026-04-14T09:55:28.566+02:00  INFO 8348 --- [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2026-04-14T09:55:28.575+02:00  INFO 8348 --- [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-14T09:55:28.575+02:00  INFO 8348 --- [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
+2026-04-14T09:55:28.622+02:00  INFO 8348 --- [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-14T09:55:28.624+02:00  INFO 8348 --- [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1598 ms
+2026-04-14T09:55:28.760+02:00  INFO 8348 --- [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-14T09:55:28.821+02:00  INFO 8348 --- [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.2.13.Final
+2026-04-14T09:55:28.823+02:00  INFO 8348 --- [  restartedMain] org.hibernate.cfg.Environment            : HHH000406: Using bytecode reflection optimizer
+2026-04-14T09:55:28.997+02:00  INFO 8348 --- [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-14T09:55:29.016+02:00  INFO 8348 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-14T09:55:29.251+02:00  INFO 8348 --- [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: 4abceefa-de83-44c4-b74b-743307c9a7a0
+2026-04-14T09:55:29.252+02:00  INFO 8348 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-14T09:55:29.274+02:00  WARN 8348 --- [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: SQLServerDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-14T09:55:29.978+02:00  INFO 8348 --- [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-14T09:55:29.981+02:00  INFO 8348 --- [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-14T09:55:30.309+02:00 DEBUG 8348 --- [  restartedMain] c.a.t.security.jwt.AuthTokenFilter       : Filter 'authTokenFilter' configured for use
+2026-04-14T09:55:30.431+02:00  WARN 8348 --- [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-14T09:55:30.669+02:00  INFO 8348 --- [  restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@61066f2d, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2f2f04a3, org.springframework.security.web.context.SecurityContextHolderFilter@61f43b4e, org.springframework.security.web.header.HeaderWriterFilter@727f0104, org.springframework.security.web.authentication.logout.LogoutFilter@1a06208e, com.ao8r.tasks_api.security.jwt.AuthTokenFilter@3470ff45, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4bfb4a5a, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@287cec9, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@8f912d6, org.springframework.security.web.session.SessionManagementFilter@1b0f5b5, org.springframework.security.web.access.ExceptionTranslationFilter@45cda52d, org.springframework.security.web.access.intercept.AuthorizationFilter@5962e0be]
+2026-04-14T09:55:30.891+02:00  WARN 8348 --- [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : Unable to start LiveReload server
+2026-04-14T09:55:30.922+02:00  WARN 8348 --- [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-04-14T09:55:30.928+02:00  INFO 8348 --- [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-14T09:55:30.933+02:00  INFO 8348 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-14T09:55:30.972+02:00  INFO 8348 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-04-14T09:55:30.974+02:00  INFO 8348 --- [  restartedMain] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2026-04-14T09:55:30.984+02:00  INFO 8348 --- [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-04-14T09:55:31.050+02:00 ERROR 8348 --- [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
 [INFO] ------------------------------------------------------------------------
-[INFO] BUILD FAILURE
+[INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  02:10 min
-[INFO] Finished at: 2026-04-12T13:10:43+02:00
+[INFO] Total time:  7.511 s
+[INFO] Finished at: 2026-04-14T09:55:31+02:00
 [INFO] ------------------------------------------------------------------------
-[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.1.5:run (default-cli) on project tasks_api: Process terminated with exit code: 137 -> [Help 1]
-[ERROR] 
-[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
-[ERROR] Re-run Maven using the -X switch to enable full debug logging.
-[ERROR] 
-[ERROR] For more information about the errors and possible solutions, please read the following articles:
-[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

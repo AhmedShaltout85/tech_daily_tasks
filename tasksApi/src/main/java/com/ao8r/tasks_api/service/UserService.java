@@ -17,7 +17,13 @@ public interface UserService {
 
     List<User> findByRole(Role role);
 
+    List<User> findByRoleAndIsEnabled(Role role, boolean isEnabled);
+
     User updateUserEnabled(Long id, boolean enabled);
 
     void deleteUser(Long id);
+
+    void changePassword(String username, String currentPassword, String newPassword);
+
+    void resetPassword(String username, String newPassword);
 }

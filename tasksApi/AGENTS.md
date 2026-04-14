@@ -57,8 +57,15 @@ mvn package -DskipTests
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
 | GET | `/api/users/role/{role}` | Get usernames by role | ADMIN/MANAGER |
+| GET | `/api/users/role/{role}/enabled/{enabled}` | Get usernames by role and enabled status | ADMIN/MANAGER |
 | PUT | `/api/users/{id}/enable?enabled=true` | Enable/disable user | ADMIN |
+| PUT | `/api/users/change-password` | Change password (requires old password) | AUTHENTICATED |
 | DELETE | `/api/users/{id}` | Delete user by ID | ADMIN |
+
+### Auth Controller (`/api/auth`) - Additional Endpoints
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/auth/forgot-password` | Reset password (username + new password) | No |
 
 ---
 
