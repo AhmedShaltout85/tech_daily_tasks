@@ -139,6 +139,40 @@ Content-Type: application/json
 }
 
 ### ======================================================
+### APPS CONTROLLER
+### ======================================================
+
+### 18. Create New App
+POST http://localhost:8080/api/apps
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "appName": "Test Application"
+}
+
+### 19. Get All Apps
+GET http://localhost:8080/api/apps
+Authorization: Bearer {{adminToken}}
+
+### 20. Get App by ID
+GET http://localhost:8080/api/apps/1
+Authorization: Bearer {{adminToken}}
+
+### 21. Update App by ID
+PUT http://localhost:8080/api/apps/1
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "appName": "Updated Application Name"
+}
+
+### 22. Delete App by ID
+DELETE http://localhost:8080/api/apps/1
+Authorization: Bearer {{adminToken}}
+
+### ======================================================
 ### ENVIRONMENT VARIABLES
 ### ======================================================
 # {

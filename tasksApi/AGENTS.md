@@ -62,10 +62,16 @@ mvn package -DskipTests
 | PUT | `/api/users/change-password` | Change password (requires old password) | AUTHENTICATED |
 | DELETE | `/api/users/{id}` | Delete user by ID | ADMIN |
 
-### Auth Controller (`/api/auth`) - Additional Endpoints
+### Apps Controller (`/api/apps`)
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| POST | `/api/auth/forgot-password` | Reset password (username + new password) | No |
+| POST | `/api/apps` | Create new app | AUTHENTICATED |
+| GET | `/api/apps` | Get all apps | AUTHENTICATED |
+| GET | `/api/apps/{id}` | Get app by ID | AUTHENTICATED |
+| PUT | `/api/apps/{id}` | Update app by ID | AUTHENTICATED |
+| DELETE | `/api/apps/{id}` | Delete app by ID | AUTHENTICATED |
+
+---
 
 ---
 
@@ -205,11 +211,19 @@ mvn package -DskipTests
 | isEnabled | boolean | Account enabled status |
 | createdAt | LocalDateTime | Creation timestamp |
 
+### Apps Entity Fields
+| Field | Type | Description |
+|-------|------|-------------|
+| id | Long | Primary key |
+| appName | String | Application name |
+
 ### DTOs
 - `SignupRequest`: displayName, username, password, role, department
 - `SigninRequest`: username, password
 - `JwtResponse`: token, type, id, username, displayName, role, department
 - `MessageResponse`: message
+- `AppsNameRequest`: appName
+- `AppsNameResponse`: id, appName
 
 ---
 
@@ -225,6 +239,11 @@ CREATE TABLE task_users (
     role NVARCHAR(50) NOT NULL,
     department NVARCHAR(255) NOT NULL,
     created_at DATETIME2 NOT NULL DEFAULT GETUTCDATE()
+);
+
+CREATE TABLE apps_name (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    app_name NVARCHAR(255) NOT NULL
 );
 ```
 
