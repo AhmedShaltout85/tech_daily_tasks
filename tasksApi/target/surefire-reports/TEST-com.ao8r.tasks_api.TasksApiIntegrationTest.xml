@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.ao8r.tasks_api.TasksApiIntegrationTest" time="8.764" tests="11" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="17"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.class.path" value="/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/target/test-classes:/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/target/classes:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-web/3.1.5/spring-boot-starter-web-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter/3.1.5/spring-boot-starter-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-logging/3.1.5/spring-boot-starter-logging-3.1.5.jar:/home/ahmedshaltout/.m2/repository/ch/qos/logback/logback-classic/1.4.11/logback-classic-1.4.11.jar:/home/ahmedshaltout/.m2/repository/ch/qos/logback/logback-core/1.4.11/logback-core-1.4.11.jar:/home/ahmedshaltout/.m2/repository/org/apache/logging/log4j/log4j-to-slf4j/2.20.0/log4j-to-slf4j-2.20.0.jar:/home/ahmedshaltout/.m2/repository/org/apache/logging/log4j/log4j-api/2.20.0/log4j-api-2.20.0.jar:/home/ahmedshaltout/.m2/repository/org/slf4j/jul-to-slf4j/2.0.9/jul-to-slf4j-2.0.9.jar:/home/ahmedshaltout/.m2/repository/jakarta/annotation/jakarta.annotation-api/2.1.1/jakarta.annotation-api-2.1.1.jar:/home/ahmedshaltout/.m2/repository/org/yaml/snakeyaml/1.33/snakeyaml-1.33.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-json/3.1.5/spring-boot-starter-json-3.1.5.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.15.3/jackson-datatype-jdk8-2.15.3.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.15.3/jackson-datatype-jsr310-2.15.3.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/jackson/module/jackson-module-parameter-names/2.15.3/jackson-module-parameter-names-2.15.3.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-tomcat/3.1.5/spring-boot-starter-tomcat-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/apache/tomcat/embed/tomcat-embed-core/10.1.15/tomcat-embed-core-10.1.15.jar:/home/ahmedshaltout/.m2/repository/org/apache/tomcat/embed/tomcat-embed-websocket/10.1.15/tomcat-embed-websocket-10.1.15.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-web/6.0.13/spring-web-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-beans/6.0.13/spring-beans-6.0.13.jar:/home/ahmedshaltout/.m2/repository/io/micrometer/micrometer-observation/1.11.5/micrometer-observation-1.11.5.jar:/home/ahmedshaltout/.m2/repository/io/micrometer/micrometer-commons/1.11.5/micrometer-commons-1.11.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-webmvc/6.0.13/spring-webmvc-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-context/6.0.13/spring-context-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-expression/6.0.13/spring-expression-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-devtools/3.1.5/spring-boot-devtools-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot/3.1.5/spring-boot-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-autoconfigure/3.1.5/spring-boot-autoconfigure-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-security/3.1.5/spring-boot-starter-security-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-aop/6.0.13/spring-aop-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/security/spring-security-config/6.1.5/spring-security-config-6.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/security/spring-security-web/6.1.5/spring-security-web-6.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-data-jpa/3.1.5/spring-boot-starter-data-jpa-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-aop/3.1.5/spring-boot-starter-aop-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/aspectj/aspectjweaver/1.9.20/aspectjweaver-1.9.20.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-jdbc/3.1.5/spring-boot-starter-jdbc-3.1.5.jar:/home/ahmedshaltout/.m2/repository/com/zaxxer/HikariCP/5.0.1/HikariCP-5.0.1.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-jdbc/6.0.13/spring-jdbc-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/hibernate/orm/hibernate-core/6.2.13.Final/hibernate-core-6.2.13.Final.jar:/home/ahmedshaltout/.m2/repository/jakarta/persistence/jakarta.persistence-api/3.1.0/jakarta.persistence-api-3.1.0.jar:/home/ahmedshaltout/.m2/repository/jakarta/transaction/jakarta.transaction-api/2.0.1/jakarta.transaction-api-2.0.1.jar:/home/ahmedshaltout/.m2/repository/org/jboss/logging/jboss-logging/3.5.3.Final/jboss-logging-3.5.3.Final.jar:/home/ahmedshaltout/.m2/repository/org/hibernate/common/hibernate-commons-annotations/6.0.6.Final/hibernate-commons-annotations-6.0.6.Final.jar:/home/ahmedshaltout/.m2/repository/io/smallrye/jandex/3.0.5/jandex-3.0.5.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/classmate/1.5.1/classmate-1.5.1.jar:/home/ahmedshaltout/.m2/repository/net/bytebuddy/byte-buddy/1.14.9/byte-buddy-1.14.9.jar:/home/ahmedshaltout/.m2/repository/org/glassfish/jaxb/jaxb-runtime/4.0.3/jaxb-runtime-4.0.3.jar:/home/ahmedshaltout/.m2/repository/org/glassfish/jaxb/jaxb-core/4.0.3/jaxb-core-4.0.3.jar:/home/ahmedshaltout/.m2/repository/org/eclipse/angus/angus-activation/2.0.1/angus-activation-2.0.1.jar:/home/ahmedshaltout/.m2/repository/org/glassfish/jaxb/txw2/4.0.3/txw2-4.0.3.jar:/home/ahmedshaltout/.m2/repository/com/sun/istack/istack-commons-runtime/4.1.2/istack-commons-runtime-4.1.2.jar:/home/ahmedshaltout/.m2/repository/jakarta/inject/jakarta.inject-api/2.0.1/jakarta.inject-api-2.0.1.jar:/home/ahmedshaltout/.m2/repository/org/antlr/antlr4-runtime/4.10.1/antlr4-runtime-4.10.1.jar:/home/ahmedshaltout/.m2/repository/org/springframework/data/spring-data-jpa/3.1.5/spring-data-jpa-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/data/spring-data-commons/3.1.5/spring-data-commons-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-orm/6.0.13/spring-orm-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-tx/6.0.13/spring-tx-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/slf4j/slf4j-api/2.0.9/slf4j-api-2.0.9.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-aspects/6.0.13/spring-aspects-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-validation/3.1.5/spring-boot-starter-validation-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/apache/tomcat/embed/tomcat-embed-el/10.1.15/tomcat-embed-el-10.1.15.jar:/home/ahmedshaltout/.m2/repository/org/hibernate/validator/hibernate-validator/8.0.1.Final/hibernate-validator-8.0.1.Final.jar:/home/ahmedshaltout/.m2/repository/jakarta/validation/jakarta.validation-api/3.0.2/jakarta.validation-api-3.0.2.jar:/home/ahmedshaltout/.m2/repository/com/microsoft/sqlserver/mssql-jdbc/12.4.2.jre11/mssql-jdbc-12.4.2.jre11.jar:/home/ahmedshaltout/.m2/repository/io/jsonwebtoken/jjwt-api/0.11.5/jjwt-api-0.11.5.jar:/home/ahmedshaltout/.m2/repository/io/jsonwebtoken/jjwt-impl/0.11.5/jjwt-impl-0.11.5.jar:/home/ahmedshaltout/.m2/repository/io/jsonwebtoken/jjwt-jackson/0.11.5/jjwt-jackson-0.11.5.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.15.3/jackson-databind-2.15.3.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.15.3/jackson-annotations-2.15.3.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.15.3/jackson-core-2.15.3.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-test/3.1.5/spring-boot-starter-test-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-test/3.1.5/spring-boot-test-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-test-autoconfigure/3.1.5/spring-boot-test-autoconfigure-3.1.5.jar:/home/ahmedshaltout/.m2/repository/com/jayway/jsonpath/json-path/2.8.0/json-path-2.8.0.jar:/home/ahmedshaltout/.m2/repository/jakarta/xml/bind/jakarta.xml.bind-api/4.0.1/jakarta.xml.bind-api-4.0.1.jar:/home/ahmedshaltout/.m2/repository/jakarta/activation/jakarta.activation-api/2.1.2/jakarta.activation-api-2.1.2.jar:/home/ahmedshaltout/.m2/repository/net/minidev/json-smart/2.4.11/json-smart-2.4.11.jar:/home/ahmedshaltout/.m2/repository/net/minidev/accessors-smart/2.4.11/accessors-smart-2.4.11.jar:/home/ahmedshaltout/.m2/repository/org/ow2/asm/asm/9.3/asm-9.3.jar:/home/ahmedshaltout/.m2/repository/org/assertj/assertj-core/3.24.2/assertj-core-3.24.2.jar:/home/ahmedshaltout/.m2/repository/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar:/home/ahmedshaltout/.m2/repository/org/junit/jupiter/junit-jupiter/5.9.3/junit-jupiter-5.9.3.jar:/home/ahmedshaltout/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.3/junit-jupiter-api-5.9.3.jar:/home/ahmedshaltout/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/home/ahmedshaltout/.m2/repository/org/junit/platform/junit-platform-commons/1.9.3/junit-platform-commons-1.9.3.jar:/home/ahmedshaltout/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/ahmedshaltout/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.3/junit-jupiter-params-5.9.3.jar:/home/ahmedshaltout/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.3/junit-jupiter-engine-5.9.3.jar:/home/ahmedshaltout/.m2/repository/org/junit/platform/junit-platform-engine/1.9.3/junit-platform-engine-1.9.3.jar:/home/ahmedshaltout/.m2/repository/org/mockito/mockito-core/5.3.1/mockito-core-5.3.1.jar:/home/ahmedshaltout/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.9/byte-buddy-agent-1.14.9.jar:/home/ahmedshaltout/.m2/repository/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/home/ahmedshaltout/.m2/repository/org/mockito/mockito-junit-jupiter/5.3.1/mockito-junit-jupiter-5.3.1.jar:/home/ahmedshaltout/.m2/repository/org/skyscreamer/jsonassert/1.5.1/jsonassert-1.5.1.jar:/home/ahmedshaltout/.m2/repository/com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-core/6.0.13/spring-core-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-jcl/6.0.13/spring-jcl-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-test/6.0.13/spring-test-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/xmlunit/xmlunit-core/2.9.1/xmlunit-core-2.9.1.jar:/home/ahmedshaltout/.m2/repository/org/springframework/security/spring-security-test/6.1.5/spring-security-test-6.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/security/spring-security-core/6.1.5/spring-security-core-6.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/security/spring-security-crypto/6.1.5/spring-security-crypto-6.1.5.jar:/home/ahmedshaltout/.m2/repository/com/h2database/h2/2.1.214/h2-2.1.214.jar:"/>
+    <property name="java.vm.vendor" value="JetBrains s.r.o."/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="catalina.useNaming" value="false"/>
+    <property name="java.vendor.url" value="https://openjdk.java.net/"/>
+    <property name="user.timezone" value="Africa/Cairo"/>
+    <property name="org.jboss.logging.provider" value="slf4j"/>
+    <property name="os.name" value="Linux"/>
+    <property name="java.vm.specification.version" value="17"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.boot.library.path" value="/home/ahmedshaltout/Documents/Android/android-studio/jbr/lib"/>
+    <property name="sun.java.command" value="/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/target/surefire/surefirebooter-20260414141435297_3.jar /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/target/surefire 2026-04-14T14-14-35_177-jvmRun1 surefire-20260414141435297_1tmp surefire_0-20260414141435297_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/target/test-classes:/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/target/classes:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-web/3.1.5/spring-boot-starter-web-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter/3.1.5/spring-boot-starter-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-logging/3.1.5/spring-boot-starter-logging-3.1.5.jar:/home/ahmedshaltout/.m2/repository/ch/qos/logback/logback-classic/1.4.11/logback-classic-1.4.11.jar:/home/ahmedshaltout/.m2/repository/ch/qos/logback/logback-core/1.4.11/logback-core-1.4.11.jar:/home/ahmedshaltout/.m2/repository/org/apache/logging/log4j/log4j-to-slf4j/2.20.0/log4j-to-slf4j-2.20.0.jar:/home/ahmedshaltout/.m2/repository/org/apache/logging/log4j/log4j-api/2.20.0/log4j-api-2.20.0.jar:/home/ahmedshaltout/.m2/repository/org/slf4j/jul-to-slf4j/2.0.9/jul-to-slf4j-2.0.9.jar:/home/ahmedshaltout/.m2/repository/jakarta/annotation/jakarta.annotation-api/2.1.1/jakarta.annotation-api-2.1.1.jar:/home/ahmedshaltout/.m2/repository/org/yaml/snakeyaml/1.33/snakeyaml-1.33.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-json/3.1.5/spring-boot-starter-json-3.1.5.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.15.3/jackson-datatype-jdk8-2.15.3.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.15.3/jackson-datatype-jsr310-2.15.3.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/jackson/module/jackson-module-parameter-names/2.15.3/jackson-module-parameter-names-2.15.3.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-tomcat/3.1.5/spring-boot-starter-tomcat-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/apache/tomcat/embed/tomcat-embed-core/10.1.15/tomcat-embed-core-10.1.15.jar:/home/ahmedshaltout/.m2/repository/org/apache/tomcat/embed/tomcat-embed-websocket/10.1.15/tomcat-embed-websocket-10.1.15.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-web/6.0.13/spring-web-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-beans/6.0.13/spring-beans-6.0.13.jar:/home/ahmedshaltout/.m2/repository/io/micrometer/micrometer-observation/1.11.5/micrometer-observation-1.11.5.jar:/home/ahmedshaltout/.m2/repository/io/micrometer/micrometer-commons/1.11.5/micrometer-commons-1.11.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-webmvc/6.0.13/spring-webmvc-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-context/6.0.13/spring-context-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-expression/6.0.13/spring-expression-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-devtools/3.1.5/spring-boot-devtools-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot/3.1.5/spring-boot-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-autoconfigure/3.1.5/spring-boot-autoconfigure-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-security/3.1.5/spring-boot-starter-security-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-aop/6.0.13/spring-aop-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/security/spring-security-config/6.1.5/spring-security-config-6.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/security/spring-security-web/6.1.5/spring-security-web-6.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-data-jpa/3.1.5/spring-boot-starter-data-jpa-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-aop/3.1.5/spring-boot-starter-aop-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/aspectj/aspectjweaver/1.9.20/aspectjweaver-1.9.20.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-jdbc/3.1.5/spring-boot-starter-jdbc-3.1.5.jar:/home/ahmedshaltout/.m2/repository/com/zaxxer/HikariCP/5.0.1/HikariCP-5.0.1.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-jdbc/6.0.13/spring-jdbc-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/hibernate/orm/hibernate-core/6.2.13.Final/hibernate-core-6.2.13.Final.jar:/home/ahmedshaltout/.m2/repository/jakarta/persistence/jakarta.persistence-api/3.1.0/jakarta.persistence-api-3.1.0.jar:/home/ahmedshaltout/.m2/repository/jakarta/transaction/jakarta.transaction-api/2.0.1/jakarta.transaction-api-2.0.1.jar:/home/ahmedshaltout/.m2/repository/org/jboss/logging/jboss-logging/3.5.3.Final/jboss-logging-3.5.3.Final.jar:/home/ahmedshaltout/.m2/repository/org/hibernate/common/hibernate-commons-annotations/6.0.6.Final/hibernate-commons-annotations-6.0.6.Final.jar:/home/ahmedshaltout/.m2/repository/io/smallrye/jandex/3.0.5/jandex-3.0.5.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/classmate/1.5.1/classmate-1.5.1.jar:/home/ahmedshaltout/.m2/repository/net/bytebuddy/byte-buddy/1.14.9/byte-buddy-1.14.9.jar:/home/ahmedshaltout/.m2/repository/org/glassfish/jaxb/jaxb-runtime/4.0.3/jaxb-runtime-4.0.3.jar:/home/ahmedshaltout/.m2/repository/org/glassfish/jaxb/jaxb-core/4.0.3/jaxb-core-4.0.3.jar:/home/ahmedshaltout/.m2/repository/org/eclipse/angus/angus-activation/2.0.1/angus-activation-2.0.1.jar:/home/ahmedshaltout/.m2/repository/org/glassfish/jaxb/txw2/4.0.3/txw2-4.0.3.jar:/home/ahmedshaltout/.m2/repository/com/sun/istack/istack-commons-runtime/4.1.2/istack-commons-runtime-4.1.2.jar:/home/ahmedshaltout/.m2/repository/jakarta/inject/jakarta.inject-api/2.0.1/jakarta.inject-api-2.0.1.jar:/home/ahmedshaltout/.m2/repository/org/antlr/antlr4-runtime/4.10.1/antlr4-runtime-4.10.1.jar:/home/ahmedshaltout/.m2/repository/org/springframework/data/spring-data-jpa/3.1.5/spring-data-jpa-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/data/spring-data-commons/3.1.5/spring-data-commons-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-orm/6.0.13/spring-orm-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-tx/6.0.13/spring-tx-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/slf4j/slf4j-api/2.0.9/slf4j-api-2.0.9.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-aspects/6.0.13/spring-aspects-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-validation/3.1.5/spring-boot-starter-validation-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/apache/tomcat/embed/tomcat-embed-el/10.1.15/tomcat-embed-el-10.1.15.jar:/home/ahmedshaltout/.m2/repository/org/hibernate/validator/hibernate-validator/8.0.1.Final/hibernate-validator-8.0.1.Final.jar:/home/ahmedshaltout/.m2/repository/jakarta/validation/jakarta.validation-api/3.0.2/jakarta.validation-api-3.0.2.jar:/home/ahmedshaltout/.m2/repository/com/microsoft/sqlserver/mssql-jdbc/12.4.2.jre11/mssql-jdbc-12.4.2.jre11.jar:/home/ahmedshaltout/.m2/repository/io/jsonwebtoken/jjwt-api/0.11.5/jjwt-api-0.11.5.jar:/home/ahmedshaltout/.m2/repository/io/jsonwebtoken/jjwt-impl/0.11.5/jjwt-impl-0.11.5.jar:/home/ahmedshaltout/.m2/repository/io/jsonwebtoken/jjwt-jackson/0.11.5/jjwt-jackson-0.11.5.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.15.3/jackson-databind-2.15.3.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.15.3/jackson-annotations-2.15.3.jar:/home/ahmedshaltout/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.15.3/jackson-core-2.15.3.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-starter-test/3.1.5/spring-boot-starter-test-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-test/3.1.5/spring-boot-test-3.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/boot/spring-boot-test-autoconfigure/3.1.5/spring-boot-test-autoconfigure-3.1.5.jar:/home/ahmedshaltout/.m2/repository/com/jayway/jsonpath/json-path/2.8.0/json-path-2.8.0.jar:/home/ahmedshaltout/.m2/repository/jakarta/xml/bind/jakarta.xml.bind-api/4.0.1/jakarta.xml.bind-api-4.0.1.jar:/home/ahmedshaltout/.m2/repository/jakarta/activation/jakarta.activation-api/2.1.2/jakarta.activation-api-2.1.2.jar:/home/ahmedshaltout/.m2/repository/net/minidev/json-smart/2.4.11/json-smart-2.4.11.jar:/home/ahmedshaltout/.m2/repository/net/minidev/accessors-smart/2.4.11/accessors-smart-2.4.11.jar:/home/ahmedshaltout/.m2/repository/org/ow2/asm/asm/9.3/asm-9.3.jar:/home/ahmedshaltout/.m2/repository/org/assertj/assertj-core/3.24.2/assertj-core-3.24.2.jar:/home/ahmedshaltout/.m2/repository/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar:/home/ahmedshaltout/.m2/repository/org/junit/jupiter/junit-jupiter/5.9.3/junit-jupiter-5.9.3.jar:/home/ahmedshaltout/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.3/junit-jupiter-api-5.9.3.jar:/home/ahmedshaltout/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/home/ahmedshaltout/.m2/repository/org/junit/platform/junit-platform-commons/1.9.3/junit-platform-commons-1.9.3.jar:/home/ahmedshaltout/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/ahmedshaltout/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.3/junit-jupiter-params-5.9.3.jar:/home/ahmedshaltout/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.3/junit-jupiter-engine-5.9.3.jar:/home/ahmedshaltout/.m2/repository/org/junit/platform/junit-platform-engine/1.9.3/junit-platform-engine-1.9.3.jar:/home/ahmedshaltout/.m2/repository/org/mockito/mockito-core/5.3.1/mockito-core-5.3.1.jar:/home/ahmedshaltout/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.9/byte-buddy-agent-1.14.9.jar:/home/ahmedshaltout/.m2/repository/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/home/ahmedshaltout/.m2/repository/org/mockito/mockito-junit-jupiter/5.3.1/mockito-junit-jupiter-5.3.1.jar:/home/ahmedshaltout/.m2/repository/org/skyscreamer/jsonassert/1.5.1/jsonassert-1.5.1.jar:/home/ahmedshaltout/.m2/repository/com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-core/6.0.13/spring-core-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-jcl/6.0.13/spring-jcl-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/springframework/spring-test/6.0.13/spring-test-6.0.13.jar:/home/ahmedshaltout/.m2/repository/org/xmlunit/xmlunit-core/2.9.1/xmlunit-core-2.9.1.jar:/home/ahmedshaltout/.m2/repository/org/springframework/security/spring-security-test/6.1.5/spring-security-test-6.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/security/spring-security-core/6.1.5/spring-security-core-6.1.5.jar:/home/ahmedshaltout/.m2/repository/org/springframework/security/spring-security-crypto/6.1.5/spring-security-crypto-6.1.5.jar:/home/ahmedshaltout/.m2/repository/com/h2database/h2/2.1.214/h2-2.1.214.jar:"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="/home/ahmedshaltout"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2024-01-16"/>
+    <property name="java.home" value="/home/ahmedshaltout/Documents/Android/android-studio/jbr"/>
+    <property name="file.separator" value="/"/>
+    <property name="basedir" value="/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="FILE_LOG_CHARSET" value="UTF-8"/>
+    <property name="java.awt.headless" value="true"/>
+    <property name="jbr.virtualization.information" value="No virtualization detected"/>
+    <property name="surefire.real.class.path" value="/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/target/surefire/surefirebooter-20260414141435297_3.jar"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="17.0.10+0-17.0.10b1087.21-11572160"/>
+    <property name="user.name" value="ahmedshaltout"/>
+    <property name="path.separator" value=":"/>
+    <property name="os.version" value="5.4.0-150-generic"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="localRepository" value="/home/ahmedshaltout/.m2/repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="/tmp"/>
+    <property name="catalina.home" value="/tmp/tomcat.0.3094848794801443763"/>
+    <property name="com.zaxxer.hikari.pool_number" value="1"/>
+    <property name="java.version" value="17.0.10"/>
+    <property name="user.dir" value="/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="PID" value="13099"/>
+    <property name="CONSOLE_LOG_CHARSET" value="UTF-8"/>
+    <property name="catalina.base" value="/tmp/tomcat.0.3094848794801443763"/>
+    <property name="native.encoding" value="UTF-8"/>
+    <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.vendor" value="JetBrains s.r.o."/>
+    <property name="java.vm.version" value="17.0.10+0-17.0.10b1087.21-11572160"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="61.0"/>
+  </properties>
+  <testcase name="test01_signup_new_user" classname="com.ao8r.tasks_api.TasksApiIntegrationTest" time="1.14">
+    <system-out><![CDATA[14:14:36.645 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.ao8r.tasks_api.TasksApiIntegrationTest]: TasksApiIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+14:14:36.841 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.ao8r.tasks_api.TasksApiApplication for test class com.ao8r.tasks_api.TasksApiIntegrationTest
+14:14:37.085 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.1.5)
+
+2026-04-14T14:14:37.458+02:00  INFO 13099 --- [           main] c.a.tasks_api.TasksApiIntegrationTest    : Starting TasksApiIntegrationTest using Java 17.0.10 with PID 13099 (started by ahmedshaltout in /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi)
+2026-04-14T14:14:37.458+02:00 DEBUG 13099 --- [           main] c.a.tasks_api.TasksApiIntegrationTest    : Running with Spring Boot v3.1.5, Spring v6.0.13
+2026-04-14T14:14:37.459+02:00  INFO 13099 --- [           main] c.a.tasks_api.TasksApiIntegrationTest    : The following 1 profile is active: "test"
+2026-04-14T14:14:38.599+02:00  INFO 13099 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-14T14:14:38.731+02:00  INFO 13099 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 124 ms. Found 2 JPA repository interfaces.
+2026-04-14T14:14:39.597+02:00  INFO 13099 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 0 (http)
+2026-04-14T14:14:39.612+02:00  INFO 13099 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-14T14:14:39.612+02:00  INFO 13099 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
+2026-04-14T14:14:39.718+02:00  INFO 13099 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-14T14:14:39.719+02:00  INFO 13099 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2211 ms
+2026-04-14T14:14:39.908+02:00  INFO 13099 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-14T14:14:39.951+02:00  INFO 13099 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.2.13.Final
+2026-04-14T14:14:39.953+02:00  INFO 13099 --- [           main] org.hibernate.cfg.Environment            : HHH000406: Using bytecode reflection optimizer
+2026-04-14T14:14:40.293+02:00  INFO 13099 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-14T14:14:40.334+02:00  INFO 13099 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-14T14:14:40.663+02:00  INFO 13099 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-04-14T14:14:40.664+02:00  INFO 13099 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-14T14:14:41.715+02:00  INFO 13099 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: 
+    drop table if exists apps_name cascade 
+Hibernate: 
+    drop table if exists task_users cascade 
+Hibernate: 
+    create table apps_name (
+        id bigint generated by default as identity,
+        app_name varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table task_users (
+        is_enable boolean not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        department varchar(255) not null,
+        display_name varchar(255) not null,
+        password varchar(255) not null,
+        role varchar(255) not null check (role in ('ADMIN','USER','MANAGER','GENERAL_MANAGER','SECTOR_MANAGER')),
+        username varchar(255) not null unique,
+        primary key (id)
+    )
+2026-04-14T14:14:41.782+02:00  INFO 13099 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-14T14:14:42.247+02:00 DEBUG 13099 --- [           main] c.a.t.security.jwt.AuthTokenFilter       : Filter 'authTokenFilter' configured for use
+2026-04-14T14:14:42.422+02:00  WARN 13099 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-14T14:14:42.788+02:00  INFO 13099 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@32db94fb, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6b61a4b0, org.springframework.security.web.context.SecurityContextHolderFilter@a15e3c1, org.springframework.security.web.header.HeaderWriterFilter@50f5ce5b, org.springframework.security.web.authentication.logout.LogoutFilter@cf82c58, com.ao8r.tasks_api.security.jwt.AuthTokenFilter@cef23a8, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2bc52b08, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4e797a39, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5c00de0d, org.springframework.security.web.session.SessionManagementFilter@10ab976b, org.springframework.security.web.access.ExceptionTranslationFilter@38aed8ad, org.springframework.security.web.access.intercept.AuthorizationFilter@1609ed55]
+2026-04-14T14:14:43.051+02:00  INFO 13099 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 33229 (http) with context path ''
+2026-04-14T14:14:43.057+02:00  INFO 13099 --- [           main] c.a.tasks_api.TasksApiIntegrationTest    : Started TasksApiIntegrationTest in 5.984 seconds (process running for 7.639)
+Hibernate: 
+    select
+        count(*) 
+    from
+        task_users u1_0
+2026-04-14T14:14:43.302+02:00  INFO 13099 --- [           main] com.ao8r.tasks_api.TestDataInitializer   : Initializing test data...
+Hibernate: 
+    insert 
+    into
+        task_users
+        (created_at,department,display_name,is_enable,password,role,username,id) 
+    values
+        (?,?,?,?,?,?,?,default)
+Hibernate: 
+    insert 
+    into
+        task_users
+        (created_at,department,display_name,is_enable,password,role,username,id) 
+    values
+        (?,?,?,?,?,?,?,default)
+Hibernate: 
+    insert 
+    into
+        task_users
+        (created_at,department,display_name,is_enable,password,role,username,id) 
+    values
+        (?,?,?,?,?,?,?,default)
+Hibernate: 
+    insert 
+    into
+        task_users
+        (created_at,department,display_name,is_enable,password,role,username,id) 
+    values
+        (?,?,?,?,?,?,?,default)
+Hibernate: 
+    insert 
+    into
+        task_users
+        (created_at,department,display_name,is_enable,password,role,username,id) 
+    values
+        (?,?,?,?,?,?,?,default)
+2026-04-14T14:14:43.426+02:00  INFO 13099 --- [           main] com.ao8r.tasks_api.TestDataInitializer   : Test data initialized: 5 users created
+2026-04-14T14:14:44.323+02:00  INFO 13099 --- [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-14T14:14:44.324+02:00  INFO 13099 --- [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-14T14:14:44.329+02:00  INFO 13099 --- [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2026-04-14T14:14:44.431+02:00  INFO 13099 --- [o-auto-1-exec-1] c.a.t.controller.auth.AuthController     : Signup request received for username: newuser
+2026-04-14T14:14:44.433+02:00 DEBUG 13099 --- [o-auto-1-exec-1] c.a.tasks_api.service.UserServiceImpl    : Registering new user with username: newuser
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        task_users u1_0 
+    where
+        u1_0.username=? 
+    fetch
+        first ? rows only
+Hibernate: 
+    insert 
+    into
+        task_users
+        (created_at,department,display_name,is_enable,password,role,username,id) 
+    values
+        (?,?,?,?,?,?,?,default)
+2026-04-14T14:14:44.535+02:00  INFO 13099 --- [o-auto-1-exec-1] c.a.tasks_api.service.UserServiceImpl    : User registered successfully: newuser
+]]></system-out>
+  </testcase>
+  <testcase name="test02_signup_duplicate_username" classname="com.ao8r.tasks_api.TasksApiIntegrationTest" time="0.031">
+    <system-out><![CDATA[2026-04-14T14:14:44.590+02:00  INFO 13099 --- [o-auto-1-exec-2] c.a.t.controller.auth.AuthController     : Signup request received for username: newuser
+2026-04-14T14:14:44.591+02:00 DEBUG 13099 --- [o-auto-1-exec-2] c.a.tasks_api.service.UserServiceImpl    : Registering new user with username: newuser
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        task_users u1_0 
+    where
+        u1_0.username=? 
+    fetch
+        first ? rows only
+2026-04-14T14:14:44.596+02:00 ERROR 13099 --- [o-auto-1-exec-2] c.a.t.exception.GlobalExceptionHandler   : Runtime error: Error: Username is already taken!
+Response status: 400 BAD_REQUEST
+Response body: {error=Error: Username is already taken!}
+]]></system-out>
+  </testcase>
+  <testcase name="test03_signin_admin" classname="com.ao8r.tasks_api.TasksApiIntegrationTest" time="0.222">
+    <system-out><![CDATA[2026-04-14T14:14:44.631+02:00  INFO 13099 --- [o-auto-1-exec-3] c.a.t.controller.auth.AuthController     : Signin request received for username: admin
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.department,
+        u1_0.display_name,
+        u1_0.is_enable,
+        u1_0.password,
+        u1_0.role,
+        u1_0.username 
+    from
+        task_users u1_0 
+    where
+        u1_0.username=?
+]]></system-out>
+  </testcase>
+  <testcase name="test04_signin_regular_user" classname="com.ao8r.tasks_api.TasksApiIntegrationTest" time="0.116">
+    <system-out><![CDATA[2026-04-14T14:14:44.840+02:00  INFO 13099 --- [o-auto-1-exec-3] c.a.t.controller.auth.AuthController     : Signin request received for username: user
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.department,
+        u1_0.display_name,
+        u1_0.is_enable,
+        u1_0.password,
+        u1_0.role,
+        u1_0.username 
+    from
+        task_users u1_0 
+    where
+        u1_0.username=?
+]]></system-out>
+  </testcase>
+  <testcase name="test05_signin_invalid_credentials" classname="com.ao8r.tasks_api.TasksApiIntegrationTest" time="0.093">
+    <system-out><![CDATA[2026-04-14T14:14:44.964+02:00  INFO 13099 --- [o-auto-1-exec-4] c.a.t.controller.auth.AuthController     : Signin request received for username: admin
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.department,
+        u1_0.display_name,
+        u1_0.is_enable,
+        u1_0.password,
+        u1_0.role,
+        u1_0.username 
+    from
+        task_users u1_0 
+    where
+        u1_0.username=?
+2026-04-14T14:14:45.044+02:00 ERROR 13099 --- [o-auto-1-exec-4] c.a.t.exception.GlobalExceptionHandler   : Bad credentials: Bad credentials
+]]></system-out>
+  </testcase>
+  <testcase name="test06_public_endpoint_no_auth" classname="com.ao8r.tasks_api.TasksApiIntegrationTest" time="0.008">
+    <system-out><![CDATA[2026-04-14T14:14:45.054+02:00 DEBUG 13099 --- [o-auto-1-exec-5] c.a.t.controller.test.TestController     : Public endpoint accessed
+]]></system-out>
+  </testcase>
+  <testcase name="test07_user_endpoint_with_user_token" classname="com.ao8r.tasks_api.TasksApiIntegrationTest" time="0.07">
+    <system-out><![CDATA[Hibernate: 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.department,
+        u1_0.display_name,
+        u1_0.is_enable,
+        u1_0.password,
+        u1_0.role,
+        u1_0.username 
+    from
+        task_users u1_0 
+    where
+        u1_0.username=?
+2026-04-14T14:14:45.125+02:00 DEBUG 13099 --- [o-auto-1-exec-6] c.a.t.controller.test.TestController     : User endpoint accessed
+]]></system-out>
+  </testcase>
+  <testcase name="test09_admin_endpoint_with_user_token" classname="com.ao8r.tasks_api.TasksApiIntegrationTest" time="0.02">
+    <system-out><![CDATA[Hibernate: 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.department,
+        u1_0.display_name,
+        u1_0.is_enable,
+        u1_0.password,
+        u1_0.role,
+        u1_0.username 
+    from
+        task_users u1_0 
+    where
+        u1_0.username=?
+]]></system-out>
+  </testcase>
+  <testcase name="test10_admin_endpoint_with_admin_token" classname="com.ao8r.tasks_api.TasksApiIntegrationTest" time="0.022">
+    <system-out><![CDATA[Hibernate: 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.department,
+        u1_0.display_name,
+        u1_0.is_enable,
+        u1_0.password,
+        u1_0.role,
+        u1_0.username 
+    from
+        task_users u1_0 
+    where
+        u1_0.username=?
+2026-04-14T14:14:45.165+02:00 DEBUG 13099 --- [o-auto-1-exec-6] c.a.t.controller.test.TestController     : Admin endpoint accessed
+]]></system-out>
+  </testcase>
+  <testcase name="test11_validation_error_empty_username" classname="com.ao8r.tasks_api.TasksApiIntegrationTest" time="0.014"/>
+  <testcase name="test12_validation_error_short_password" classname="com.ao8r.tasks_api.TasksApiIntegrationTest" time="0.012"/>
+</testsuite>

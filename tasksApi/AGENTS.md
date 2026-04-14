@@ -61,6 +61,7 @@ mvn package -DskipTests
 | PUT | `/api/users/{id}/enable?enabled=true` | Enable/disable user | ADMIN |
 | PUT | `/api/users/change-password` | Change password (requires old password) | AUTHENTICATED |
 | DELETE | `/api/users/{id}` | Delete user by ID | ADMIN |
+| GET | `/api/users/roles` | Get all roles as list of strings | ADMIN/MANAGER |
 
 ### Apps Controller (`/api/apps`)
 | Method | Endpoint | Description | Auth Required |

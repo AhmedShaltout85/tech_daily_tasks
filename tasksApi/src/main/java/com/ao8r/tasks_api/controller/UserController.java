@@ -61,4 +61,12 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok(new MessageResponse("User deleted successfully!"));
     }
+
+    @GetMapping("/roles")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public ResponseEntity<List<String>> getAllRoles() {
+        log.debug("Fetching all roles");
+        List<String> roles = userService.getAllRoles();
+        return ResponseEntity.ok(roles);
+    }
 }

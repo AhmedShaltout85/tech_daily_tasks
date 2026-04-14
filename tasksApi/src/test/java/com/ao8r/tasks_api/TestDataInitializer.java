@@ -31,6 +31,7 @@ public class TestDataInitializer implements CommandLineRunner {
                     .username("admin")
                     .password(encodedPassword)
                     .role(Role.ADMIN)
+                    .department("IT")
                     .isEnabled(true)
                     .build());
 
@@ -39,6 +40,7 @@ public class TestDataInitializer implements CommandLineRunner {
                     .username("manager")
                     .password(encodedPassword)
                     .role(Role.MANAGER)
+                    .department("Management")
                     .isEnabled(true)
                     .build());
 
@@ -47,6 +49,7 @@ public class TestDataInitializer implements CommandLineRunner {
                     .username("generalmanager")
                     .password(encodedPassword)
                     .role(Role.GENERAL_MANAGER)
+                    .department("Management")
                     .isEnabled(true)
                     .build());
 
@@ -55,6 +58,7 @@ public class TestDataInitializer implements CommandLineRunner {
                     .username("sectormanager")
                     .password(encodedPassword)
                     .role(Role.SECTOR_MANAGER)
+                    .department("Operations")
                     .isEnabled(true)
                     .build());
 
@@ -63,6 +67,7 @@ public class TestDataInitializer implements CommandLineRunner {
                     .username("user")
                     .password(encodedPassword)
                     .role(Role.USER)
+                    .department("User Department")
                     .isEnabled(true)
                     .build());
 

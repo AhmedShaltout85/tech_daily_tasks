@@ -26,4 +26,6 @@ public interface UserService {
     void changePassword(String username, String currentPassword, String newPassword);
 
     void resetPassword(String username, String newPassword);
+
+    List<String> getAllRoles();
 }

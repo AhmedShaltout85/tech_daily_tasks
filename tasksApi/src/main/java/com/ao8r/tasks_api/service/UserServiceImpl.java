@@ -11,8 +11,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -118,5 +120,12 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         log.info("Password reset successfully for user: {}", username);
+    }
+
+    @Override
+    public List<String> getAllRoles() {
+        return Arrays.stream(Role.values())
+                .map(Enum::name)
+                .collect(Collectors.toList());
     }
 }

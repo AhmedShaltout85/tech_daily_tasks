@@ -43,6 +43,7 @@ class TasksApiIntegrationTest {
         signupRequest.setUsername("newuser");
         signupRequest.setPassword("password123");
         signupRequest.setRole("USER");
+        signupRequest.setDepartment("IT");
 
         HttpEntity<SignupRequest> request = new HttpEntity<>(signupRequest, getHeaders(null));
         ResponseEntity<MessageResponse> response = restTemplate.postForEntity(
@@ -60,10 +61,15 @@ class TasksApiIntegrationTest {
         signupRequest.setDisplayName("Duplicate User");
         signupRequest.setUsername("newuser");
         signupRequest.setPassword("password123");
+        signupRequest.setRole("USER");
+        signupRequest.setDepartment("IT");
 
         HttpEntity<SignupRequest> request = new HttpEntity<>(signupRequest, getHeaders(null));
         ResponseEntity<Map> response = restTemplate.postForEntity(
                 "/api/auth/signup", request, Map.class);
+
+        System.out.println("Response status: " + response.getStatusCode());
+        System.out.println("Response body: " + response.getBody());
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());

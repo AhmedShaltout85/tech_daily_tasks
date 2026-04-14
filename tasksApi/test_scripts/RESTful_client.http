@@ -173,6 +173,14 @@ DELETE http://localhost:8080/api/apps/1
 Authorization: Bearer {{adminToken}}
 
 ### ======================================================
+### USER CONTROLLER - ROLES LISTING
+### ======================================================
+
+### 23. Get All Roles
+GET http://localhost:8080/api/users/roles
+Authorization: Bearer {{adminToken}}
+
+### ======================================================
 ### ENVIRONMENT VARIABLES
 ### ======================================================
 # {

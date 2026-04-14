@@ -19,7 +19,7 @@ public class SignupRequest {
     @Size(min = 6, max = 40, message = "Password must be between 6 and 40 characters")
     private String password;
 
-    @NotBlank(message = "Department is required")
+    @NotBlank(message = "Role is required")
     private String role;
 
     @NotBlank(message = "Department is required")
