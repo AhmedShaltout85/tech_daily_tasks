@@ -181,6 +181,80 @@ GET http://localhost:8080/api/users/roles
 Authorization: Bearer {{adminToken}}
 
 ### ======================================================
+### DAILY TASK CONTROLLER
+### ======================================================
+
+### 24. Create New Daily Task
+POST http://localhost:8080/api/daily-tasks
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "taskTitle": "Fix login issue",
+  "taskStatus": false,
+  "appName": "Test Application",
+  "visitPlace": "Office",
+  "assignedTo": "user",
+  "assignedBy": "admin",
+  "coOperator": "manager",
+  "expectedCompletionDate": "2026-04-20T17:00:00",
+  "taskPriority": "HIGH",
+  "taskNote": "Need to investigate the authentication flow",
+  "isRemote": false
+}
+
+### 25. Get All Daily Tasks
+GET http://localhost:8080/api/daily-tasks
+Authorization: Bearer {{adminToken}}
+
+### 26. Get Daily Task by ID
+GET http://localhost:8080/api/daily-tasks/1
+Authorization: Bearer {{adminToken}}
+
+### 27. Update Daily Task by ID
+PUT http://localhost:8080/api/daily-tasks/1
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "taskTitle": "Updated task title",
+  "taskStatus": true,
+  "appName": "Updated Application",
+  "visitPlace": "Remote",
+  "assignedTo": "user",
+  "assignedBy": "admin",
+  "coOperator": "manager",
+  "expectedCompletionDate": "2026-04-25T17:00:00",
+  "taskPriority": "MEDIUM",
+  "taskNote": "Task completed successfully",
+  "isRemote": true
+}
+
+### 28. Delete Daily Task by ID
+DELETE http://localhost:8080/api/daily-tasks/1
+Authorization: Bearer {{adminToken}}
+
+### 29. Get Tasks Assigned To User
+GET http://localhost:8080/api/daily-tasks/assigned-to/user
+Authorization: Bearer {{adminToken}}
+
+### 30. Get Tasks Assigned By User
+GET http://localhost:8080/api/daily-tasks/assigned-by/admin
+Authorization: Bearer {{adminToken}}
+
+### 31. Get Tasks By App Name
+GET http://localhost:8080/api/daily-tasks/app/Test%20Application
+Authorization: Bearer {{adminToken}}
+
+### 32. Get Tasks By Status (false=pending, true=completed)
+GET http://localhost:8080/api/daily-tasks/status/false
+Authorization: Bearer {{adminToken}}
+
+### 33. Get Tasks By Priority
+GET http://localhost:8080/api/daily-tasks/priority/HIGH
+Authorization: Bearer {{adminToken}}
+
+### ======================================================
 ### ENVIRONMENT VARIABLES
 ### ======================================================
 # {

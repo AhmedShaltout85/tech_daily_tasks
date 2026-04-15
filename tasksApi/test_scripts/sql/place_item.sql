@@ -1,0 +1,4 @@
+CREATE TABLE place_item (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    place_name VARCHAR(255) NOT NULL
+);

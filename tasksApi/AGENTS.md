@@ -72,6 +72,20 @@ mvn package -DskipTests
 | PUT | `/api/apps/{id}` | Update app by ID | AUTHENTICATED |
 | DELETE | `/api/apps/{id}` | Delete app by ID | AUTHENTICATED |
 
+### DailyTask Controller (`/api/daily-tasks`)
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/daily-tasks` | Create new daily task | AUTHENTICATED |
+| GET | `/api/daily-tasks` | Get all daily tasks | AUTHENTICATED |
+| GET | `/api/daily-tasks/{id}` | Get daily task by ID | AUTHENTICATED |
+| PUT | `/api/daily-tasks/{id}` | Update daily task by ID | AUTHENTICATED |
+| DELETE | `/api/daily-tasks/{id}` | Delete daily task by ID | AUTHENTICATED |
+| GET | `/api/daily-tasks/assigned-to/{username}` | Get tasks assigned to user | AUTHENTICATED |
+| GET | `/api/daily-tasks/assigned-by/{username}` | Get tasks assigned by user | AUTHENTICATED |
+| GET | `/api/daily-tasks/app/{appName}` | Get tasks by app name | AUTHENTICATED |
+| GET | `/api/daily-tasks/status/{taskStatus}` | Get tasks by status | AUTHENTICATED |
+| GET | `/api/daily-tasks/priority/{taskPriority}` | Get tasks by priority | AUTHENTICATED |
+
 ---
 
 ---
@@ -218,6 +232,25 @@ mvn package -DskipTests
 | id | Long | Primary key |
 | appName | String | Application name |
 
+### DailyTask Entity Fields
+| Field | Type | Description |
+|-------|------|-------------|
+| id | Long | Primary key |
+| taskTitle | String | Task title |
+| taskStatus | boolean | Task status (true=completed, false=pending) |
+| appName | String | Application name |
+| visitPlace | String | Visit place |
+| subPlace | String | Sub place (optional) |
+| assignedTo | String | Assigned to username |
+| assignedBy | String | Assigned by username |
+| coOperator | String | Co-operator username |
+| createdAt | LocalDateTime | Creation timestamp |
+| updatedAt | LocalDateTime | Update timestamp |
+| expectedCompletionDate | LocalDateTime | Expected completion date |
+| taskPriority | String | Task priority |
+| taskNote | String | Task note (optional) |
+| isRemote | Boolean | Is remote flag |
+
 ### DTOs
 - `SignupRequest`: displayName, username, password, role, department
 - `SigninRequest`: username, password
@@ -225,6 +258,8 @@ mvn package -DskipTests
 - `MessageResponse`: message
 - `AppsNameRequest`: appName
 - `AppsNameResponse`: id, appName
+- `DailyTaskRequest`: taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator, expectedCompletionDate, taskPriority, taskNote, isRemote
+- `DailyTaskResponse`: id, taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator, createdAt, updatedAt, expectedCompletionDate, taskPriority, taskNote, isRemote
 
 ---
 
@@ -245,6 +280,23 @@ CREATE TABLE task_users (
 CREATE TABLE apps_name (
     id BIGINT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     app_name NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE daily_task (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    task_title NVARCHAR(255) NOT NULL,
+    task_status BIT NOT NULL,
+    app_name NVARCHAR(255) NOT NULL,
+    visit_place NVARCHAR(255) NOT NULL,
+    assigned_to NVARCHAR(255) NOT NULL,
+    assigned_by NVARCHAR(255) NOT NULL,
+    co_operator NVARCHAR(255) NOT NULL,
+    created_at DATETIME2 NOT NULL DEFAULT GETDATE(),
+    updated_at DATETIME2 NULL,
+    expected_completion_date DATETIME2 NOT NULL,
+    task_priority NVARCHAR(50) NOT NULL,
+    task_note NVARCHAR(MAX) NULL DEFAULT 'none',
+    is_remote BIT NOT NULL DEFAULT 0
 );
 ```
 
