@@ -86,6 +86,17 @@ mvn package -DskipTests
 | GET | `/api/daily-tasks/status/{taskStatus}` | Get tasks by status | AUTHENTICATED |
 | GET | `/api/daily-tasks/priority/{taskPriority}` | Get tasks by priority | AUTHENTICATED |
 
+### AboutApp Controller (`/api/about-apps`)
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/about-apps` | Create new about app | AUTHENTICATED |
+| GET | `/api/about-apps` | Get all about apps | AUTHENTICATED |
+| GET | `/api/about-apps/{id}` | Get about app by ID | AUTHENTICATED |
+| GET | `/api/about-apps/name/{appName}` | Get about app by app name | AUTHENTICATED |
+| GET | `/api/about-apps/name/{appName}/recommended` | Get recommended values by app name | AUTHENTICATED |
+| PUT | `/api/about-apps/{id}` | Update about app by ID | AUTHENTICATED |
+| DELETE | `/api/about-apps/{id}` | Delete about app by ID | AUTHENTICATED |
+
 ---
 
 ---
@@ -232,6 +243,13 @@ mvn package -DskipTests
 | id | Long | Primary key |
 | appName | String | Application name |
 
+### AboutApp Entity Fields
+| Field | Type | Description |
+|-------|------|-------------|
+| id | Long | Primary key |
+| appName | String | Application name |
+| recommended | String | Recommended value |
+
 ### DailyTask Entity Fields
 | Field | Type | Description |
 |-------|------|-------------|
@@ -258,6 +276,8 @@ mvn package -DskipTests
 - `MessageResponse`: message
 - `AppsNameRequest`: appName
 - `AppsNameResponse`: id, appName
+- `AboutAppRequest`: appName, recommended
+- `AboutAppResponse`: id, appName, recommended
 - `DailyTaskRequest`: taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator, expectedCompletionDate, taskPriority, taskNote, isRemote
 - `DailyTaskResponse`: id, taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator, createdAt, updatedAt, expectedCompletionDate, taskPriority, taskNote, isRemote
 
@@ -280,6 +300,12 @@ CREATE TABLE task_users (
 CREATE TABLE apps_name (
     id BIGINT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     app_name NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE about_app (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    app_name NVARCHAR(255) NOT NULL,
+    recommended NVARCHAR(255) NOT NULL
 );
 
 CREATE TABLE daily_task (
