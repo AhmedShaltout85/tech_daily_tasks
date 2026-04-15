@@ -97,6 +97,17 @@ mvn package -DskipTests
 | PUT | `/api/about-apps/{id}` | Update about app by ID | AUTHENTICATED |
 | DELETE | `/api/about-apps/{id}` | Delete about app by ID | AUTHENTICATED |
 
+### PreventiveItem Controller (`/api/preventive-items`)
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/preventive-items` | Create new preventive item | AUTHENTICATED |
+| GET | `/api/preventive-items` | Get all preventive items | AUTHENTICATED |
+| GET | `/api/preventive-items/{id}` | Get preventive item by ID | AUTHENTICATED |
+| GET | `/api/preventive-items/app/{appName}` | Get preventive item by app name | AUTHENTICATED |
+| GET | `/api/preventive-items/app/{appName}/actions` | Get actions by app name | AUTHENTICATED |
+| PUT | `/api/preventive-items/{id}` | Update preventive item by ID | AUTHENTICATED |
+| DELETE | `/api/preventive-items/{id}` | Delete preventive item by ID | AUTHENTICATED |
+
 ---
 
 ---
@@ -250,6 +261,13 @@ mvn package -DskipTests
 | appName | String | Application name |
 | recommended | String | Recommended value |
 
+### PreventiveItem Entity Fields
+| Field | Type | Description |
+|-------|------|-------------|
+| id | Long | Primary key |
+| appName | String | Application name |
+| action | String | Action |
+
 ### DailyTask Entity Fields
 | Field | Type | Description |
 |-------|------|-------------|
@@ -278,6 +296,8 @@ mvn package -DskipTests
 - `AppsNameResponse`: id, appName
 - `AboutAppRequest`: appName, recommended
 - `AboutAppResponse`: id, appName, recommended
+- `PreventiveItemRequest`: appName, action
+- `PreventiveItemResponse`: id, appName, action
 - `DailyTaskRequest`: taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator, expectedCompletionDate, taskPriority, taskNote, isRemote
 - `DailyTaskResponse`: id, taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator, createdAt, updatedAt, expectedCompletionDate, taskPriority, taskNote, isRemote
 
@@ -306,6 +326,12 @@ CREATE TABLE about_app (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
     app_name NVARCHAR(255) NOT NULL,
     recommended NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE preventive_item (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    app_name NVARCHAR(255) NOT NULL,
+    action NVARCHAR(255) NOT NULL
 );
 
 CREATE TABLE daily_task (
