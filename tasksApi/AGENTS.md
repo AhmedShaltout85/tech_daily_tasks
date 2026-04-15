@@ -108,6 +108,16 @@ mvn package -DskipTests
 | PUT | `/api/preventive-items/{id}` | Update preventive item by ID | AUTHENTICATED |
 | DELETE | `/api/preventive-items/{id}` | Delete preventive item by ID | AUTHENTICATED |
 
+### PlaceItem Controller (`/api/place-items`)
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/place-items` | Create new place item | AUTHENTICATED |
+| GET | `/api/place-items` | Get all place items | AUTHENTICATED |
+| GET | `/api/place-items/{id}` | Get place item by ID | AUTHENTICATED |
+| GET | `/api/place-items/names` | Get all place names | AUTHENTICATED |
+| PUT | `/api/place-items/{id}` | Update place item by ID | AUTHENTICATED |
+| DELETE | `/api/place-items/{id}` | Delete place item by ID | AUTHENTICATED |
+
 ---
 
 ---
@@ -268,6 +278,12 @@ mvn package -DskipTests
 | appName | String | Application name |
 | action | String | Action |
 
+### PlaceItem Entity Fields
+| Field | Type | Description |
+|-------|------|-------------|
+| id | Long | Primary key |
+| placeName | String | Place name |
+
 ### DailyTask Entity Fields
 | Field | Type | Description |
 |-------|------|-------------|
@@ -298,6 +314,8 @@ mvn package -DskipTests
 - `AboutAppResponse`: id, appName, recommended
 - `PreventiveItemRequest`: appName, action
 - `PreventiveItemResponse`: id, appName, action
+- `PlaceItemRequest`: placeName
+- `PlaceItemResponse`: id, placeName
 - `DailyTaskRequest`: taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator, expectedCompletionDate, taskPriority, taskNote, isRemote
 - `DailyTaskResponse`: id, taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator, createdAt, updatedAt, expectedCompletionDate, taskPriority, taskNote, isRemote
 
@@ -332,6 +350,11 @@ CREATE TABLE preventive_item (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
     app_name NVARCHAR(255) NOT NULL,
     action NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE place_item (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    place_name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE daily_task (

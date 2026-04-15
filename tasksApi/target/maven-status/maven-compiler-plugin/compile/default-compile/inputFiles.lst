@@ -7,7 +7,9 @@
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/repository/AppsNameRepository.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/controller/AppsController.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/entity/AboutApp.java
+/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/repository/PlaceItemRepository.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/service/AboutAppServiceImpl.java
+/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/PlaceItemResponse.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/exception/ResourceNotFoundException.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/MessageResponse.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/PreventiveItemRequest.java
@@ -17,6 +19,7 @@
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/service/UserService.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/service/DailyTaskServiceImpl.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/controller/UserController.java
+/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/controller/PlaceItemController.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/security/services/UserDetailsServiceImpl.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/security/jwt/JwtUtils.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/ChangePasswordRequest.java
@@ -32,10 +35,13 @@
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/exception/GlobalExceptionHandler.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/service/AppsNameService.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/repository/PreventiveItemRepository.java
+/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/entity/PlaceItem.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/entity/PreventiveItem.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/service/PreventiveItemServiceImpl.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/security/jwt/AuthTokenFilter.java
+/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/service/PlaceItemServiceImpl.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/AboutAppRequest.java
+/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/service/PlaceItemService.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/AboutAppResponse.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/AppsNameResponse.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/controller/auth/AuthController.java
@@ -46,6 +52,7 @@
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/ForgotPasswordRequest.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/entity/User.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/entity/Role.java
+/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/PlaceItemRequest.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/SigninRequest.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/entity/DailyTask.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/controller/AboutAppController.java
