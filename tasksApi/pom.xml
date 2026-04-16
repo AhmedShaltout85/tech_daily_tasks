@@ -14,6 +14,7 @@
     <groupId>com.ao8r</groupId>
     <artifactId>tasks_api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>war</packaging>
     <name>tasks_api</name>
     <description>Task Management API with JWT Authentication</description>
     
@@ -98,6 +99,12 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     
