@@ -4,6 +4,7 @@ com/ao8r/tasks_api/repository/PreventiveItemRepository.class
 com/ao8r/tasks_api/controller/PlaceItemController.class
 com/ao8r/tasks_api/repository/UserRepository.class
 com/ao8r/tasks_api/repository/AboutAppRepository.class
+com/ao8r/tasks_api/dto/PreventiveMaintenanceRequest$PreventiveMaintenanceRequestBuilder.class
 com/ao8r/tasks_api/dto/AboutAppRequest$AboutAppRequestBuilder.class
 com/ao8r/tasks_api/entity/PreventiveItem.class
 com/ao8r/tasks_api/security/jwt/AuthTokenFilter.class
@@ -22,6 +23,7 @@ com/ao8r/tasks_api/dto/JwtResponse$JwtResponseBuilder.class
 com/ao8r/tasks_api/service/DailyTaskService.class
 com/ao8r/tasks_api/dto/PreventiveItemResponse.class
 com/ao8r/tasks_api/controller/UserController.class
+com/ao8r/tasks_api/service/PreventiveMaintenanceService.class
 com/ao8r/tasks_api/config/security/SecurityConfig.class
 com/ao8r/tasks_api/dto/AppsNameRequest.class
 com/ao8r/tasks_api/TasksApiApplication.class
@@ -29,11 +31,14 @@ com/ao8r/tasks_api/entity/User.class
 com/ao8r/tasks_api/service/AppsNameServiceImpl.class
 com/ao8r/tasks_api/dto/PlaceItemResponse.class
 com/ao8r/tasks_api/service/UserService.class
+com/ao8r/tasks_api/controller/PreventiveMaintenanceController.class
 com/ao8r/tasks_api/controller/PasswordController.class
 com/ao8r/tasks_api/dto/DailyTaskRequest$DailyTaskRequestBuilder.class
 com/ao8r/tasks_api/dto/SigninRequest.class
 com/ao8r/tasks_api/repository/DailyTaskRepository.class
 com/ao8r/tasks_api/security/services/UserDetailsServiceImpl.class
+com/ao8r/tasks_api/dto/PreventiveMaintenanceRequest.class
+com/ao8r/tasks_api/repository/PreventiveMaintenanceRepository.class
 com/ao8r/tasks_api/exception/GlobalExceptionHandler.class
 com/ao8r/tasks_api/entity/AboutApp.class
 com/ao8r/tasks_api/dto/DailyTaskRequest.class
@@ -45,9 +50,13 @@ com/ao8r/tasks_api/dto/PreventiveItemRequest$PreventiveItemRequestBuilder.class
 com/ao8r/tasks_api/controller/AppsController.class
 com/ao8r/tasks_api/dto/PreventiveItemRequest.class
 com/ao8r/tasks_api/dto/ForgotPasswordRequest.class
+com/ao8r/tasks_api/dto/PreventiveMaintenanceResponse.class
 com/ao8r/tasks_api/dto/ChangePasswordRequest.class
 com/ao8r/tasks_api/dto/DailyTaskResponse$DailyTaskResponseBuilder.class
+com/ao8r/tasks_api/entity/PreventiveMaintenance.class
+com/ao8r/tasks_api/dto/PreventiveMaintenanceResponse$PreventiveMaintenanceResponseBuilder.class
 com/ao8r/tasks_api/service/DailyTaskServiceImpl.class
+com/ao8r/tasks_api/service/PreventiveMaintenanceServiceImpl.class
 com/ao8r/tasks_api/dto/PlaceItemRequest$PlaceItemRequestBuilder.class
 com/ao8r/tasks_api/dto/PlaceItemResponse$PlaceItemResponseBuilder.class
 com/ao8r/tasks_api/dto/MessageResponse.class
@@ -69,6 +78,7 @@ com/ao8r/tasks_api/entity/AppsName.class
 com/ao8r/tasks_api/dto/AppsNameResponse$AppsNameResponseBuilder.class
 com/ao8r/tasks_api/exception/UserNotFoundException.class
 com/ao8r/tasks_api/service/PlaceItemService.class
+com/ao8r/tasks_api/entity/PreventiveMaintenance$PreventiveMaintenanceBuilder.class
 com/ao8r/tasks_api/service/AppsNameService.class
 com/ao8r/tasks_api/entity/DailyTask.class
 com/ao8r/tasks_api/dto/PreventiveItemResponse$PreventiveItemResponseBuilder.class

@@ -307,10 +307,98 @@ DELETE http://localhost:8080/api/place-items/1
 Authorization: Bearer {{adminToken}}
 
 ### ======================================================
+### PREVENTIVE MAINTENANCE CONTROLLER
+### ======================================================
+
+### 63. Create New Preventive Maintenance
+POST http://localhost:8080/api/preventive-maintenance
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "appName": "Test Application",
+  "action": "Check system",
+  "username": "admin",
+  "placeName": "Office Building",
+  "subPlace": "Server Room",
+  "isRemote": false
+}
+
+### 64. Get All Preventive Maintenance
+GET http://localhost:8080/api/preventive-maintenance
+Authorization: Bearer {{adminToken}}
+
+### 65. Get Preventive Maintenance by ID
+GET http://localhost:8080/api/preventive-maintenance/1
+Authorization: Bearer {{adminToken}}
+
+### 66. Update Preventive Maintenance by ID
+PUT http://localhost:8080/api/preventive-maintenance/1
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "appName": "Updated Application",
+  "action": "Updated action",
+  "username": "admin",
+  "placeName": "Updated Office",
+  "subPlace": "Updated Room",
+  "isRemote": true
+}
+
+### 67. Delete Preventive Maintenance by ID
+DELETE http://localhost:8080/api/preventive-maintenance/1
+Authorization: Bearer {{adminToken}}
+
+### 68. Get By App Name
+GET http://localhost:8080/api/preventive-maintenance/app/Test%20Application
+Authorization: Bearer {{adminToken}}
+
+### 69. Get By Username
+GET http://localhost:8080/api/preventive-maintenance/user/admin
+Authorization: Bearer {{adminToken}}
+
+### 70. Get By Place Name
+GET http://localhost:8080/api/preventive-maintenance/place/Office%20Building
+Authorization: Bearer {{adminToken}}
+
+### 71. Get By Sub Place
+GET http://localhost:8080/api/preventive-maintenance/sub-place/Server%20Room
+Authorization: Bearer {{adminToken}}
+
+### 72. Get By IsRemote
+GET http://localhost:8080/api/preventive-maintenance/remote/false
+Authorization: Bearer {{adminToken}}
+
+### 73. Get By App Name and Username
+GET http://localhost:8080/api/preventive-maintenance/app/Test%20Application/user/admin
+Authorization: Bearer {{adminToken}}
+
+### 74. Get By App Name and Place Name
+GET http://localhost:8080/api/preventive-maintenance/app/Test%20Application/place/Office%20Building
+Authorization: Bearer {{adminToken}}
+
+### 75. Get By Username and Place Name
+GET http://localhost:8080/api/preventive-maintenance/user/admin/place/Office%20Building
+Authorization: Bearer {{adminToken}}
+
+### 76. Get By App Name and IsRemote
+GET http://localhost:8080/api/preventive-maintenance/app/Test%20Application/remote/false
+Authorization: Bearer {{adminToken}}
+
+### 77. Get By Username and IsRemote
+GET http://localhost:8080/api/preventive-maintenance/user/admin/remote/false
+Authorization: Bearer {{adminToken}}
+
+### 78. Get By Place Name and IsRemote
+GET http://localhost:8080/api/preventive-maintenance/place/Office%20Building/remote/false
+Authorization: Bearer {{adminToken}}
+
+### ======================================================
 ### DAILY TASK CONTROLLER
 ### ======================================================
 
-### 53. Create New Daily Task
+### 79. Create New Daily Task
 POST http://localhost:8080/api/daily-tasks
 Content-Type: application/json
 Authorization: Bearer {{adminToken}}
@@ -329,15 +417,15 @@ Authorization: Bearer {{adminToken}}
   "isRemote": false
 }
 
-### 54. Get All Daily Tasks
+### 80. Get All Daily Tasks
 GET http://localhost:8080/api/daily-tasks
 Authorization: Bearer {{adminToken}}
 
-### 55. Get Daily Task by ID
+### 81. Get Daily Task by ID
 GET http://localhost:8080/api/daily-tasks/1
 Authorization: Bearer {{adminToken}}
 
-### 56. Update Daily Task by ID
+### 82. Update Daily Task by ID
 PUT http://localhost:8080/api/daily-tasks/1
 Content-Type: application/json
 Authorization: Bearer {{adminToken}}
@@ -356,27 +444,27 @@ Authorization: Bearer {{adminToken}}
   "isRemote": true
 }
 
-### 57. Delete Daily Task by ID
+### 83. Delete Daily Task by ID
 DELETE http://localhost:8080/api/daily-tasks/1
 Authorization: Bearer {{adminToken}}
 
-### 58. Get Tasks Assigned To User
+### 84. Get Tasks Assigned To User
 GET http://localhost:8080/api/daily-tasks/assigned-to/user
 Authorization: Bearer {{adminToken}}
 
-### 59. Get Tasks Assigned By User
+### 85. Get Tasks Assigned By User
 GET http://localhost:8080/api/daily-tasks/assigned-by/admin
 Authorization: Bearer {{adminToken}}
 
-### 60. Get Tasks By App Name
+### 86. Get Tasks By App Name
 GET http://localhost:8080/api/daily-tasks/app/Test%20Application
 Authorization: Bearer {{adminToken}}
 
-### 61. Get Tasks By Status (false=pending, true=completed)
+### 87. Get Tasks By Status (false=pending, true=completed)
 GET http://localhost:8080/api/daily-tasks/status/false
 Authorization: Bearer {{adminToken}}
 
-### 62. Get Tasks By Priority
+### 88. Get Tasks By Priority
 GET http://localhost:8080/api/daily-tasks/priority/HIGH
 Authorization: Bearer {{adminToken}}
 
