@@ -20,6 +20,23 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public ResponseEntity<List<User>> getAllUsers() {
+        log.debug("Fetching all users");
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        log.debug("Fetching user by id: {}", id);
+        User user = userService.findUserById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        return ResponseEntity.ok(user);
+    }
+
     @GetMapping("/role/{role}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public ResponseEntity<List<String>> getUsersByRole(@PathVariable Role role) {

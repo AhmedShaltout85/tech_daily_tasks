@@ -13,6 +13,10 @@ public interface UserService {
 
     Optional<User> findByUsername(String username);
 
+    Optional<User> findUserById(Long id);
+
+    List<User> getAllUsers();
+
     Boolean existsByUsername(String username);
 
     List<User> findByRole(Role role);
