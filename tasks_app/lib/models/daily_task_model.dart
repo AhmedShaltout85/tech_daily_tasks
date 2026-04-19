@@ -1,4 +1,4 @@
-class Task {
+class DailyTaskModel {
   //Properties
   final String? id;
   final String taskTitle;
@@ -16,7 +16,7 @@ class Task {
   final DateTime createdAt;
 
   //Constructor
-  Task({
+  DailyTaskModel({
     this.id,
     required this.taskTitle,
     required this.taskStatus,
@@ -34,8 +34,8 @@ class Task {
   });
 
   //fromJson
-  factory Task.fromJson(Map<String, dynamic> json) {
-    return Task(
+  factory DailyTaskModel.fromJson(Map<String, dynamic> json) {
+    return DailyTaskModel(
       id: json['id'],
       taskTitle: json['taskTitle'],
       taskStatus: json['taskStatus'],
@@ -74,7 +74,7 @@ class Task {
   }
 
   //copyWith
-  Task copyWith({
+  DailyTaskModel copyWith({
     String? id,
     String? taskTitle,
     bool? taskStatus,
@@ -90,7 +90,7 @@ class Task {
     bool? isRemote,
     DateTime? createdAt,
   }) {
-    return Task(
+    return DailyTaskModel(
       id: id ?? this.id,
       taskTitle: taskTitle ?? this.taskTitle,
       taskStatus: taskStatus ?? this.taskStatus,

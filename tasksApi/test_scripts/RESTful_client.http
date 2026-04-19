@@ -68,6 +68,10 @@ Content-Type: application/json
   "password": "user123"
 }
 
+### 7. Signout User
+POST http://localhost:9999/tasks-api/api/auth/signout
+Authorization: Bearer {{adminToken}}
+
 ### ======================================================
 ### TEST CONTROLLER (Public Endpoints)
 ### ======================================================

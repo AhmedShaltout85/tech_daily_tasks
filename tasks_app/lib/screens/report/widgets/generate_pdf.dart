@@ -2,10 +2,10 @@ import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:tasks_app/models/task.dart';
+import 'package:tasks_app/models/daily_task_model.dart';
 
 Future<void> generatePDF({
-  required List<Task> filteredData,
+  required List<DailyTaskModel> filteredData,
   DateTime? startDate,
   DateTime? endDate,
   String? selectedAssignee,
@@ -161,12 +161,10 @@ Future<void> generatePDF({
                 ),
                 ...filteredData.map((task) {
                   String date = DateFormat('yyyy-MM-dd').format(task.createdAt);
-                  String statusArabic = task.taskStatus
-                      ? 'قيد الانتظار'
-                      : 'مكتمل';
-                  String statusEnglish = task.taskStatus
-                      ? 'Pending'
-                      : 'Completed';
+                  String statusArabic =
+                      task.taskStatus ? 'قيد الانتظار' : 'مكتمل';
+                  String statusEnglish =
+                      task.taskStatus ? 'Pending' : 'Completed';
                   String status = '$statusArabic\n$statusEnglish';
 
                   return pw.TableRow(

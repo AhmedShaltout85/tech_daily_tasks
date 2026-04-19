@@ -59,4 +59,11 @@ public class AuthController {
 
         return ResponseEntity.ok(jwtResponse);
     }
+
+    @PostMapping("/signout")
+    public ResponseEntity<MessageResponse> signoutUser() {
+        log.info("Signout request received");
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok(new MessageResponse("User signed out successfully!"));
+    }
 }

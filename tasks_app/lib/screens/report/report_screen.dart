@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'package:tasks_app/models/task.dart';
+import 'package:tasks_app/models/daily_task_model.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
@@ -86,7 +86,7 @@ class _ReportScreenState extends State<ReportScreen>
     }
   }
 
-  List<Task> getFilteredData(List<Task> tasks) {
+  List<DailyTaskModel> getFilteredData(List<DailyTaskModel> tasks) {
     return tasks.where((task) {
       bool matchesDate = true;
       bool matchesAssignee = true;
@@ -707,7 +707,7 @@ class _ReportScreenState extends State<ReportScreen>
     );
   }
 
-  Widget _buildTaskCard(Task task, int index) {
+  Widget _buildTaskCard(DailyTaskModel task, int index) {
     final status = task.taskStatus ? 'Pending' : 'Completed';
     final date = DateFormat('MMM dd, yyyy').format(task.createdAt);
 

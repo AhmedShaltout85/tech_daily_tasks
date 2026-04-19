@@ -45,6 +45,7 @@ mvn package -DskipTests
 |--------|----------|-------------|---------------|
 | POST | `/api/auth/signup` | Register new user | No |
 | POST | `/api/auth/signin` | Login, get JWT | No |
+| POST | `/api/auth/signout` | Logout, clear security context | AUTHENTICATED |
 
 ### Test Controller (`/api/test`)
 | Method | Endpoint | Description | Required Role |
