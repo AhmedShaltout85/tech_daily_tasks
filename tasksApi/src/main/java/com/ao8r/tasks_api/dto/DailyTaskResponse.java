@@ -2,6 +2,7 @@ package com.ao8r.tasks_api.dto;
 
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -17,7 +18,7 @@ public class DailyTaskResponse {
     private String subPlace;
     private String assignedTo;
     private String assignedBy;
-    private String coOperator;
+    private List<String> coOperator;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime expectedCompletionDate;

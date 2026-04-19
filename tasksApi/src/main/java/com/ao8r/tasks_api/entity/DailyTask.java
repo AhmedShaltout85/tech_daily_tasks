@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "daily_task")
@@ -41,8 +42,10 @@ public class DailyTask implements java.io.Serializable {
     @Column(name = "assigned_by", nullable = false)
     private String assignedBy;
 
-    @Column(name = "co_operator", nullable = false)
-    private String coOperator;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "daily_task_co_operator", joinColumns = @JoinColumn(name = "daily_task_id"))
+    @Column(name = "co_operator")
+    private List<String> coOperator;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

@@ -110,12 +110,12 @@ class _CustomDrawerState extends State<CustomDrawer>
                       onTap: () {
                         setState(() => _selectedIndex = 1);
                         Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const UserListScreen(),
-                          ),
-                        );
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => const UserListScreen(),
+                        //   ),
+                        // );
                       },
                     ),
                     _buildDrawerItem(

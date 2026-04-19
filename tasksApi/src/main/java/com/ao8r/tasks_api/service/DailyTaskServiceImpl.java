@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,14 +31,14 @@ public class DailyTaskServiceImpl implements DailyTaskService {
                 .taskStatus(request.getTaskStatus())
                 .appName(request.getAppName())
                 .visitPlace(request.getVisitPlace())
-                .subPlace(request.getSubPlace())
+                .subPlace(request.getSubPlace() != null ? request.getSubPlace() : "none")
                 .assignedTo(request.getAssignedTo())
                 .assignedBy(request.getAssignedBy())
-                .coOperator(request.getCoOperator())
+                .coOperator(request.getCoOperator() != null ? request.getCoOperator() : List.of())
                 .expectedCompletionDate(request.getExpectedCompletionDate())
                 .taskPriority(request.getTaskPriority())
                 .taskNote(request.getTaskNote() != null ? request.getTaskNote() : "none")
-                .isRemote(request.getIsRemote())
+                .isRemote(request.getIsRemote() != null ? request.getIsRemote() : false)
                 .build();
 
         DailyTask savedTask = dailyTaskRepository.save(task);
@@ -74,13 +75,14 @@ public class DailyTaskServiceImpl implements DailyTaskService {
         task.setTaskStatus(request.getTaskStatus());
         task.setAppName(request.getAppName());
         task.setVisitPlace(request.getVisitPlace());
-        task.setSubPlace(request.getSubPlace());
+        task.setSubPlace(request.getSubPlace() != null ? request.getSubPlace() : "none");
         task.setAssignedTo(request.getAssignedTo());
         task.setAssignedBy(request.getAssignedBy());
-        task.setCoOperator(request.getCoOperator());
+        task.setCoOperator(request.getCoOperator() != null ? request.getCoOperator() : Collections.emptyList());
         task.setExpectedCompletionDate(request.getExpectedCompletionDate());
         task.setTaskPriority(request.getTaskPriority());
         task.setTaskNote(request.getTaskNote() != null ? request.getTaskNote() : "none");
+        task.setIsRemote(request.getIsRemote() != null ? request.getIsRemote() : false);
         task.setIsRemote(request.getIsRemote());
 
         DailyTask updatedTask = dailyTaskRepository.save(task);

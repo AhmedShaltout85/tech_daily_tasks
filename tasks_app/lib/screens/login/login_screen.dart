@@ -19,29 +19,29 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  bool _isValidEmail(String email) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  bool _isValidusername(String username) {
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(username);
   }
 
   // Future<void> _handleLogin() async {
-  //   String email = _emailController.text.trim();
+  //   String username = _usernameController.text.trim();
   //   String password = _passwordController.text.trim();
 
-  //   if (email.isEmpty || password.isEmpty) {
+  //   if (username.isEmpty || password.isEmpty) {
   //     ReusableToast.showToast(
-  //       message: 'Please enter both email and password',
+  //       message: 'Please enter both username and password',
   //       bgColor: AppColors.redColor,
   //       textColor: AppColors.whiteColor,
   //       fontSize: 16,
@@ -49,9 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
   //     return;
   //   }
 
-  //   if (!_isValidEmail(email)) {
+  //   if (!_isValidusername(username)) {
   //     ReusableToast.showToast(
-  //       message: 'Please enter a valid email address',
+  //       message: 'Please enter a valid username address',
   //       bgColor: AppColors.redColor,
   //       textColor: AppColors.whiteColor,
   //       fontSize: 16,
@@ -65,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //   try {
   //     // UserCredential userCredential = await FirebaseAuth.instance
-  //     //     .signInWithEmailAndPassword(email: email, password: password);
+  //     //     .signInWithusernameAndPassword(username: username, password: password);
 
   //     // User? user = userCredential.user;
 
@@ -86,13 +86,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //     switch (e.code) {
   //       case 'user-not-found':
-  //         errorMessage = 'No user found with this email';
+  //         errorMessage = 'No user found with this username';
   //         break;
   //       case 'wrong-password':
   //         errorMessage = 'Incorrect password';
   //         break;
-  //       case 'invalid-email':
-  //         errorMessage = 'Invalid email address';
+  //       case 'invalid-username':
+  //         errorMessage = 'Invalid username address';
   //         break;
   //       case 'user-disabled':
   //         errorMessage = 'This account has been disabled';
@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
   //         errorMessage = 'Too many attempts. Please try again later';
   //         break;
   //       case 'invalid-credential':
-  //         errorMessage = 'Invalid email or password';
+  //         errorMessage = 'Invalid username or password';
   //         break;
   //       case 'network-request-failed':
   //         errorMessage = 'Network error. Please check your connection';
@@ -237,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               gap(height: 25),
 
-              // Email field
+              // username field
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Container(
@@ -258,19 +258,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                   ),
                   child: TextField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
+                    controller: _usernameController,
+                    keyboardType: TextInputType.name,
                     style: TextStyle(
                       color: isDark ? Colors.white : Colors.black87,
                       fontSize: 16,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Email',
+                      hintText: 'username',
                       hintStyle: TextStyle(
                         color: isDark ? Colors.grey[600] : Colors.grey[400],
                       ),
                       prefixIcon: Icon(
-                        Icons.email_outlined,
+                        Icons.person_2_outlined,
                         color: colorScheme.primary,
                         size: 22,
                       ),
@@ -369,11 +369,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () async {
-                      String email = _emailController.text.trim();
+                      String username = _usernameController.text.trim();
 
-                      if (email.isEmpty) {
+                      if (username.isEmpty) {
                         ReusableToast.showToast(
-                          message: 'Please enter your email address',
+                          message: 'Please enter your username',
                           bgColor: AppColors.redColor,
                           textColor: AppColors.whiteColor,
                           fontSize: 16,
@@ -381,9 +381,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         return;
                       }
 
-                      if (!_isValidEmail(email)) {
+                      if (!_isValidusername(username)) {
                         ReusableToast.showToast(
-                          message: 'Please enter a valid email address',
+                          message: 'Please enter a valid username address',
                           bgColor: AppColors.redColor,
                           textColor: AppColors.whiteColor,
                           fontSize: 16,
@@ -393,13 +393,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       try {
                         // await FirebaseApiSAuthServices.resetPassword(
-                        //   emailAddress: email,
+                        //   usernameAddress: username,
                         // );
 
                         if (mounted) {
                           ReusableToast.showToast(
                             message:
-                                'Password reset email sent successfully, please check your email',
+                                'Password reset username sent successfully, please check your username',
                             bgColor: AppColors.greenColor,
                             textColor: AppColors.whiteColor,
                             fontSize: 16,
@@ -409,7 +409,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (mounted) {
                           ReusableToast.showToast(
                             message:
-                                'Failed to send reset email. Please try again.',
+                                'Failed to send reset username. Please try again.',
                             bgColor: AppColors.redColor,
                             textColor: AppColors.whiteColor,
                             fontSize: 16,

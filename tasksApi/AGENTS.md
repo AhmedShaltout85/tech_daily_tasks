@@ -329,7 +329,7 @@ mvn package -DskipTests
 | subPlace | String | Sub place (optional) |
 | assignedTo | String | Assigned to username |
 | assignedBy | String | Assigned by username |
-| coOperator | String | Co-operator username |
+| coOperator | List<String> | Co-operator usernames |
 | createdAt | LocalDateTime | Creation timestamp |
 | updatedAt | LocalDateTime | Update timestamp |
 | expectedCompletionDate | LocalDateTime | Expected completion date |
@@ -352,8 +352,8 @@ mvn package -DskipTests
 - `PlaceItemResponse`: id, placeName
 - `PreventiveMaintenanceRequest`: appName, action, username, placeName, subPlace, isRemote
 - `PreventiveMaintenanceResponse`: id, appName, action, username, placeName, subPlace, isRemote, createdAt
-- `DailyTaskRequest`: taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator, expectedCompletionDate, taskPriority, taskNote, isRemote
-- `DailyTaskResponse`: id, taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator, createdAt, updatedAt, expectedCompletionDate, taskPriority, taskNote, isRemote
+- `DailyTaskRequest`: taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator (List), expectedCompletionDate, taskPriority, taskNote, isRemote
+- `DailyTaskResponse`: id, taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator (List), createdAt, updatedAt, expectedCompletionDate, taskPriority, taskNote, isRemote
 
 ---
 
@@ -412,7 +412,7 @@ CREATE TABLE daily_task (
     visit_place NVARCHAR(255) NOT NULL,
     assigned_to NVARCHAR(255) NOT NULL,
     assigned_by NVARCHAR(255) NOT NULL,
-    co_operator NVARCHAR(255) NOT NULL,
+    co_operator NVARCHAR(255)  NULL,
     created_at DATETIME2 NOT NULL DEFAULT GETDATE(),
     updated_at DATETIME2 NULL,
     expected_completion_date DATETIME2 NOT NULL,
@@ -420,6 +420,12 @@ CREATE TABLE daily_task (
     task_note NVARCHAR(MAX) NULL DEFAULT 'none',
     is_remote BIT NOT NULL DEFAULT 0
 );
+CREATE TABLE daily_task_co_operator (
+    daily_task_id BIGINT NOT NULL,
+    co_operator NVARCHAR(255) NOT NULL,
+    CONSTRAINT fk_daily_task FOREIGN KEY (daily_task_id) REFERENCES daily_task(id)
+);
+
 ```
 
 ---

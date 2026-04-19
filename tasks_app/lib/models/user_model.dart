@@ -1,78 +1,66 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class UserModel {
-  final String id;
-  final String? firstName;
-  final String? lastName;
+  final String? id;
   final String displayName;
-  final String email;
+  final String username;
   final String? password;
-  final DateTime createdAt;
+  final String? role;
+  final String? department;
+  final String? token;
 
+//Constructor
   UserModel({
-    this.firstName,
-    this.lastName,
-    this.password,
-    required this.id,
+    this.id,
     required this.displayName,
-    required this.email,
-    required this.createdAt,
+    required this.username,
+    this.password,
+    this.role,
+    this.department,
+    this.token,
   });
 
-  // Convert UserModel to Map for Firestore
-  Map<String, dynamic> toMap() {
+//FromJson
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'],
+      displayName: json['displayName'],
+      username: json['username'],
+      password: json['password'],
+      role: json['role'],
+      department: json['department'],
+      token: json['token'],
+    );
+  }
+  //ToJson
+  Map<String, dynamic> toJson() {
     return {
-      'firstName': firstName,
-      'lastName': lastName,
+      'id': id,
       'displayName': displayName,
-      'email': email,
+      'username': username,
       'password': password,
-      'createdAt': Timestamp.fromDate(createdAt),
+      'role': role,
+      'department': department,
+      'token': token,
     };
   }
 
-  // Create UserModel from Firestore document
-  factory UserModel.fromMap(String id, Map<String, dynamic> map) {
-    DateTime createdAtDateTime;
-
-    // Handle Timestamp from Firestore
-    if (map['createdAt'] is Timestamp) {
-      createdAtDateTime = (map['createdAt'] as Timestamp).toDate();
-    } else if (map['createdAt'] is String) {
-      createdAtDateTime = DateTime.parse(map['createdAt']);
-    } else {
-      createdAtDateTime = DateTime.now();
-    }
-
-    return UserModel(
-      id: id,
-      firstName: map['firstName'] ?? '',
-      lastName: map['lastName'] ?? '',
-      displayName: map['displayName'] ?? '',
-      email: map['email'] ?? '',
-      password: map['password'] ?? '123456',
-      createdAt: createdAtDateTime,
-    );
-  }
-
-  // Create a copy with modified fields
+  //CopyWith
   UserModel copyWith({
     String? id,
-    String? firstName,
-    String? lastName,
     String? displayName,
-    String? email,
+    String? username,
     String? password,
-    DateTime? createdAt,
+    String? role,
+    String? department,
+    String? token,
   }) {
     return UserModel(
       id: id ?? this.id,
-      firstName: firstName ?? this.firstName,
-      lastName: lastName ?? this.lastName,
       displayName: displayName ?? this.displayName,
-      email: email ?? this.email,
+      username: username ?? this.username,
       password: password ?? this.password,
-      createdAt: createdAt ?? this.createdAt,
+      role: role ?? this.role,
+      department: department ?? this.department,
+      token: token ?? this.token,
     );
   }
 }

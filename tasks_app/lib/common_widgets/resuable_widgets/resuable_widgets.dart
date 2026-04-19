@@ -1,10 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 
-import '../../controller/task_providers.dart';
+
 import '../custom_widgets/custom_bottom_sheet.dart';
 
 void showSnackBar(String message, BuildContext context) => ScaffoldMessenger.of(
@@ -163,40 +161,40 @@ void showCustomBottomSheet({
     submitButtonText: 'Save',
     onSubmit: (values) async {
       log('Form submitted: $values');
-      try {
-        await context.read<TaskProviders>().addTask({
-          'id': DateTime.now().millisecondsSinceEpoch.toString(),
-          'taskTitle': values['title'],
-          'applicationName': values['app-name'],
-          'taskNote': values['task-note'],
-          'assignedBy': values['assign-by'],
-          'assignedTo': values['assign-to'],
-          'visitPlace': values['visit-place'],
-          'taskPriority': values['task-priority'],
-          'coOperator': values['co-operator'],
-          'taskStatus': true,
-          'expectedCompletionDate': DateTime.now().add(
-            Duration(
-              days: int.parse(values['expected-completion-date'] as String),
-            ),
-          ),
-        });
-        log('Task added successfully');
-        ReusableToast.showToast(
-          message: 'Task added successfully',
-          bgColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16,
-        );
-      } catch (e) {
-        log('Error adding task: $e');
-        ReusableToast.showToast(
-          message: 'Error adding task: $e',
-          bgColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16,
-        );
-      }
+      // try {
+      //   await context.read<TaskProviders>().addTask({
+      //     'id': DateTime.now().millisecondsSinceEpoch.toString(),
+      //     'taskTitle': values['title'],
+      //     'applicationName': values['app-name'],
+      //     'taskNote': values['task-note'],
+      //     'assignedBy': values['assign-by'],
+      //     'assignedTo': values['assign-to'],
+      //     'visitPlace': values['visit-place'],
+      //     'taskPriority': values['task-priority'],
+      //     'coOperator': values['co-operator'],
+      //     'taskStatus': true,
+      //     'expectedCompletionDate': DateTime.now().add(
+      //       Duration(
+      //         days: int.parse(values['expected-completion-date'] as String),
+      //       ),
+      //     ),
+      //   });
+      //   log('Task added successfully');
+      //   ReusableToast.showToast(
+      //     message: 'Task added successfully',
+      //     bgColor: Colors.green,
+      //     textColor: Colors.white,
+      //     fontSize: 16,
+      //   );
+      // } catch (e) {
+      //   log('Error adding task: $e');
+      //   ReusableToast.showToast(
+      //     message: 'Error adding task: $e',
+      //     bgColor: Colors.red,
+      //     textColor: Colors.white,
+      //     fontSize: 16,
+      //   );
+      // }
     },
     onCancel: () {
       // Just log the cancellation, don't call Navigator.pop

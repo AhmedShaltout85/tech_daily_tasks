@@ -1,91 +1,111 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Task {
-  final String id;
+  //Properties
+  final String? id;
   final String taskTitle;
   final bool taskStatus;
-  final String applicationName;
+  final String appName;
   final String visitPlace;
+  final String subPlace;
   final String assignedTo;
   final String assignedBy;
   final List<dynamic> coOperator;
-  final DateTime createdAt;
-  final DateTime? updatedAt;
   final DateTime expectedCompletionDate;
   final String taskPriority;
   final String? taskNote;
+  final bool? isRemote;
+  final DateTime createdAt;
 
+  //Constructor
   Task({
-    required this.applicationName,
+    this.id,
+    required this.taskTitle,
+    required this.taskStatus,
+    required this.appName,
+    required this.visitPlace,
+    required this.subPlace,
+    required this.assignedTo,
     required this.assignedBy,
     required this.coOperator,
     required this.expectedCompletionDate,
     required this.taskPriority,
-    required this.visitPlace,
-    required this.id,
-    required this.taskTitle,
-    required this.taskStatus,
-    required this.assignedTo,
-    required this.createdAt,
-    this.updatedAt,
     this.taskNote,
+    this.isRemote,
+    required this.createdAt,
   });
 
-  // Convert Firestore document to Task
-  factory Task.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-
+  //fromJson
+  factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
-      id: doc.id,
-      taskTitle: data['taskTitle'] as String? ?? '',
-      taskStatus: data['taskStatus'] as bool? ?? true,
-      assignedTo: data['assignedTo'] as String? ?? '',
-      taskNote: data['taskNote'] as String?,
-      visitPlace: data['visitPlace'] as String? ?? '',
-      applicationName: data['applicationName'] as String? ?? '',
-      assignedBy: data['assignedBy'] as String? ?? '',
-      coOperator: List<dynamic>.from(data['coOperator'] as List<dynamic>),
-      expectedCompletionDate:
-          (data['expectedCompletionDate'] as Timestamp?)?.toDate() ??
-          DateTime.now(),
-      taskPriority: data['taskPriority'] as String? ?? '',
-      // Convert Timestamp to DateTime
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate(),
+      id: json['id'],
+      taskTitle: json['taskTitle'],
+      taskStatus: json['taskStatus'],
+      appName: json['appName'],
+      visitPlace: json['visitPlace'],
+      subPlace: json['subPlace'],
+      assignedTo: json['assignedTo'],
+      assignedBy: json['assignedBy'],
+      coOperator: json['coOperator'],
+      expectedCompletionDate: json['expectedCompletionDate'].toDate(),
+      taskPriority: json['taskPriority'],
+      taskNote: json['taskNote'],
+      isRemote: json['isRemote'],
+      createdAt: json['createdAt'].toDate(),
     );
   }
 
-  // CopyWith method for updating
+  //toJson
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'taskTitle': taskTitle,
+      'taskStatus': taskStatus,
+      'appName': appName,
+      'visitPlace': visitPlace,
+      'subPlace': subPlace,
+      'assignedTo': assignedTo,
+      'assignedBy': assignedBy,
+      'coOperator': coOperator,
+      'expectedCompletionDate': expectedCompletionDate,
+      'taskPriority': taskPriority,
+      'taskNote': taskNote,
+      'isRemote': isRemote,
+      'createdAt': createdAt
+    };
+  }
+
+  //copyWith
   Task copyWith({
     String? id,
     String? taskTitle,
     bool? taskStatus,
-    String? assignedTo,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? appName,
     String? visitPlace,
-    String? notes,
-    String? applicationName,
+    String? subPlace,
+    String? assignedTo,
     String? assignedBy,
-    String? coOperator,
+    List<dynamic>? coOperator,
     DateTime? expectedCompletionDate,
     String? taskPriority,
+    String? taskNote,
+    bool? isRemote,
+    DateTime? createdAt,
   }) {
     return Task(
       id: id ?? this.id,
       taskTitle: taskTitle ?? this.taskTitle,
       taskStatus: taskStatus ?? this.taskStatus,
-      assignedTo: assignedTo ?? this.assignedTo,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      taskNote: taskNote,
+      appName: appName ?? this.appName,
       visitPlace: visitPlace ?? this.visitPlace,
-      applicationName: applicationName ?? this.applicationName,
+      subPlace: subPlace ?? this.subPlace,
+      assignedTo: assignedTo ?? this.assignedTo,
       assignedBy: assignedBy ?? this.assignedBy,
-      coOperator: coOperator != null ? [coOperator] : this.coOperator,
+      coOperator: coOperator ?? this.coOperator,
       expectedCompletionDate:
           expectedCompletionDate ?? this.expectedCompletionDate,
       taskPriority: taskPriority ?? this.taskPriority,
+      taskNote: taskNote ?? this.taskNote,
+      isRemote: isRemote ?? this.isRemote,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }

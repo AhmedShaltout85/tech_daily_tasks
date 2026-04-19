@@ -3,6 +3,8 @@ package com.ao8r.tasks_api.dto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,9 +37,7 @@ public class DailyTaskRequest {
     @Size(max = 255, message = "Assigned by must not exceed 255 characters")
     private String assignedBy;
 
-    @NotBlank(message = "Co-operator is required")
-    @Size(max = 255, message = "Co-operator must not exceed 255 characters")
-    private String coOperator;
+    private List<String> coOperator;
 
     @NotNull(message = "Expected completion date is required")
     private java.time.LocalDateTime expectedCompletionDate;

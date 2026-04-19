@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/resuable_widgets.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
-import 'package:tasks_app/controller/employee_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
-import 'package:tasks_app/screens/auth/auth_wrapper.dart';
 
 import '../login/login_screen.dart';
 
@@ -19,10 +17,10 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _userNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  // final TextEditingController _firstNameController = TextEditingController();
+  // final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _displayNameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -36,20 +34,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   /// Validates all input fields before signup
   String? _validateInputs() {
-    if (_firstNameController.text.trim().isEmpty) {
-      return 'Please enter your first name';
-    }
-    if (_lastNameController.text.trim().isEmpty) {
-      return 'Please enter your last name';
-    }
-    if (_userNameController.text.trim().isEmpty) {
+    // if (_firstNameController.text.trim().isEmpty) {
+    //   return 'Please enter your first name';
+    // }
+    // if (_lastNameController.text.trim().isEmpty) {
+    //   return 'Please enter your last name';
+    // }
+    if (_displayNameController.text.trim().isEmpty) {
       return 'Please enter a username';
     }
-    if (_emailController.text.trim().isEmpty) {
-      return 'Please enter your email';
+    if (_usernameController.text.trim().isEmpty) {
+      return 'Please enter your username';
     }
-    if (!_isValidEmail(_emailController.text.trim())) {
-      return 'Please enter a valid email address';
+    if (!_isValidusername(_usernameController.text.trim())) {
+      return 'Please enter a valid username';
     }
     if (_passwordController.text.isEmpty) {
       return 'Please enter a password';
@@ -66,9 +64,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return null;
   }
 
-  /// Email validation helper
-  bool _isValidEmail(String email) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  /// username validation helper
+  bool _isValidusername(String username) {
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(username);
   }
 
   /// Comprehensive Firebase Auth exception handler
@@ -76,11 +74,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     log('🔥 Firebase Auth Error: ${e.code} - ${e.message}');
 
     switch (e.code) {
-      // Email-related errors
-      case 'email-already-in-use':
-        return 'This email is already registered. Please login or use a different email.';
-      case 'invalid-email':
-        return 'Invalid email address format. Please check and try again.';
+      // username-related errors
+      case 'username-already-in-use':
+        return 'This username is already registered. Please login or use a different username.';
+      case 'invalid-username':
+        return 'Invalid username address format. Please check and try again.';
 
       // Password-related errors
       case 'weak-password':
@@ -90,13 +88,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       // Account-related errors
       case 'user-not-found':
-        return 'No account found with this email.';
+        return 'No account found with this username.';
       case 'user-disabled':
         return 'This account has been disabled. Please contact support.';
 
       // Operation errors
       case 'operation-not-allowed':
-        return 'Email/password accounts are not enabled. Please contact support.';
+        return 'username/password accounts are not enabled. Please contact support.';
       case 'too-many-requests':
         return 'Too many failed attempts. Please try again later.';
 
@@ -142,8 +140,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       log('📝 Starting signup process...');
 
       // Create Firebase account
-      // await FirebaseApiSAuthServices.createUserWithEmailAndPassword(
-      //   emailAddress: _emailController.text.trim(),
+      // await FirebaseApiSAuthServices.createUserWithusernameAndPassword(
+      //   usernameAddress: _usernameController.text.trim(),
       //   password: _passwordController.text.trim(),
       // );
       log('✅ Firebase account created');
@@ -151,7 +149,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // Get user data
       // final userId = FirebaseAuth.instance.currentUser!.uid;
       final displayName = capitalizeFirstLetter(
-        _userNameController.text.trim(),
+        _displayNameController.text.trim(),
       );
 
       // Save to Firestore
@@ -160,7 +158,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       //   'firstName': capitalizeFirstLetter(_firstNameController.text.trim()),
       //   'lastName': capitalizeFirstLetter(_lastNameController.text.trim()),
       //   'displayName': displayName,
-      //   'email': _emailController.text.trim(),
+      //   'username': _usernameController.text.trim(),
       //   'password': _passwordController.text.trim(),
       // });
       log('✅ User saved to Firestore');
@@ -171,7 +169,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       // Add to provider
       if (context.mounted) {
-        await context.read<EmployeeNameProvider>().addEmployeeName(displayName);
+        // await context.read<EmployeeNameProvider>().addEmployeeName(displayName);
         log('✅ Employee name added to provider');
       }
 
@@ -188,10 +186,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         // Navigate to login
         log('🧭 Navigating to AuthWrapper...');
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const AuthWrapper()),
-          (route) => false,
-        );
+        // Navigator.of(context).pushAndRemoveUntil(
+        //   MaterialPageRoute(builder: (context) => const AuthWrapper()),
+        //   (route) => false,
+        // );
         log('✅ Navigation completed');
       }
     } on FirebaseAuthException catch (e) {
@@ -250,10 +248,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _userNameController.dispose();
-    _emailController.dispose();
+    // _firstNameController.dispose();
+    // _lastNameController.dispose();
+    _displayNameController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -320,38 +318,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                   gap(height: 35),
 
-                  // First Name field
-                  _buildThemedInputField(
-                    keyboardType: TextInputType.text,
-                    textCapitalization: TextCapitalization.words,
-                    controller: _firstNameController,
-                    hintText: 'First Name',
-                    icon: Icons.person_outline,
-                    isDark: isDark,
-                    colorScheme: colorScheme,
-                  ),
+                  // // First Name field
+                  // _buildThemedInputField(
+                  //   keyboardType: TextInputType.text,
+                  //   textCapitalization: TextCapitalization.words,
+                  //   controller: _firstNameController,
+                  //   hintText: 'First Name',
+                  //   icon: Icons.person_outline,
+                  //   isDark: isDark,
+                  //   colorScheme: colorScheme,
+                  // ),
 
-                  gap(height: 18),
+                  // gap(height: 18),
 
-                  // Last Name field
-                  _buildThemedInputField(
-                    keyboardType: TextInputType.text,
-                    textCapitalization: TextCapitalization.words,
-                    controller: _lastNameController,
-                    hintText: 'Last Name',
-                    icon: Icons.person_outline,
-                    isDark: isDark,
-                    colorScheme: colorScheme,
-                  ),
+                  // // Last Name field
+                  // _buildThemedInputField(
+                  //   keyboardType: TextInputType.text,
+                  //   textCapitalization: TextCapitalization.words,
+                  //   controller: _lastNameController,
+                  //   hintText: 'Last Name',
+                  //   icon: Icons.person_outline,
+                  //   isDark: isDark,
+                  //   colorScheme: colorScheme,
+                  // ),
 
-                  gap(height: 18),
+                  // gap(height: 18),
 
                   // User Name field
                   _buildThemedInputField(
                     keyboardType: TextInputType.text,
                     textCapitalization: TextCapitalization.words,
-                    controller: _userNameController,
-                    hintText: 'User Name',
+                    controller: _displayNameController,
+                    hintText: 'Display Name',
                     icon: Icons.badge_outlined,
                     isDark: isDark,
                     colorScheme: colorScheme,
@@ -359,14 +357,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                   gap(height: 18),
 
-                  // Email field
+                  // username field
                   _buildThemedInputField(
-                    controller: _emailController,
-                    hintText: 'Email',
-                    icon: Icons.email_outlined,
+                    controller: _usernameController,
+                    hintText: 'username',
+                    icon: Icons.person_outline,
                     isDark: isDark,
                     colorScheme: colorScheme,
-                    keyboardType: TextInputType.emailAddress,
+                    keyboardType: TextInputType.name,
                   ),
 
                   gap(height: 18),

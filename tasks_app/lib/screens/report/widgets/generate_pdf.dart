@@ -179,7 +179,7 @@ Future<void> generatePDF({
                       ),
                       contentCellBilingual(
                         cellPadding,
-                        task.applicationName,
+                        task.appName,
                         contentTextStyle,
                       ),
                       contentCellBilingual(

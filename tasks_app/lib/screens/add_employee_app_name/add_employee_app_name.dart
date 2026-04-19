@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/custom_widgets/custom_reusable_dialog.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
-import 'package:tasks_app/controller/app_name_provider.dart';
-import 'package:tasks_app/controller/employee_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 
 
@@ -61,10 +59,10 @@ class _AddEmployeeAppNameState extends State<AddEmployeeAppName>
   void _fetchData() async {
     setState(() => _isLoading = true);
 
-    await Future.wait([
-      context.read<EmployeeNameProvider>().fetchAllEmployeeNames(),
-      context.read<AppNameProvider>().fetchAllAppNames(),
-    ]);
+    // await Future.wait([
+    //   context.read<EmployeeNameProvider>().fetchAllEmployeeNames(),
+    //   context.read<AppNameProvider>().fetchAllAppNames(),
+    // ]);
 
     setState(() => _isLoading = false);
     _animationController.forward();
@@ -76,8 +74,8 @@ class _AddEmployeeAppNameState extends State<AddEmployeeAppName>
     final isDark = themeProvider.isDark;
     final colorScheme = Theme.of(context).colorScheme;
 
-    final employeeNames = context.watch<EmployeeNameProvider>().employeeNames;
-    final appNames = context.watch<AppNameProvider>().appNames;
+    // final employeeNames = context.watch<EmployeeNameProvider>().employeeNames;
+    // final appNames = context.watch<AppNameProvider>().appNames;
 
     bool isAddedEmployees = widget.title.toLowerCase() == 'added employees';
     bool isAddedApplications =
@@ -120,21 +118,21 @@ class _AddEmployeeAppNameState extends State<AddEmployeeAppName>
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: isAddedEmployees
-                          ? _buildEmployeeNamesList(
-                              employeeNames,
+                          ? _buildEmployeeNamesList(List.empty(),
+                              // employeeNames,
                               isDark,
                               colorScheme,
                             )
                           : isAddedApplications
-                          ? _buildAppNamesList(appNames, isDark, colorScheme)
+                          ? _buildAppNamesList(List.empty(), isDark, colorScheme)
                           : (selectedView == 'Add-app-name'
                                 ? _buildAppNamesList(
-                                    appNames,
+                                    List.empty(),
                                     isDark,
                                     colorScheme,
                                   )
                                 : _buildEmployeeNamesList(
-                                    employeeNames,
+                                    List.empty(),
                                     isDark,
                                     colorScheme,
                                   )),
@@ -764,7 +762,7 @@ class _AddEmployeeAppNameState extends State<AddEmployeeAppName>
 
         switch (selectedOption) {
           case 'Add-app-name':
-            await context.read<AppNameProvider>().addAppName(textValue);
+            // await context.read<AppNameProvider>().addAppName(textValue);
             setState(() {
               selectedView = 'Add-app-name';
               currentTitle = 'Added Applications';
@@ -778,9 +776,9 @@ class _AddEmployeeAppNameState extends State<AddEmployeeAppName>
             );
             break;
           case 'Add-employee-name':
-            await context.read<EmployeeNameProvider>().addEmployeeName(
-              textValue,
-            );
+            // // await context.read<EmployeeNameProvider>().addEmployeeName(
+            //   textValue,
+            // );
             setState(() {
               selectedView = 'Add-employee-name';
               currentTitle = 'Added Employees';
@@ -880,23 +878,24 @@ class _AddEmployeeAppNameState extends State<AddEmployeeAppName>
                 'Delete',
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
-              onPressed: () async {
-                if (type == 'app') {
-                  await context.read<AppNameProvider>().deleteAppName(id);
-                } else {
-                  await context.read<EmployeeNameProvider>().deleteEmployeeName(
-                    id,
-                  );
-                }
-                Navigator.of(context).pop();
-                _fetchData();
-                ReusableToast.showToast(
-                  message: '$name deleted successfully',
-                  bgColor: Colors.red,
-                  textColor: Colors.white,
-                  fontSize: 16,
-                );
-              },
+              onPressed: (){},
+              // () async {
+                // if (type == 'app') {
+                //   await context.read<AppNameProvider>().deleteAppName(id);
+                // } else {
+                //   await context.read<EmployeeNameProvider>().deleteEmployeeName(
+                //     id,
+                //   );
+                // }
+                // Navigator.of(context).pop();
+                // _fetchData();
+              //   ReusableToast.showToast(
+              //     message: '$name deleted successfully',
+              //     bgColor: Colors.red,
+              //     textColor: Colors.white,
+              //     fontSize: 16,
+              //   );
+              // },
             ),
           ],
         );

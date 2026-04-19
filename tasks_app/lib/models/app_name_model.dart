@@ -15,4 +15,14 @@ class AppNameModel {
   Map<String, dynamic> toJson() {
     return {'id': id, 'appName': appName};
   }
+  //copywith
+  AppNameModel copyWith({
+    String? id,
+    String? appName,
+  }) {
+    return AppNameModel(
+      id: id ?? this.id,
+      appName: appName ?? this.appName,
+    );
+  }
 }
