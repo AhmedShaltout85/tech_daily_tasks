@@ -59,6 +59,7 @@ mvn package -DskipTests
 |--------|----------|-------------|---------------|
 | GET | `/api/users` | Get all users | ADMIN/MANAGER |
 | GET | `/api/users/{id}` | Get user by ID | ADMIN/MANAGER |
+| GET | `/api/users/department/{department}` | Get usernames by department | ADMIN/MANAGER |
 | GET | `/api/users/role/{role}` | Get usernames by role | ADMIN/MANAGER |
 | GET | `/api/users/role/{role}/enabled/{enabled}` | Get usernames by role and enabled status | ADMIN/MANAGER |
 | PUT | `/api/users/{id}/enable?enabled=true` | Enable/disable user | ADMIN |

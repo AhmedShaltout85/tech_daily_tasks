@@ -99,35 +99,39 @@ Authorization: Bearer {{adminToken}}
 GET http://localhost:9999/tasks-api/api/users/1
 Authorization: Bearer {{adminToken}}
 
-### 12. Get All Users by Role - USER
+### 12. Get Users by Department
+GET http://localhost:9999/tasks-api/api/users/department/IT
+Authorization: Bearer {{adminToken}}
+
+### 13. Get All Users by Role - USER
 GET http://localhost:9999/tasks-api/api/users/role/USER
 Authorization: Bearer {{adminToken}}
 
-### 13. Get All Users by Role - MANAGER
+### 14. Get All Users by Role - MANAGER
 GET http://localhost:9999/tasks-api/api/users/role/MANAGER
 Authorization: Bearer {{adminToken}}
 
-### 14. Get All Users by Role - ADMIN
+### 15. Get All Users by Role - ADMIN
 GET http://localhost:9999/tasks-api/api/users/role/ADMIN
 Authorization: Bearer {{adminToken}}
 
-### 15. Get Enabled Users by Role - USER
+### 16. Get Enabled Users by Role - USER
 GET http://localhost:9999/tasks-api/api/users/role/USER/enabled/true
 Authorization: Bearer {{adminToken}}
 
-### 16. Get Disabled Users by Role - USER
+### 17. Get Disabled Users by Role - USER
 GET http://localhost:9999/tasks-api/api/users/role/USER/enabled/false
 Authorization: Bearer {{adminToken}}
 
-### 17. Disable User (Set enabled=false)
+### 18. Disable User (Set enabled=false)
 PUT http://localhost:9999/tasks-api/api/users/3/enable?enabled=false
 Authorization: Bearer {{adminToken}}
 
-### 18. Enable User (Set enabled=true)
+### 19. Enable User (Set enabled=true)
 PUT http://localhost:9999/tasks-api/api/users/3/enable?enabled=true
 Authorization: Bearer {{adminToken}}
 
-### 19. Delete User by ID
+### 20. Delete User by ID
 DELETE http://localhost:9999/tasks-api/api/users/3
 Authorization: Bearer {{adminToken}}
 

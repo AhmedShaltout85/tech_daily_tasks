@@ -23,6 +23,8 @@ public interface UserService {
 
     List<User> findByRoleAndIsEnabled(Role role, boolean isEnabled);
 
+    List<User> findByDepartment(String department);
+
     User updateUserEnabled(Long id, boolean enabled);
 
     void deleteUser(Long id);

@@ -87,6 +87,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> findByDepartment(String department) {
+        return userRepository.findByDepartment(department);
+    }
+
+    @Override
     @Transactional
     public User updateUserEnabled(Long id, boolean enabled) {
         User user = userRepository.findById(id)
