@@ -1,15 +1,15 @@
-
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
+import 'package:tasks_app/common_widgets/resuable_widgets/resuable_widgets.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
+import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/utils/app_route.dart';
+import 'package:tasks_app/screens/signup/signup_screen.dart';
+import 'package:tasks_app/services/connectivity_service.dart';
 import 'package:tasks_app/utils/app_colors.dart';
-
-
-import '../../common_widgets/resuable_widgets/resuable_widgets.dart';
-import '../signup/signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -23,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
+  final ConnectivityService _connectivity = ConnectivityService();
 
   @override
   void dispose() {
@@ -31,114 +32,176 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  bool _isValidusername(String username) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(username);
+  bool _isValidInput(String username) {
+    return username.trim().isNotEmpty;
   }
 
-  // Future<void> _handleLogin() async {
-  //   String username = _usernameController.text.trim();
-  //   String password = _passwordController.text.trim();
+  Future<bool> _checkConnectivity() async {
+    return await _connectivity.hasConnection();
+  }
 
-  //   if (username.isEmpty || password.isEmpty) {
-  //     ReusableToast.showToast(
-  //       message: 'Please enter both username and password',
-  //       bgColor: AppColors.redColor,
-  //       textColor: AppColors.whiteColor,
-  //       fontSize: 16,
-  //     );
-  //     return;
-  //   }
+  Future<void> _handleLogin() async {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
 
-  //   if (!_isValidusername(username)) {
-  //     ReusableToast.showToast(
-  //       message: 'Please enter a valid username address',
-  //       bgColor: AppColors.redColor,
-  //       textColor: AppColors.whiteColor,
-  //       fontSize: 16,
-  //     );
-  //     return;
-  //   }
+    if (username.isEmpty || password.isEmpty) {
+      ReusableToast.showToast(
+        message: 'Please enter both username and password',
+        bgColor: AppColors.redColor,
+        textColor: AppColors.whiteColor,
+        fontSize: 16,
+      );
+      return;
+    }
 
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
+    final hasConnection = await _checkConnectivity();
+    if (!hasConnection) {
+      _showNoInternetDialog();
+      return;
+    }
 
-  //   try {
-  //     // UserCredential userCredential = await FirebaseAuth.instance
-  //     //     .signInWithusernameAndPassword(username: username, password: password);
+    setState(() => _isLoading = true);
 
-  //     // User? user = userCredential.user;
+    try {
+      final userProvider = context.read<UserProvider>();
+      await userProvider.signIn(
+        username: username,
+        password: password,
+      );
 
-  //     if (user == null) {
-  //       throw Exception('User authentication failed');
-  //     }
+      if (!mounted) return;
 
-  //     if (mounted) {
-  //       ReusableToast.showToast(
-  //         message: 'Login successful',
-  //         bgColor: Colors.green,
-  //         textColor: Colors.white,
-  //         fontSize: 16,
-  //       );
-  //     }
-  //   } on FirebaseAuthException catch (e) {
-  //     String errorMessage;
+      if (userProvider.error != null) {
+        log(userProvider.error!);
+        ReusableToast.showToast(
+          message: userProvider.error!,
+          bgColor: AppColors.redColor,
+          textColor: AppColors.whiteColor,
+          fontSize: 16,
+        );
+        userProvider.clearError();
+      } else {
+        ReusableToast.showToast(
+          message: 'Login successful',
+          bgColor: AppColors.greenColor,
+          textColor: AppColors.whiteColor,
+          fontSize: 16,
+        );
+        navigateToReplacementNamed(context, AppRoute.taskRouteName);
+      }
+    } catch (e) {
+      log('Login error: $e');
+      if (!mounted) return;
+      String errorMessage = 'Invalid username or password';
+      if (e.toString().contains('401')) {
+        errorMessage = 'Invalid username or password';
+      } else if (e.toString().contains('connection')) {
+        errorMessage = 'Cannot connect to server. Check your connection.';
+      } else {
+        errorMessage = 'Login failed. Please try again.';
+      }
+      ReusableToast.showToast(
+        message: errorMessage,
+        bgColor: AppColors.redColor,
+        textColor: AppColors.whiteColor,
+        fontSize: 16,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
-  //     switch (e.code) {
-  //       case 'user-not-found':
-  //         errorMessage = 'No user found with this username';
-  //         break;
-  //       case 'wrong-password':
-  //         errorMessage = 'Incorrect password';
-  //         break;
-  //       case 'invalid-username':
-  //         errorMessage = 'Invalid username address';
-  //         break;
-  //       case 'user-disabled':
-  //         errorMessage = 'This account has been disabled';
-  //         break;
-  //       case 'too-many-requests':
-  //         errorMessage = 'Too many attempts. Please try again later';
-  //         break;
-  //       case 'invalid-credential':
-  //         errorMessage = 'Invalid username or password';
-  //         break;
-  //       case 'network-request-failed':
-  //         errorMessage = 'Network error. Please check your connection';
-  //         break;
-  //       default:
-  //         errorMessage = 'Login failed: ${e.message ?? "Unknown error"}';
-  //     }
+  Future<void> _handleForgotPassword() async {
+    final username = _usernameController.text.trim();
 
-  //     if (mounted) {
-  //       ReusableToast.showToast(
-  //         message: errorMessage,
-  //         bgColor: AppColors.redColor,
-  //         textColor: AppColors.whiteColor,
-  //         fontSize: 16,
-  //       );
-  //     }
+    if (username.isEmpty) {
+      ReusableToast.showToast(
+        message: 'Please enter your username',
+        bgColor: AppColors.redColor,
+        textColor: AppColors.whiteColor,
+        fontSize: 16,
+      );
+      return;
+    }
 
-  //     log('Login error: ${e.code} - ${e.message}');
-  //   } catch (e) {
-  //     if (mounted) {
-  //       ReusableToast.showToast(
-  //         message: 'An unexpected error occurred. Please try again.',
-  //         bgColor: AppColors.redColor,
-  //         textColor: AppColors.whiteColor,
-  //         fontSize: 16,
-  //       );
-  //     }
+    if (!_isValidInput(username)) {
+      ReusableToast.showToast(
+        message: 'Please enter a valid username',
+        bgColor: AppColors.redColor,
+        textColor: AppColors.whiteColor,
+        fontSize: 16,
+      );
+      return;
+    }
 
-  //     log('Unexpected error during login: $e');
-  //   } finally {
-  //     if (mounted) {
-  //       setState(() {
-  //         _isLoading = false;
-  //       });
-  //     }
-  //   }
-  // }
+    final hasConnection = await _checkConnectivity();
+    if (!hasConnection) {
+      _showNoInternetDialog();
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final userProvider = context.read<UserProvider>();
+      await userProvider.forgotPassword(
+        username: username,
+        newPassword: 'temporary123',
+      );
+
+      if (!mounted) return;
+
+      if (userProvider.error != null) {
+        ReusableToast.showToast(
+          message: userProvider.error!,
+          bgColor: AppColors.redColor,
+          textColor: AppColors.whiteColor,
+          fontSize: 16,
+        );
+        userProvider.clearError();
+      } else {
+        ReusableToast.showToast(
+          message: 'Password reset instructions sent to your email',
+          bgColor: AppColors.greenColor,
+          textColor: AppColors.whiteColor,
+          fontSize: 16,
+        );
+      }
+    } catch (e) {
+      log('Forgot password error: $e');
+      if (!mounted) return;
+      ReusableToast.showToast(
+        message: 'Failed to send reset instructions. Please try again.',
+        bgColor: AppColors.redColor,
+        textColor: AppColors.whiteColor,
+        fontSize: 16,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  void _showNoInternetDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('No Internet'),
+        content: const Text(
+          'No internet found. Please check your internet connection and try again.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +215,6 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Decorative shapes at the top
               SizedBox(
                 height: 120,
                 width: double.infinity,
@@ -192,10 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-
               gap(height: 20),
-
-              // Logo
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -208,10 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: colorScheme.primary,
                 ),
               ),
-
               gap(height: 15),
-
-              // Welcome back text
               Text(
                 'Welcome back!',
                 textAlign: TextAlign.center,
@@ -221,10 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: isDark ? Colors.white : Colors.black87,
                 ),
               ),
-
               gap(height: 8),
-
-              // Subtitle
               Text(
                 'Log in to your existing account',
                 textAlign: TextAlign.center,
@@ -234,10 +287,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: isDark ? Colors.grey[400] : Colors.grey[600],
                 ),
               ),
-
               gap(height: 25),
-
-              // username field
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Container(
@@ -290,10 +340,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               gap(height: 15),
-
-              // Password field
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Container(
@@ -359,65 +406,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               gap(height: 3),
-
-              // Forgot password
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () async {
-                      String username = _usernameController.text.trim();
-
-                      if (username.isEmpty) {
-                        ReusableToast.showToast(
-                          message: 'Please enter your username',
-                          bgColor: AppColors.redColor,
-                          textColor: AppColors.whiteColor,
-                          fontSize: 16,
-                        );
-                        return;
-                      }
-
-                      if (!_isValidusername(username)) {
-                        ReusableToast.showToast(
-                          message: 'Please enter a valid username address',
-                          bgColor: AppColors.redColor,
-                          textColor: AppColors.whiteColor,
-                          fontSize: 16,
-                        );
-                        return;
-                      }
-
-                      try {
-                        // await FirebaseApiSAuthServices.resetPassword(
-                        //   usernameAddress: username,
-                        // );
-
-                        if (mounted) {
-                          ReusableToast.showToast(
-                            message:
-                                'Password reset username sent successfully, please check your username',
-                            bgColor: AppColors.greenColor,
-                            textColor: AppColors.whiteColor,
-                            fontSize: 16,
-                          );
-                        }
-                      } catch (e) {
-                        if (mounted) {
-                          ReusableToast.showToast(
-                            message:
-                                'Failed to send reset username. Please try again.',
-                            bgColor: AppColors.redColor,
-                            textColor: AppColors.whiteColor,
-                            fontSize: 16,
-                          );
-                        }
-                        log('Password reset error: $e');
-                      }
-                    },
+                    onPressed: _isLoading ? null : _handleForgotPassword,
                     child: Text(
                       'Forgot Password?',
                       style: TextStyle(
@@ -429,18 +424,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               gap(height: 30),
-
-              // Login button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: SizedBox(
                   width: double.infinity,
                   height: 54,
                   child: ElevatedButton(
-                    onPressed: _isLoading ? null : (){},
-                    // _handleLogin,
+                    onPressed: _isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.primary,
                       foregroundColor: isDark ? Colors.black87 : Colors.white,
@@ -469,10 +460,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               gap(height: 30),
-
-              // Or sign up using text
               Text(
                 'Or sign up using',
                 style: TextStyle(
@@ -481,10 +469,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: isDark ? Colors.grey[400] : Colors.grey[600],
                 ),
               ),
-
               gap(height: 20),
-
-              // Social login buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -534,10 +519,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-
               gap(height: 20),
-
-              // Sign up link
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -565,7 +547,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-
               gap(height: 20),
             ],
           ),

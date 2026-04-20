@@ -61,6 +61,7 @@ com/ao8r/tasks_api/dto/PlaceItemRequest$PlaceItemRequestBuilder.class
 com/ao8r/tasks_api/dto/PlaceItemResponse$PlaceItemResponseBuilder.class
 com/ao8r/tasks_api/dto/MessageResponse.class
 com/ao8r/tasks_api/service/AboutAppServiceImpl.class
+com/ao8r/tasks_api/config/WebConfig.class
 com/ao8r/tasks_api/entity/DailyTask$DailyTaskBuilder.class
 com/ao8r/tasks_api/entity/PreventiveItem$PreventiveItemBuilder.class
 com/ao8r/tasks_api/dto/AboutAppResponse$AboutAppResponseBuilder.class

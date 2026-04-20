@@ -226,9 +226,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: isLoading
-                            ? null
-                            : () => Navigator.pop(context),
+                        onPressed:
+                            isLoading ? null : () => Navigator.pop(context),
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 24,
@@ -260,10 +259,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       // Re-authenticate user
                                       final credential =
                                           EmailAuthProvider.credential(
-                                            email: user.email!,
-                                            password:
-                                                currentPasswordController.text,
-                                          );
+                                        email: user.email!,
+                                        password:
+                                            currentPasswordController.text,
+                                      );
 
                                       await user.reauthenticateWithCredential(
                                         credential,
@@ -400,7 +399,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.isDark;
     final colorScheme = Theme.of(context).colorScheme;
-    // final user = FirebaseAuth.instance.currentUser;
+    final user = context.watch<UserProvider>().currentUser;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
@@ -446,10 +445,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     CircleAvatar(
                       radius: 30,
                       backgroundColor: colorScheme.primary,
-                      child: Text('',
-                        // user?.email?.isNotEmpty == true
-                        //     ? user!.email![0].toUpperCase()
-                        //     : 'U',
+                      child: Text(
+                        '${user?.username.substring(0, 1).toUpperCase()}',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -462,22 +459,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('',
-                            // user!.email!.substring(0, user.email!.indexOf('@')),
+                          Text(
+                            '${user?.username.toUpperCase()}',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 20,
                               fontWeight: FontWeight.w600,
                               color: isDark ? Colors.white : Colors.black87,
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Text('',
+                          Text(
+                            '',
                             // user.email ?? 'No email',
                             style: TextStyle(
                               fontSize: 14,
-                              color: isDark
-                                  ? Colors.grey[400]
-                                  : Colors.grey[600],
+                              color:
+                                  isDark ? Colors.grey[400] : Colors.grey[600],
                             ),
                           ),
                         ],

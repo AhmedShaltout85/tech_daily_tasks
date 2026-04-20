@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/apps")
+@CrossOrigin(origins ="*" )  // Allow CORS for Flutter Web
 @RequiredArgsConstructor
 @Slf4j
 public class AppsController {

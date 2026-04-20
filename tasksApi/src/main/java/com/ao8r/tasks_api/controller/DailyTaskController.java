@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/daily-tasks")
+@CrossOrigin(origins ="*" )  // Allow CORS for Flutter Web
 @RequiredArgsConstructor
 @Slf4j
 public class DailyTaskController {

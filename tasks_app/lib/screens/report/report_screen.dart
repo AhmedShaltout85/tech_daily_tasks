@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import 'package:tasks_app/models/daily_task_model.dart';
+import 'package:provider/provider.dart';
+import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
+import 'package:tasks_app/controller/theme_provider.dart';
+import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/models/user_model.dart';
+import 'package:tasks_app/services/connectivity_service.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
@@ -15,20 +19,21 @@ class _ReportScreenState extends State<ReportScreen>
   DateTime? startDate;
   DateTime? endDate;
   String? selectedAssignee;
-  String? selectedApplication;
-  String? selectedStatus;
+  String? selectedDepartment;
+  String? selectedRole;
   bool _isFilterExpanded = true;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
-  final List<String> statusList = ['All', 'Pending', 'Completed'];
+  final List<String> roleList = ['All', 'USER', 'MANAGER', 'ADMIN'];
+  final ConnectivityService _connectivity = ConnectivityService();
 
   @override
   void initState() {
     super.initState();
     selectedAssignee = 'All';
-    selectedApplication = 'All';
-    selectedStatus = 'All';
+    selectedDepartment = 'All';
+    selectedRole = 'All';
 
     _animationController = AnimationController(
       vsync: this,
@@ -40,11 +45,9 @@ class _ReportScreenState extends State<ReportScreen>
     );
     _animationController.forward();
 
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   context.read<TaskProviders>().fetchTasks();
-    //   context.read<EmployeeNameProvider>().fetchEmployeeNamesAsStrings();
-    //   context.read<AppNameProvider>().fetchAppNamesAsStrings();
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchData();
+    });
   }
 
   @override
@@ -53,26 +56,39 @@ class _ReportScreenState extends State<ReportScreen>
     super.dispose();
   }
 
+  Future<void> _fetchData() async {
+    final hasConnection = await _connectivity.hasConnection();
+    if (!hasConnection) {
+      _showNoInternetDialog();
+      return;
+    }
+    await context.read<UserProvider>().fetchAllUsers();
+  }
+
+  void _showNoInternetDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('No Internet'),
+        content: const Text(
+          'No internet found. Please check your internet connection and try again.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF2196F3),
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black87,
-            ),
-            dialogTheme: DialogThemeData(backgroundColor: Colors.white),
-          ),
-          child: child!,
-        );
-      },
     );
 
     if (picked != null) {
@@ -86,423 +102,364 @@ class _ReportScreenState extends State<ReportScreen>
     }
   }
 
-  List<DailyTaskModel> getFilteredData(List<DailyTaskModel> tasks) {
-    return tasks.where((task) {
-      bool matchesDate = true;
+  List<UserModel> getFilteredData(List<UserModel> users) {
+    return users.where((user) {
       bool matchesAssignee = true;
-      bool matchesApplication = true;
-      bool matchesStatus = true;
-
-      if (startDate != null || endDate != null) {
-        DateTime? taskDate = task.createdAt;
-        if (startDate != null && taskDate.isBefore(startDate!)) {
-          matchesDate = false;
-        }
-        if (endDate != null &&
-            taskDate.isAfter(endDate!.add(const Duration(days: 1)))) {
-          matchesDate = false;
-        }
-      }
+      bool matchesDepartment = true;
+      bool matchesRole = true;
 
       if (selectedAssignee != null && selectedAssignee != 'All') {
-        matchesAssignee = task.assignedTo == selectedAssignee;
+        matchesAssignee = user.username == selectedAssignee;
       }
 
-      if (selectedApplication != null && selectedApplication != 'All') {
-        matchesApplication = task.appName == selectedApplication;
+      if (selectedDepartment != null && selectedDepartment != 'All') {
+        matchesDepartment = user.department == selectedDepartment;
       }
 
-      if (selectedStatus != null && selectedStatus != 'All') {
-        String taskStatusString = task.taskStatus ? 'Pending' : 'Completed';
-        matchesStatus = taskStatusString == selectedStatus;
+      if (selectedRole != null && selectedRole != 'All') {
+        matchesRole = user.role == selectedRole;
       }
 
-      return matchesDate &&
-          matchesAssignee &&
-          matchesApplication &&
-          matchesStatus;
+      return matchesAssignee && matchesDepartment && matchesRole;
     }).toList();
   }
 
-  void _showSuccessSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(child: Text(message)),
-          ],
-        ),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
+  void _clearFilters() {
+    setState(() {
+      startDate = null;
+      endDate = null;
+      selectedAssignee = 'All';
+      selectedDepartment = 'All';
+      selectedRole = 'All';
+    });
+    ReusableToast.showToast(
+      message: 'Filters cleared',
+      bgColor: Colors.green,
+      textColor: Colors.white,
+      fontSize: 16,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.isDark;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-        // backgroundColor: const Color(0xFFF5F7FA),
-        appBar: AppBar(
-            // elevation: 0,
-            // backgroundColor: Colors.white,
-            title: const Text(
-      'Reports & Analytics',
-      // style: TextStyle(
-      //   color: Colors.blue,
-      //   fontWeight: FontWeight.w600,
-      //   fontSize: 20,
-      // ),
-    )));
-    // iconTheme: const IconThemeData(color: Color(0xFF2196F3)),
-    //   actions: [
-    //     // Consumer<TaskProviders>(
-    //     //   builder: (context, taskProvider, child) {
-    //         final filteredData = getFilteredData(taskProvider.tasks);
-    //         return Container(
-    //           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-    //           decoration: BoxDecoration(
-    //             color: filteredData.isEmpty
-    //                 ? Colors.grey.shade200
-    //                 : const Color(0xFF2196F3),
-    //             borderRadius: BorderRadius.circular(12),
-    //           ),
-    //           child: IconButton(
-    //             icon: const Icon(Icons.download_rounded, size: 22),
-    //             color: filteredData.isEmpty ? Colors.grey : Colors.white,
-    //             onPressed: filteredData.isEmpty
-    //                 ? null
-    //                 : () {
-    //                     generatePDF(
-    //                       filteredData: filteredData,
-    //                       startDate: startDate,
-    //                       endDate: endDate,
-    //                       selectedStatus: selectedStatus,
-    //                       selectedAssignee: selectedAssignee,
-    //                       selectedApplication: selectedApplication,
-    //                     );
-    //                     _showSuccessSnackbar('PDF generated successfully!');
-    //                   },
-    //             tooltip: 'Download PDF Report',
-    //           ),
-    //         );
-    //       },
-    //     ),
-    //   ],
-    // ),
-    // body: Scaffold()));
-    // Consumer3<TaskProviders, EmployeeNameProvider, AppNameProvider>(
-    //   builder: (context, taskProvider, employeeProvider, appProvider, child) {
-    //     final tasks = taskProvider.tasks;
-    //     final employeeNames =
-    //         employeeProvider.employeeNameStrings.toSet().toList()
-    //           ..removeWhere((element) => element.contains('system.admin'));
-    //     final appNames = appProvider.appNameStrings;
-    //     final filteredData = getFilteredData(tasks);
-    //     final assigneeList = ['All', ...employeeNames];
-    //     final applicationList = ['All', ...appNames];
-    //     final isLoading =
-    //         taskProvider.isLoading ||
-    //         employeeProvider.isLoading ||
-    //         appProvider.isLoading;
+      appBar: AppBar(
+        title: const Text('Reports & Analytics'),
+        actions: [
+          Consumer<UserProvider>(
+            builder: (context, userProvider, child) {
+              final filteredData = getFilteredData(userProvider.users);
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                decoration: BoxDecoration(
+                  color: filteredData.isEmpty
+                      ? Colors.grey.shade200
+                      : colorScheme.primary,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.download_rounded, size: 22),
+                  color: filteredData.isEmpty ? Colors.grey : Colors.white,
+                  onPressed: filteredData.isEmpty
+                      ? null
+                      : () {
+                          ReusableToast.showToast(
+                            message: 'PDF generation coming soon',
+                            bgColor: Colors.grey,
+                            textColor: Colors.white,
+                            fontSize: 16,
+                          );
+                        },
+                  tooltip: 'Download PDF Report',
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Consumer<UserProvider>(
+        builder: (context, userProvider, child) {
+          final users = userProvider.users;
+          final assigneeList = [
+            'All',
+            ...users.map((u) => u.username).toSet().toList()
+          ];
+          final departmentList = [
+            'All',
+            ...users
+                .map((u) => u.department ?? '')
+                .toSet()
+                .where((d) => d.isNotEmpty)
+                .toList()
+          ];
+          final filteredData = getFilteredData(users);
+          final isLoading = userProvider.isLoading;
 
-    //     if (isLoading) {
-    //       return Center(
-    //         child: Column(
-    //           mainAxisAlignment: MainAxisAlignment.center,
-    //           children: [
-    //             const CircularProgressIndicator(
-    //               valueColor: AlwaysStoppedAnimation<Color>(
-    //                 Color(0xFF2196F3),
-    //               ),
-    //             ),
-    //             const SizedBox(height: 16),
-    //             Text(
-    //               'Loading reports...',
-    //               style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
-    //             ),
-    //           ],
-    //         ),
-    //       );
-    //     }
+          if (isLoading) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(color: colorScheme.primary),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Loading reports...',
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                  ),
+                ],
+              ),
+            );
+          }
 
-    //     return FadeTransition(
-    //       opacity: _fadeAnimation,
-    //       child: Column(
-    //         children: [
-    //           // Filter Section
-    //           AnimatedContainer(
-    //             duration: const Duration(milliseconds: 300),
-    //             curve: Curves.easeInOut,
-    //             child: Container(
-    //               margin: const EdgeInsets.all(16),
-    //               decoration: BoxDecoration(
-    //                 color: Colors.white,
-    //                 borderRadius: BorderRadius.circular(16),
-    //                 boxShadow: [
-    //                   BoxShadow(
-    //                     color: Colors.black.withOpacity(0.05),
-    //                     blurRadius: 10,
-    //                     offset: const Offset(0, 4),
-    //                   ),
-    //                 ],
-    //               ),
-    //               child: Column(
-    //                 children: [
-    //                   InkWell(
-    //                     onTap: () {
-    //                       setState(() {
-    //                         _isFilterExpanded = !_isFilterExpanded;
-    //                       });
-    //                     },
-    //                     child: Container(
-    //                       padding: const EdgeInsets.all(16),
-    //                       decoration: BoxDecoration(
-    //                         border: Border(
-    //                           bottom: BorderSide(
-    //                             color: Colors.grey.shade200,
-    //                             width: 1,
-    //                           ),
-    //                         ),
-    //                       ),
-    //                       child: Row(
-    //                         children: [
-    //                           Container(
-    //                             padding: const EdgeInsets.all(8),
-    //                             decoration: BoxDecoration(
-    //                               color: const Color(
-    //                                 0xFF2196F3,
-    //                               ).withOpacity(0.1),
-    //                               borderRadius: BorderRadius.circular(8),
-    //                             ),
-    //                             child: const Icon(
-    //                               Icons.filter_alt_rounded,
-    //                               color: Color(0xFF2196F3),
-    //                               size: 20,
-    //                             ),
-    //                           ),
-    //                           const SizedBox(width: 12),
-    //                           const Text(
-    //                             'Search Filters',
-    //                             style: TextStyle(
-    //                               fontSize: 16,
-    //                               fontWeight: FontWeight.w600,
-    //                               color: Color(0xFF1E293B),
-    //                             ),
-    //                           ),
-    //                           const Spacer(),
-    //                           AnimatedRotation(
-    //                             turns: _isFilterExpanded ? 0.5 : 0,
-    //                             duration: const Duration(milliseconds: 300),
-    //                             child: Icon(
-    //                               Icons.keyboard_arrow_down_rounded,
-    //                               color: Colors.grey.shade600,
-    //                             ),
-    //                           ),
-    //                         ],
-    //                       ),
-    //                     ),
-    //                   ),
-    //                   AnimatedCrossFade(
-    //                     firstChild: Container(),
-    //                     secondChild: Padding(
-    //                       padding: const EdgeInsets.all(16),
-    //                       child: Column(
-    //                         children: [
-    //                           // Date Range
-    //                           Row(
-    //                             children: [
-    //                               Expanded(
-    //                                 child: _buildDateField(
-    //                                   label: 'Start Date',
-    //                                   date: startDate,
-    //                                   onTap: () => _selectDate(context, true),
-    //                                 ),
-    //                               ),
-    //                               const SizedBox(width: 12),
-    //                               Expanded(
-    //                                 child: _buildDateField(
-    //                                   label: 'End Date',
-    //                                   date: endDate,
-    //                                   onTap: () =>
-    //                                       _selectDate(context, false),
-    //                                 ),
-    //                               ),
-    //                             ],
-    //                           ),
-    //                           const SizedBox(height: 16),
-    //                           // Assignee and Application
-    //                           Row(
-    //                             children: [
-    //                               Expanded(
-    //                                 child: _buildDropdown(
-    //                                   label: 'Assigned To',
-    //                                   value:
-    //                                       assigneeList.contains(
-    //                                         selectedAssignee,
-    //                                       )
-    //                                       ? selectedAssignee!
-    //                                       : 'All',
-    //                                   items: assigneeList,
-    //                                   icon: Icons.person_outline_rounded,
-    //                                   onChanged: (value) {
-    //                                     setState(
-    //                                       () => selectedAssignee = value,
-    //                                     );
-    //                                   },
-    //                                 ),
-    //                               ),
-    //                               const SizedBox(width: 12),
-    //                               Expanded(
-    //                                 child: _buildDropdown(
-    //                                   label: 'Application',
-    //                                   value:
-    //                                       applicationList.contains(
-    //                                         selectedApplication,
-    //                                       )
-    //                                       ? selectedApplication!
-    //                                       : 'All',
-    //                                   items: applicationList,
-    //                                   icon: Icons.apps_rounded,
-    //                                   onChanged: (value) {
-    //                                     setState(
-    //                                       () => selectedApplication = value,
-    //                                     );
-    //                                   },
-    //                                 ),
-    //                               ),
-    //                             ],
-    //                           ),
-    //                           const SizedBox(height: 16),
-    //                           // Status and Clear Button
-    //                           Row(
-    //                             children: [
-    //                               Expanded(
-    //                                 child: _buildStatusDropdown(
-    //                                   value:
-    //                                       statusList.contains(selectedStatus)
-    //                                       ? selectedStatus!
-    //                                       : 'All',
-    //                                   items: statusList,
-    //                                   onChanged: (value) {
-    //                                     setState(
-    //                                       () => selectedStatus = value,
-    //                                     );
-    //                                   },
-    //                                 ),
-    //                               ),
-    //                               const SizedBox(width: 12),
-    //                               Expanded(
-    //                                 child: ElevatedButton.icon(
-    //                                   onPressed: () {
-    //                                     setState(() {
-    //                                       startDate = null;
-    //                                       endDate = null;
-    //                                       selectedAssignee = 'All';
-    //                                       selectedApplication = 'All';
-    //                                       selectedStatus = 'All';
-    //                                     });
-    //                                     _showSuccessSnackbar(
-    //                                       'Filters cleared',
-    //                                     );
-    //                                   },
-    //                                   icon: const Icon(
-    //                                     Icons.clear_rounded,
-    //                                     size: 20,
-    //                                   ),
-    //                                   label: const Text('Clear Filters'),
-    //                                   style: ElevatedButton.styleFrom(
-    //                                     backgroundColor: Colors.grey.shade100,
-    //                                     foregroundColor: Colors.grey.shade700,
-    //                                     elevation: 0,
-    //                                     padding: const EdgeInsets.symmetric(
-    //                                       vertical: 16,
-    //                                     ),
-    //                                     shape: RoundedRectangleBorder(
-    //                                       borderRadius: BorderRadius.circular(
-    //                                         12,
-    //                                       ),
-    //                                     ),
-    //                                   ),
-    //                                 ),
-    //                               ),
-    //                             ],
-    //                           ),
-    //                         ],
-    //                       ),
-    //                     ),
-    //                     crossFadeState: _isFilterExpanded
-    //                         ? CrossFadeState.showSecond
-    //                         : CrossFadeState.showFirst,
-    //                     duration: const Duration(milliseconds: 300),
-    //                   ),
-    //                 ],
-    //               ),
-    //             ),
-    //           ),
-    //           // Summary Stats
-    //           if (filteredData.isNotEmpty)
-    //             Padding(
-    //               padding: const EdgeInsets.symmetric(horizontal: 16),
-    //               child: Row(
-    //                 children: [
-    //                   Expanded(
-    //                     child: _buildStatCard(
-    //                       'Total Tasks',
-    //                       filteredData.length.toString(),
-    //                       Icons.list_alt_rounded,
-    //                       const Color(0xFF2196F3),
-    //                     ),
-    //                   ),
-    //                   const SizedBox(width: 12),
-    //                   Expanded(
-    //                     child: _buildStatCard(
-    //                       'Completed',
-    //                       filteredData
-    //                           .where((t) => !t.taskStatus)
-    //                           .length
-    //                           .toString(),
-    //                       Icons.check_circle_outline_rounded,
-    //                       Colors.green,
-    //                     ),
-    //                   ),
-    //                   const SizedBox(width: 12),
-    //                   Expanded(
-    //                     child: _buildStatCard(
-    //                       'Pending',
-    //                       filteredData
-    //                           .where((t) => t.taskStatus)
-    //                           .length
-    //                           .toString(),
-    //                       Icons.pending_outlined,
-    //                       Colors.orange,
-    //                     ),
-    //                   ),
-    //                 ],
-    //               ),
-    //             ),
-    //           const SizedBox(height: 16),
-    //           // Results List
-    //           Expanded(
-    //             child: filteredData.isEmpty
-    //                 ? _buildEmptyState()
-    //                 : ListView.builder(
-    //                     padding: const EdgeInsets.symmetric(horizontal: 16),
-    //                     itemCount: filteredData.length,
-    //                     itemBuilder: (context, index) {
-    //                       final task = filteredData[index];
-    //                       return _buildTaskCard(task, index);
-    //                     },
-    //                   ),
-    //           ),
-    //         ],
-    //       ),
-    //     );
-    //   },
-    // ),
-    // );
+          return FadeTransition(
+            opacity: _fadeAnimation,
+            child: Column(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  child: Container(
+                    margin: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: isDark ? colorScheme.surface : Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _isFilterExpanded = !_isFilterExpanded;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Colors.grey.shade200,
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.primary
+                                        .withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(
+                                    Icons.filter_alt_rounded,
+                                    color: colorScheme.primary,
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  'Search Filters',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: isDark
+                                        ? Colors.white
+                                        : const Color(0xFF1E293B),
+                                  ),
+                                ),
+                                const Spacer(),
+                                AnimatedRotation(
+                                  turns: _isFilterExpanded ? 0.5 : 0,
+                                  duration: const Duration(milliseconds: 300),
+                                  child: Icon(
+                                    Icons.keyboard_arrow_down_rounded,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        AnimatedCrossFade(
+                          firstChild: Container(),
+                          secondChild: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildDateField(
+                                        label: 'Start Date',
+                                        date: startDate,
+                                        onTap: () => _selectDate(context, true),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: _buildDateField(
+                                        label: 'End Date',
+                                        date: endDate,
+                                        onTap: () =>
+                                            _selectDate(context, false),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildDropdown(
+                                        label: 'Username',
+                                        value: assigneeList
+                                                .contains(selectedAssignee)
+                                            ? selectedAssignee!
+                                            : 'All',
+                                        items: assigneeList,
+                                        icon: Icons.person_outline_rounded,
+                                        onChanged: (value) {
+                                          setState(
+                                              () => selectedAssignee = value);
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: _buildDropdown(
+                                        label: 'Department',
+                                        value: departmentList
+                                                .contains(selectedDepartment)
+                                            ? selectedDepartment!
+                                            : 'All',
+                                        items: departmentList,
+                                        icon: Icons.business_outlined,
+                                        onChanged: (value) {
+                                          setState(
+                                              () => selectedDepartment = value);
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildRoleDropdown(
+                                        value: roleList.contains(selectedRole)
+                                            ? selectedRole!
+                                            : 'All',
+                                        items: roleList,
+                                        onChanged: (value) {
+                                          setState(() => selectedRole = value);
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: ElevatedButton.icon(
+                                        onPressed: _clearFilters,
+                                        icon: const Icon(Icons.clear_rounded,
+                                            size: 20),
+                                        label: const Text('Clear Filters'),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.grey.shade100,
+                                          foregroundColor: Colors.grey.shade700,
+                                          elevation: 0,
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 16),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          crossFadeState: _isFilterExpanded
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          duration: const Duration(milliseconds: 300),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (filteredData.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _buildStatCard(
+                            'Total Users',
+                            filteredData.length.toString(),
+                            colorScheme.primary,
+                            Icons.list_alt_rounded,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildStatCard(
+                            'Active',
+                            filteredData
+                                .where((u) => u.enabled == true)
+                                .length
+                                .toString(),
+                            Colors.green,
+                            Icons.check_circle_outline_rounded,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildStatCard(
+                            'Inactive',
+                            filteredData
+                                .where((u) => u.enabled == false)
+                                .length
+                                .toString(),
+                            Colors.orange,
+                            Icons.pending_outlined,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: filteredData.isEmpty
+                      ? _buildEmptyState()
+                      : ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: filteredData.length,
+                          itemBuilder: (context, index) {
+                            final user = filteredData[index];
+                            return _buildUserCard(user, index);
+                          },
+                        ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildDateField({
@@ -521,11 +478,8 @@ class _ReportScreenState extends State<ReportScreen>
         ),
         child: Row(
           children: [
-            Icon(
-              Icons.calendar_today_rounded,
-              size: 20,
-              color: Colors.grey.shade600,
-            ),
+            Icon(Icons.calendar_today_rounded,
+                size: 20, color: Colors.grey.shade600),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -534,10 +488,9 @@ class _ReportScreenState extends State<ReportScreen>
                   Text(
                     label,
                     style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                      fontWeight: FontWeight.w500,
-                    ),
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w500),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -578,15 +531,12 @@ class _ReportScreenState extends State<ReportScreen>
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: Colors.grey.shade600,
-          ),
+          icon: Icon(Icons.keyboard_arrow_down_rounded,
+              color: Colors.grey.shade600),
           style: const TextStyle(
-            fontSize: 14,
-            color: Color(0xFF1E293B),
-            fontWeight: FontWeight.w500,
-          ),
+              fontSize: 14,
+              color: Color(0xFF1E293B),
+              fontWeight: FontWeight.w500),
           items: items.map((item) {
             return DropdownMenuItem<String>(
               value: item,
@@ -605,7 +555,7 @@ class _ReportScreenState extends State<ReportScreen>
     );
   }
 
-  Widget _buildStatusDropdown({
+  Widget _buildRoleDropdown({
     required String value,
     required List<String> items,
     required Function(String?) onChanged,
@@ -620,15 +570,12 @@ class _ReportScreenState extends State<ReportScreen>
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: Colors.grey.shade600,
-          ),
+          icon: Icon(Icons.keyboard_arrow_down_rounded,
+              color: Colors.grey.shade600),
           style: const TextStyle(
-            fontSize: 14,
-            color: Color(0xFF1E293B),
-            fontWeight: FontWeight.w500,
-          ),
+              fontSize: 14,
+              color: Color(0xFF1E293B),
+              fontWeight: FontWeight.w500),
           items: items.map((status) {
             return DropdownMenuItem<String>(
               value: status,
@@ -645,11 +592,8 @@ class _ReportScreenState extends State<ReportScreen>
                       ),
                     )
                   else
-                    Icon(
-                      Icons.info_outline_rounded,
-                      size: 18,
-                      color: Colors.grey.shade600,
-                    ),
+                    Icon(Icons.info_outline_rounded,
+                        size: 18, color: Colors.grey.shade600),
                   if (status == 'All') const SizedBox(width: 12),
                   Text(status),
                 ],
@@ -663,11 +607,7 @@ class _ReportScreenState extends State<ReportScreen>
   }
 
   Widget _buildStatCard(
-    String title,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
+      String title, String value, Color color, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -675,7 +615,7 @@ class _ReportScreenState extends State<ReportScreen>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -685,31 +625,22 @@ class _ReportScreenState extends State<ReportScreen>
         children: [
           Icon(icon, color: color, size: 24),
           const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
+          Text(value,
+              style: TextStyle(
+                  fontSize: 24, fontWeight: FontWeight.bold, color: color)),
           const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey.shade600,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          Text(title,
+              style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w500)),
         ],
       ),
     );
   }
 
-  Widget _buildTaskCard(DailyTaskModel task, int index) {
-    final status = task.taskStatus ? 'Pending' : 'Completed';
-    final date = DateFormat('MMM dd, yyyy').format(task.createdAt);
+  Widget _buildUserCard(UserModel user, int index) {
+    final status = user.enabled == true ? 'Active' : 'Inactive';
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
@@ -728,7 +659,7 @@ class _ReportScreenState extends State<ReportScreen>
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -748,7 +679,7 @@ class _ReportScreenState extends State<ReportScreen>
                     children: [
                       Expanded(
                         child: Text(
-                          task.taskTitle,
+                          user.displayName,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -758,11 +689,9 @@ class _ReportScreenState extends State<ReportScreen>
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: _getStatusColor(status).withOpacity(0.1),
+                          color: _getStatusColor(status).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
@@ -791,37 +720,14 @@ class _ReportScreenState extends State<ReportScreen>
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _buildInfoRow(
-                    Icons.apps_rounded,
-                    task.appName,
-                    const Color(0xFF2196F3),
-                  ),
+                  _buildInfoRow(Icons.person_outline, user.username,
+                      const Color(0xFF2196F3)),
                   const SizedBox(height: 8),
-                  _buildInfoRow(
-                    Icons.person,
-                    task.assignedBy,
-                    const Color.fromARGB(255, 25, 109, 225),
-                  ),
+                  _buildInfoRow(Icons.business_outlined,
+                      user.department ?? 'N/A', const Color(0xFF64748B)),
                   const SizedBox(height: 8),
-                  _buildInfoRow(
-                    Icons.person_outline_rounded,
-                    task.assignedTo,
-                    const Color(0xFF64748B),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRow(
-                    Icons.calendar_today_rounded,
-                    date,
-                    const Color(0xFF60048B),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildInfoRow(
-                    Icons.group,
-                    task.coOperator.length > 1
-                        ? '${task.coOperator.toString().replaceAll('[', ' ').replaceAll(']', ' ')} Co-Operators'
-                        : '${task.coOperator.first} Co-Operator',
-                    const Color(0xFF69948B),
-                  ),
+                  _buildInfoRow(Icons.badge_outlined, user.role ?? 'USER',
+                      const Color(0xFF69948B)),
                 ],
               ),
             ),
@@ -837,10 +743,8 @@ class _ReportScreenState extends State<ReportScreen>
         Icon(icon, size: 16, color: iconColor),
         const SizedBox(width: 8),
         Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)),
-          ),
+          child: Text(text,
+              style: const TextStyle(fontSize: 14, color: Color(0xFF64748B))),
         ),
       ],
     );
@@ -857,20 +761,16 @@ class _ReportScreenState extends State<ReportScreen>
               color: Colors.grey.shade100,
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              Icons.search_off_rounded,
-              size: 64,
-              color: Colors.grey.shade400,
-            ),
+            child: Icon(Icons.search_off_rounded,
+                size: 64, color: Colors.grey.shade400),
           ),
           const SizedBox(height: 24),
           const Text(
             'No Results Found',
             style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF1E293B),
-            ),
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1E293B)),
           ),
           const SizedBox(height: 8),
           Text(
@@ -885,17 +785,16 @@ class _ReportScreenState extends State<ReportScreen>
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'completed':
-      case 'done':
+      case 'active':
         return Colors.green;
-      case 'in progress':
-      case 'ongoing':
+      case 'inactive':
         return Colors.orange;
-      case 'pending':
+      case 'admin':
+        return Colors.blue;
+      case 'manager':
+        return Colors.purple;
+      case 'user':
         return const Color(0xFF2196F3);
-      case 'cancelled':
-      case 'failed':
-        return Colors.red;
       default:
         return Colors.grey;
     }

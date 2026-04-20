@@ -1,13 +1,13 @@
-
 import 'dart:developer';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/resuable_widgets.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
-
-import '../login/login_screen.dart';
+import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/services/connectivity_service.dart';
+import 'package:tasks_app/utils/app_colors.dart';
+import 'package:tasks_app/utils/app_route.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -17,37 +17,35 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  // final TextEditingController _firstNameController = TextEditingController();
-  // final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _displayNameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  final TextEditingController _departmentController = TextEditingController();
 
   bool _isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+  String _selectedRole = 'USER';
+  final ConnectivityService _connectivity = ConnectivityService();
 
-  String capitalizeFirstLetter(String text) {
-    if (text.isEmpty) return text;
-    return text[0].toUpperCase() + text.substring(1);
+  @override
+  void dispose() {
+    _displayNameController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _departmentController.dispose();
+    super.dispose();
   }
 
-  /// Validates all input fields before signup
   String? _validateInputs() {
-    // if (_firstNameController.text.trim().isEmpty) {
-    //   return 'Please enter your first name';
-    // }
-    // if (_lastNameController.text.trim().isEmpty) {
-    //   return 'Please enter your last name';
-    // }
     if (_displayNameController.text.trim().isEmpty) {
-      return 'Please enter a username';
+      return 'Please enter a display name';
     }
     if (_usernameController.text.trim().isEmpty) {
-      return 'Please enter your username';
-    }
-    if (!_isValidusername(_usernameController.text.trim())) {
-      return 'Please enter a valid username';
+      return 'Please enter a username';
     }
     if (_passwordController.text.isEmpty) {
       return 'Please enter a password';
@@ -61,163 +59,74 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (_passwordController.text != _confirmPasswordController.text) {
       return 'Passwords do not match';
     }
+    // if (_departmentController.text.trim().isEmpty) {
+    //   return 'Please enter a department';
+    // }
     return null;
   }
 
-  /// username validation helper
-  bool _isValidusername(String username) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(username);
+  Future<bool> _checkConnectivity() async {
+    return await _connectivity.hasConnection();
   }
 
-  /// Comprehensive Firebase Auth exception handler
-  String _handleFirebaseAuthException(FirebaseAuthException e) {
-    log('🔥 Firebase Auth Error: ${e.code} - ${e.message}');
-
-    switch (e.code) {
-      // username-related errors
-      case 'username-already-in-use':
-        return 'This username is already registered. Please login or use a different username.';
-      case 'invalid-username':
-        return 'Invalid username address format. Please check and try again.';
-
-      // Password-related errors
-      case 'weak-password':
-        return 'Password is too weak. Please use a stronger password.';
-      case 'wrong-password':
-        return 'Incorrect password. Please try again.';
-
-      // Account-related errors
-      case 'user-not-found':
-        return 'No account found with this username.';
-      case 'user-disabled':
-        return 'This account has been disabled. Please contact support.';
-
-      // Operation errors
-      case 'operation-not-allowed':
-        return 'username/password accounts are not enabled. Please contact support.';
-      case 'too-many-requests':
-        return 'Too many failed attempts. Please try again later.';
-
-      // Credential errors
-      case 'invalid-credential':
-        return 'Invalid credentials provided. Please check your information.';
-      case 'credential-already-in-use':
-        return 'This credential is already associated with a different account.';
-
-      // Network errors
-      case 'network-request-failed':
-        return 'Network error. Please check your internet connection and try again.';
-
-      // Token errors
-      case 'invalid-verification-code':
-        return 'Invalid verification code. Please try again.';
-      case 'invalid-verification-id':
-        return 'Invalid verification ID. Please restart the process.';
-
-      // Quota errors
-      case 'quota-exceeded':
-        return 'Quota exceeded. Please try again later.';
-
-      // Default case
-      default:
-        log('⚠️ Unhandled Firebase error code: ${e.code}');
-        return 'Signup failed: ${e.message ?? "An unexpected error occurred"}';
-    }
-  }
-
-  /// Handle the signup process
   Future<void> _handleSignup() async {
-    // Validate inputs first
     final validationError = _validateInputs();
     if (validationError != null) {
-      _showErrorToast(validationError);
+      ReusableToast.showToast(
+        message: validationError,
+        bgColor: AppColors.redColor,
+        textColor: AppColors.whiteColor,
+        fontSize: 16,
+      );
+      return;
+    }
+
+    final hasConnection = await _checkConnectivity();
+    if (!hasConnection) {
+      _showNoInternetDialog();
       return;
     }
 
     setState(() => _isLoading = true);
 
     try {
-      log('📝 Starting signup process...');
+      await context.read<UserProvider>().signUp(
+            displayName: _displayNameController.text.trim(),
+            username: _usernameController.text.trim(),
+            password: _passwordController.text.trim(),
+            role: '$_selectedRole',
+            department: 'ادراة البرامج وصيانتها',
+          );
 
-      // Create Firebase account
-      // await FirebaseApiSAuthServices.createUserWithusernameAndPassword(
-      //   usernameAddress: _usernameController.text.trim(),
-      //   password: _passwordController.text.trim(),
-      // );
-      log('✅ Firebase account created');
-
-      // Get user data
-      // final userId = FirebaseAuth.instance.currentUser!.uid;
-      final displayName = capitalizeFirstLetter(
-        _displayNameController.text.trim(),
-      );
-
-      // Save to Firestore
-      // await AddNewUserToDB.saveUser({
-      //   'id': userId,
-      //   'firstName': capitalizeFirstLetter(_firstNameController.text.trim()),
-      //   'lastName': capitalizeFirstLetter(_lastNameController.text.trim()),
-      //   'displayName': displayName,
-      //   'username': _usernameController.text.trim(),
-      //   'password': _passwordController.text.trim(),
-      // });
-      log('✅ User saved to Firestore');
-
-      // Update display name
-      await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
-      log('✅ Display name updated');
-
-      // Add to provider
-      if (context.mounted) {
-        // await context.read<EmployeeNameProvider>().addEmployeeName(displayName);
-        log('✅ Employee name added to provider');
+      if (mounted) {
+        final userProvider = context.read<UserProvider>();
+        if (userProvider.error != null) {
+          ReusableToast.showToast(
+            message: userProvider.error!,
+            bgColor: AppColors.redColor,
+            textColor: AppColors.whiteColor,
+            fontSize: 16,
+          );
+          userProvider.clearError();
+        } else {
+          ReusableToast.showToast(
+            message: 'Account created successfully! Please log in.',
+            bgColor: AppColors.greenColor,
+            textColor: AppColors.whiteColor,
+            fontSize: 16,
+          );
+          navigateToReplacementNamed(context, AppRoute.loginRouteName);
+        }
       }
-
-      // Sign out immediately
-      log('🚪 Signing out user...');
-      await FirebaseAuth.instance.signOut();
-      log('✅ User signed out successfully');
-
-      // Small delay for auth state propagation
-      await Future.delayed(const Duration(milliseconds: 300));
-
-      if (context.mounted) {
-        _showSuccessToast('Account created successfully! Please log in.');
-
-        // Navigate to login
-        log('🧭 Navigating to AuthWrapper...');
-        // Navigator.of(context).pushAndRemoveUntil(
-        //   MaterialPageRoute(builder: (context) => const AuthWrapper()),
-        //   (route) => false,
-        // );
-        log('✅ Navigation completed');
-      }
-    } on FirebaseAuthException catch (e) {
-      // Handle Firebase-specific errors
-      final errorMessage = _handleFirebaseAuthException(e);
-
-      // Clean up: sign out if account was partially created
-      try {
-        await FirebaseAuth.instance.signOut();
-      } catch (_) {
-        log('⚠️ Could not sign out after error');
-      }
-
-      if (context.mounted) {
-        _showErrorToast(errorMessage);
-      }
-    } catch (e, stackTrace) {
-      // Handle any other errors
-      log('❌ Unexpected signup error: $e');
-      log('Stack trace: $stackTrace');
-
-      // Clean up
-      try {
-        await FirebaseAuth.instance.signOut();
-      } catch (_) {}
-
-      if (context.mounted) {
-        _showErrorToast('An unexpected error occurred. Please try again.');
+    } catch (e) {
+      log('Signup error: $e');
+      if (mounted) {
+        ReusableToast.showToast(
+          message: 'An unexpected error occurred. Please try again.',
+          bgColor: AppColors.redColor,
+          textColor: AppColors.whiteColor,
+          fontSize: 16,
+        );
       }
     } finally {
       if (mounted) {
@@ -226,35 +135,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  /// Show error toast helper
-  void _showErrorToast(String message) {
-    ReusableToast.showToast(
-      message: message,
-      textColor: Colors.white,
-      fontSize: 16,
-      bgColor: Colors.red,
+  void _showNoInternetDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('No Internet'),
+        content: const Text(
+          'No internet found. Please check your internet connection and try again.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 
-  /// Show success toast helper
-  void _showSuccessToast(String message) {
-    ReusableToast.showToast(
-      message: message,
-      textColor: Colors.white,
-      fontSize: 16,
-      bgColor: Colors.green,
-    );
-  }
-
-  @override
-  void dispose() {
-    // _firstNameController.dispose();
-    // _lastNameController.dispose();
-    _displayNameController.dispose();
-    _usernameController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
+  String capitalizeFirstLetter(String text) {
+    if (text.isEmpty) return text;
+    return text[0].toUpperCase() + text.substring(1);
   }
 
   @override
@@ -277,7 +178,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Logo
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -290,10 +190,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       color: colorScheme.primary,
                     ),
                   ),
-
                   gap(height: 24),
-
-                  // Title
                   Text(
                     'Let\'s Get Started!',
                     style: TextStyle(
@@ -302,10 +199,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       color: isDark ? Colors.white : Colors.black87,
                     ),
                   ),
-
                   gap(height: 8),
-
-                  // Subtitle
                   Text(
                     'Create an account on TASKS to get all features',
                     style: TextStyle(
@@ -315,36 +209,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-
                   gap(height: 35),
-
-                  // // First Name field
-                  // _buildThemedInputField(
-                  //   keyboardType: TextInputType.text,
-                  //   textCapitalization: TextCapitalization.words,
-                  //   controller: _firstNameController,
-                  //   hintText: 'First Name',
-                  //   icon: Icons.person_outline,
-                  //   isDark: isDark,
-                  //   colorScheme: colorScheme,
-                  // ),
-
-                  // gap(height: 18),
-
-                  // // Last Name field
-                  // _buildThemedInputField(
-                  //   keyboardType: TextInputType.text,
-                  //   textCapitalization: TextCapitalization.words,
-                  //   controller: _lastNameController,
-                  //   hintText: 'Last Name',
-                  //   icon: Icons.person_outline,
-                  //   isDark: isDark,
-                  //   colorScheme: colorScheme,
-                  // ),
-
-                  // gap(height: 18),
-
-                  // User Name field
                   _buildThemedInputField(
                     keyboardType: TextInputType.text,
                     textCapitalization: TextCapitalization.words,
@@ -354,46 +219,111 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     isDark: isDark,
                     colorScheme: colorScheme,
                   ),
-
                   gap(height: 18),
-
-                  // username field
                   _buildThemedInputField(
                     controller: _usernameController,
-                    hintText: 'username',
+                    hintText: 'Username',
                     icon: Icons.person_outline,
                     isDark: isDark,
                     colorScheme: colorScheme,
                     keyboardType: TextInputType.name,
                   ),
-
+                  // gap(height: 18),
+                  // _buildThemedInputField(
+                  //   controller: _departmentController,
+                  //   hintText: 'Department',
+                  //   icon: Icons.business_outlined,
+                  //   isDark: isDark,
+                  //   colorScheme: colorScheme,
+                  //   keyboardType: TextInputType.text,
+                  // ),
+                  // gap(height: 18),
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 16),
+                  //   decoration: BoxDecoration(
+                  //     color: isDark ? colorScheme.surface : Colors.white,
+                  //     borderRadius: BorderRadius.circular(12),
+                  //     border: isDark
+                  //         ? Border.all(color: Colors.grey.shade800, width: 1)
+                  //         : Border.all(color: Colors.grey.shade300, width: 1),
+                  //   ),
+                  //   child: DropdownButtonHideUnderline(
+                  //     child: DropdownButton<String>(
+                  //       value: _selectedRole,
+                  //       isExpanded: true,
+                  //       dropdownColor:
+                  //           isDark ? colorScheme.surface : Colors.white,
+                  //       style: TextStyle(
+                  //         color: isDark ? Colors.white : Colors.black87,
+                  //         fontSize: 16,
+                  //       ),
+                  //       items: const [
+                  //         DropdownMenuItem(
+                  //           value: 'USER',
+                  //           child: Text('USER'),
+                  //         ),
+                  //         DropdownMenuItem(
+                  //           value: 'MANAGER',
+                  //           child: Text('MANAGER'),
+                  //         ),
+                  //         DropdownMenuItem(
+                  //           value: 'ADMIN',
+                  //           child: Text('ADMIN'),
+                  //         ),
+                  //       ],
+                  //       onChanged: (value) {
+                  //         setState(() {
+                  //           _selectedRole = value!;
+                  //         });
+                  //       },
+                  //     ),
+                  //   ),
+                  // ),
                   gap(height: 18),
-
-                  // Password field
                   _buildThemedInputField(
                     controller: _passwordController,
                     hintText: 'Password',
                     icon: Icons.lock_outline,
                     isDark: isDark,
                     colorScheme: colorScheme,
-                    obscureText: true,
+                    obscureText: _obscurePassword,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: isDark ? Colors.grey[400] : Colors.grey[600],
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                   ),
-
                   gap(height: 18),
-
-                  // Confirm Password field
                   _buildThemedInputField(
                     controller: _confirmPasswordController,
                     hintText: 'Confirm Password',
                     icon: Icons.lock_outline,
                     isDark: isDark,
                     colorScheme: colorScheme,
-                    obscureText: true,
+                    obscureText: _obscureConfirmPassword,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureConfirmPassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: isDark ? Colors.grey[400] : Colors.grey[600],
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureConfirmPassword = !_obscureConfirmPassword;
+                        });
+                      },
+                    ),
                   ),
-
                   gap(height: 35),
-
-                  // Create button
                   SizedBox(
                     width: double.infinity,
                     height: 54,
@@ -426,10 +356,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                     ),
                   ),
-
                   gap(height: 25),
-
-                  // Login link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -443,7 +370,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          navigateTo(context, const LoginScreen());
+                          navigateToReplacementNamed(
+                            context,
+                            AppRoute.loginRouteName,
+                          );
                         },
                         child: Text(
                           'Login here',
@@ -475,14 +405,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
     bool obscureText = false,
     TextInputType? keyboardType,
     TextCapitalization? textCapitalization,
+    Widget? suffixIcon,
   }) {
     return Container(
       decoration: BoxDecoration(
         color: isDark ? colorScheme.surface : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: isDark
-            ? Border.all(color: Colors.grey.shade800, width: 1)
-            : null,
+        border:
+            isDark ? Border.all(color: Colors.grey.shade800, width: 1) : null,
         boxShadow: isDark
             ? null
             : [
@@ -508,6 +438,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             color: isDark ? Colors.grey[600] : Colors.grey[400],
           ),
           prefixIcon: Icon(icon, color: colorScheme.primary, size: 22),
+          suffixIcon: suffixIcon,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
@@ -521,9 +452,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
             borderSide: BorderSide(color: colorScheme.primary, width: 2),
           ),
           filled: true,
-          fillColor: isDark
-              ? colorScheme.surface.withOpacity(0.5)
-              : Colors.white,
+          fillColor:
+              isDark ? colorScheme.surface.withOpacity(0.5) : Colors.white,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 16,

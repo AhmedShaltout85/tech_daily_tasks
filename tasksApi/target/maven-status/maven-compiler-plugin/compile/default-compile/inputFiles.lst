@@ -1,4 +1,5 @@
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/DailyTaskRequest.java
+/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/config/WebConfig.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/config/security/SecurityConfig.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/JwtResponse.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/controller/DailyTaskController.java

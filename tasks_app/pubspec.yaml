@@ -30,6 +30,7 @@ environment:
 dependencies:
   awesome_dialog: ^3.3.0
   connectivity_plus: ^7.0.0
+  dio: ^5.4.0
   cloud_firestore: ^6.1.0
   cupertino_icons: ^1.0.8
   firebase_auth: ^6.1.2

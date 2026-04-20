@@ -1,5 +1,5 @@
 class AppNameModel {
-  final String id;
+  final int id;
   final String appName;
 
   //constructor
@@ -7,7 +7,7 @@ class AppNameModel {
   //from json
   factory AppNameModel.fromJson(Map<String, dynamic> json) {
     return AppNameModel(
-      id: json['id'] as String,
+      id: json['id'] as int,
       appName: json['appName'] as String,
     );
   }
@@ -17,7 +17,7 @@ class AppNameModel {
   }
   //copywith
   AppNameModel copyWith({
-    String? id,
+    int? id,
     String? appName,
   }) {
     return AppNameModel(

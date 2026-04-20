@@ -6,6 +6,7 @@ class UserModel {
   final String? role;
   final String? department;
   final String? token;
+  final bool? enabled;
 
 //Constructor
   UserModel({
@@ -16,18 +17,20 @@ class UserModel {
     this.role,
     this.department,
     this.token,
+    this.enabled,
   });
 
 //FromJson
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'],
-      displayName: json['displayName'],
-      username: json['username'],
+      id: json['id']?.toString(),
+      displayName: json['displayName'] ?? '',
+      username: json['username'] ?? '',
       password: json['password'],
       role: json['role'],
       department: json['department'],
       token: json['token'],
+      enabled: json['enabled'],
     );
   }
   //ToJson
@@ -40,6 +43,7 @@ class UserModel {
       'role': role,
       'department': department,
       'token': token,
+      'enabled': enabled,
     };
   }
 
@@ -52,6 +56,7 @@ class UserModel {
     String? role,
     String? department,
     String? token,
+    bool? enabled,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -61,6 +66,7 @@ class UserModel {
       role: role ?? this.role,
       department: department ?? this.department,
       token: token ?? this.token,
+      enabled: enabled ?? this.enabled,
     );
   }
 }
