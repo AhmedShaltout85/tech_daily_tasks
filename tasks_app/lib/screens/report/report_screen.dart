@@ -62,7 +62,10 @@ class _ReportScreenState extends State<ReportScreen>
       _showNoInternetDialog();
       return;
     }
-    await context.read<UserProvider>().fetchAllUsers();
+    final userProvider = context.read<UserProvider>();
+    final department = userProvider.currentUser?.department;
+    await context.read<UserProvider>().fetchUsersByDepartment(department!);
+    // await context.read<UserProvider>().fetchAllUsers();
   }
 
   void _showNoInternetDialog() {

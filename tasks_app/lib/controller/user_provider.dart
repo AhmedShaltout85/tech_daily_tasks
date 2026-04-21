@@ -1,8 +1,10 @@
+import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 
 import '../models/user_model.dart';
 import '../newtork_repos/remote_repo/api_repos/api_network_user_repos_impl.dart';
+import 'local_control/cache_helper.dart';
 
 class UserProvider with ChangeNotifier {
   final ApiNetworkUserReposImpl _api = ApiNetworkUserReposImpl();
@@ -13,18 +15,52 @@ class UserProvider with ChangeNotifier {
   String? _error;
   String? _token;
 
+  UserProvider() {
+    _loadTokenFromCache();
+  }
+
+  void _loadTokenFromCache() async {
+    final savedToken = CacheHelper.getData(key: 'auth_token');
+    if (savedToken != null) {
+      _token = savedToken as String;
+      _api.setToken(_token!);
+      log('Token loaded from cache, fetching user data...');
+
+      // Fetch current user data when token is loaded
+      try {
+        final users = await _api.getAllUsers();
+        if (users.isNotEmpty) {
+          _currentUser = users.first;
+          log('User data restored: ${_currentUser?.displayName}');
+          notifyListeners();
+        }
+      } catch (e) {
+        log('Failed to restore user data: $e');
+      }
+    }
+  }
+
+  Future<void> _saveTokenToCache(String token) async {
+    await CacheHelper.saveData(key: 'auth_token', value: token);
+  }
+
+  Future<void> _clearTokenFromCache() async {
+    await CacheHelper.removeData(key: 'auth_token');
+  }
+
   UserModel? get currentUser => _currentUser;
   List<UserModel> get users => _users;
   bool get isLoading => _isLoading;
   String? get error => _error;
   String? get token => _token;
 
-  void clearUserData() {
+  void clearUserData() async {
     _token = null;
     _currentUser = null;
     _users = [];
     _error = null;
     _api.clearToken();
+    await _clearTokenFromCache();
     notifyListeners();
   }
 
@@ -68,12 +104,16 @@ class UserProvider with ChangeNotifier {
         username: username,
         password: password,
       );
+      log('SignIn response: $response');
       _token = response['token'];
       _api.setToken(_token!);
+      await _saveTokenToCache(_token!);
       _currentUser = UserModel.fromJson(response);
+      log('Current user set: ${_currentUser?.displayName}, role: ${_currentUser?.role}, department: ${_currentUser?.department}');
       _error = null;
       notifyListeners();
     } on DioException catch (e) {
+      log('SignIn error: ${e.response?.statusCode} - ${e.response?.data}');
       if (e.response?.statusCode == 401) {
         final data = e.response?.data;
         _error = data['error'] ?? 'Invalid username or password';
@@ -82,6 +122,7 @@ class UserProvider with ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
+      log('SignIn error: $e');
       _error = e.toString();
       notifyListeners();
     } finally {
@@ -160,12 +201,15 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> fetchEnabledUsersByRole(String role, bool enabled) async {
+    log('fetchEnabledUsersByRole called - role: $role, enabled: $enabled, token: $_token');
     _setLoading(true);
     try {
       _users = await _api.getEnabledUsersByRole(role, enabled);
+      log('Users fetched successfully: ${_users.length}');
       _error = null;
       notifyListeners();
     } catch (e) {
+      log('Error fetching users: $e');
       _error = e.toString();
       notifyListeners();
     } finally {
@@ -177,11 +221,11 @@ class UserProvider with ChangeNotifier {
     _setLoading(true);
     try {
       final updatedUser = await _api.setUserEnabled(id, enabled);
-      final index = _users.indexWhere((u) => u.id == id.toString());
+      final index = _users.indexWhere((u) => u.id == id);
       if (index != -1) {
         _users[index] = updatedUser;
       }
-      if (_currentUser?.id == id.toString()) {
+      if (_currentUser?.id == id) {
         _currentUser = updatedUser;
       }
       _error = null;
@@ -198,7 +242,7 @@ class UserProvider with ChangeNotifier {
     _setLoading(true);
     try {
       await _api.deleteUser(id);
-      _users.removeWhere((u) => u.id == id.toString());
+      _users.removeWhere((u) => u.id == id);
       _error = null;
       notifyListeners();
     } catch (e) {

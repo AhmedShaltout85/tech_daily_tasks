@@ -57,11 +57,11 @@ mvn package -DskipTests
 ### User Controller (`/api/users`)
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/api/users` | Get all users | ADMIN/MANAGER |
+| GET | `/api/users` | Get all users (full objects) | ADMIN/MANAGER |
 | GET | `/api/users/{id}` | Get user by ID | ADMIN/MANAGER |
-| GET | `/api/users/department/{department}` | Get usernames by department | ADMIN/MANAGER |
-| GET | `/api/users/role/{role}` | Get usernames by role | ADMIN/MANAGER |
-| GET | `/api/users/role/{role}/enabled/{enabled}` | Get usernames by role and enabled status | ADMIN/MANAGER |
+| GET | `/api/users/department/{department}` | Get users by department (full objects) | ADMIN/MANAGER |
+| GET | `/api/users/role/{role}` | Get users by role (full objects) | ADMIN/MANAGER |
+| GET | `/api/users/role/{role}/enabled/{enabled}` | Get users by role and enabled status (full objects) | ADMIN/MANAGER |
 | PUT | `/api/users/{id}/enable?enabled=true` | Enable/disable user | ADMIN |
 | PUT | `/api/users/change-password` | Change password (requires old password) | AUTHENTICATED |
 | DELETE | `/api/users/{id}` | Delete user by ID | ADMIN |
@@ -73,6 +73,7 @@ mvn package -DskipTests
 | POST | `/api/apps` | Create new app | AUTHENTICATED |
 | GET | `/api/apps` | Get all apps | AUTHENTICATED |
 | GET | `/api/apps/{id}` | Get app by ID | AUTHENTICATED |
+| GET | `/api/apps/department/{department}` | Get apps by department | AUTHENTICATED |
 | PUT | `/api/apps/{id}` | Update app by ID | AUTHENTICATED |
 | DELETE | `/api/apps/{id}` | Delete app by ID | AUTHENTICATED |
 
@@ -287,6 +288,7 @@ mvn package -DskipTests
 |-------|------|-------------|
 | id | Long | Primary key |
 | appName | String | Application name |
+| department | String | Department (NOT NULL) |
 
 ### AboutApp Entity Fields
 | Field | Type | Description |
@@ -344,8 +346,8 @@ mvn package -DskipTests
 - `SigninRequest`: username, password
 - `JwtResponse`: token, type, id, username, displayName, role, department
 - `MessageResponse`: message
-- `AppsNameRequest`: appName
-- `AppsNameResponse`: id, appName
+- `AppsNameRequest`: appName, department
+- `AppsNameResponse`: id, appName, department
 - `AboutAppRequest`: appName, recommended
 - `AboutAppResponse`: id, appName, recommended
 - `PreventiveItemRequest`: appName, action
@@ -375,7 +377,8 @@ CREATE TABLE task_users (
 
 CREATE TABLE apps_name (
     id BIGINT IDENTITY(1,1) PRIMARY KEY NOT NULL,
-    app_name NVARCHAR(255) NOT NULL
+    app_name NVARCHAR(255) NOT NULL,
+    department NVARCHAR(255) NOT NULL
 );
 
 CREATE TABLE about_app (

@@ -20,6 +20,9 @@ class DioClient {
         log('DATA: ${options.data}');
         if (_token != null) {
           options.headers['Authorization'] = 'Bearer $_token';
+          log('TOKEN ADDED: Bearer $_token');
+        } else {
+          log('NO TOKEN - Request may be unauthorized');
         }
         return handler.next(options);
       },

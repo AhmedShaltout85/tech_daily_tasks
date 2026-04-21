@@ -28,11 +28,43 @@ class AppNameProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addAppName(String appName) async {
+  Future<void> fetchAppsByDepartment(String department) async {
     _setLoading(true);
     try {
-      final newApp = await _api.addAppName(appName);
+      _appNames = await _api.getAppNamesByDepartment(department);
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> addAppName(String appName, String department) async {
+    _setLoading(true);
+    try {
+      final newApp = await _api.addAppName(appName, department);
       _appNames.add(newApp);
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> updateAppName(int id, String appName, String department) async {
+    _setLoading(true);
+    try {
+      final updatedApp = await _api.updateAppName(id, appName, department);
+      final index = _appNames.indexWhere((app) => app.id == id);
+      if (index != -1) {
+        _appNames[index] = updatedApp;
+      }
       _error = null;
       notifyListeners();
     } catch (e) {

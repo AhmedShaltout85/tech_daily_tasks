@@ -40,37 +40,28 @@ public class UserController {
 
     @GetMapping("/role/{role}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public ResponseEntity<List<String>> getUsersByRole(@PathVariable Role role) {
+    public ResponseEntity<List<User>> getUsersByRole(@PathVariable Role role) {
         log.debug("Fetching users with role: {}", role);
         List<User> users = userService.findByRole(role);
-        List<String> userNames = users.stream()
-                .map(User::getUsername)
-                .toList();
-        return ResponseEntity.ok(userNames);
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/department/{department}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public ResponseEntity<List<String>> getUsersByDepartment(@PathVariable String department) {
+    public ResponseEntity<List<User>> getUsersByDepartment(@PathVariable String department) {
         log.debug("Fetching users with department: {}", department);
         List<User> users = userService.findByDepartment(department);
-        List<String> userNames = users.stream()
-                .map(User::getUsername)
-                .toList();
-        return ResponseEntity.ok(userNames);
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/role/{role}/enabled/{enabled}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public ResponseEntity<List<String>> getUsersByRoleAndEnabled(
+    public ResponseEntity<List<User>> getUsersByRoleAndEnabled(
             @PathVariable Role role,
             @PathVariable boolean enabled) {
         log.debug("Fetching {} users with role: {} and enabled: {}", enabled ? "enabled" : "disabled", role);
         List<User> users = userService.findByRoleAndIsEnabled(role, enabled);
-        List<String> userNames = users.stream()
-                .map(User::getUsername)
-                .toList();
-        return ResponseEntity.ok(userNames);
+        return ResponseEntity.ok(users);
     }
 
     @PutMapping("/{id}/enable")

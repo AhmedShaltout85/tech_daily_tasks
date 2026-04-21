@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
@@ -44,7 +46,22 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
       _showNoInternetDialog();
       return;
     }
-    await context.read<UserProvider>().fetchAllUsers();
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    log('Current user: ${userProvider.currentUser?.displayName}');
+    log('Current user department: ${userProvider.currentUser?.department}');
+    log('Token: ${userProvider.token}');
+
+    final department = userProvider.currentUser?.department;
+
+    if (department != null && department.isNotEmpty) {
+      log('Fetching users by department: $department');
+      await userProvider.fetchUsersByDepartment(department);
+    } else {
+      log('Fetching all users');
+      await userProvider.fetchAllUsers();
+    }
+    log('Users loaded: ${userProvider.users.length}');
   }
 
   void _showNoInternetDialog() {
@@ -72,7 +89,7 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
       return;
     }
 
-    final userId = int.tryParse(user.id ?? '');
+    final userId = user.id;
     if (userId == null) return;
 
     await context.read<UserProvider>().setUserEnabled(userId, enable);
@@ -145,7 +162,7 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
     );
 
     if (confirmed == true) {
-      final userId = int.tryParse(user.id ?? '');
+      final userId = user.id;
       if (userId == null) return;
 
       await context.read<UserProvider>().deleteUser(userId);

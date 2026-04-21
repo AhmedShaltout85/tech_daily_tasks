@@ -13,4 +13,5 @@ public class AppsNameResponse {
 
     private Long id;
     private String appName;
+    private String department;
 }

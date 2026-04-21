@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
@@ -46,7 +47,23 @@ class _AddUserScreenState extends State<AddUserScreen>
       _showNoInternetDialog();
       return;
     }
-    await context.read<UserProvider>().fetchAllUsers();
+    final provider = Provider.of<UserProvider>(context, listen: false);
+
+    // Debug: check what's in currentUser
+    log('Current user: ${provider.currentUser?.displayName}');
+    log('Current user department: ${provider.currentUser?.department}');
+    log('Token: ${provider.token}');
+
+    final department = provider.currentUser?.department;
+
+    if (department != null && department.isNotEmpty) {
+      log('Fetching users by department: $department');
+      await provider.fetchUsersByDepartment(department);
+    } else {
+      log('Fetching all users');
+      await provider.fetchAllUsers();
+    }
+    log('Users loaded: ${provider.users.length}');
     _animationController.forward();
   }
 
@@ -73,7 +90,7 @@ class _AddUserScreenState extends State<AddUserScreen>
     final displayNameController = TextEditingController();
     final usernameController = TextEditingController();
     final passwordController = TextEditingController();
-    final departmentController = TextEditingController();
+    // final departmentController = TextEditingController();
     String selectedRole = 'USER';
 
     showDialog(
@@ -144,42 +161,42 @@ class _AddUserScreenState extends State<AddUserScreen>
                       return null;
                     },
                   ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: departmentController,
-                    decoration: const InputDecoration(
-                      labelText: 'Department',
-                      hintText: 'Enter department',
-                      prefixIcon: Icon(Icons.business),
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter department';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    initialValue: selectedRole,
-                    decoration: const InputDecoration(
-                      labelText: 'Role',
-                      prefixIcon: Icon(Icons.badge),
-                      border: OutlineInputBorder(),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 'USER', child: Text('USER')),
-                      DropdownMenuItem(
-                          value: 'MANAGER', child: Text('MANAGER')),
-                      DropdownMenuItem(value: 'ADMIN', child: Text('ADMIN')),
-                    ],
-                    onChanged: (value) {
-                      setDialogState(() {
-                        selectedRole = value!;
-                      });
-                    },
-                  ),
+                  // const SizedBox(height: 12),
+                  // TextFormField(
+                  //   controller: departmentController,
+                  //   decoration: const InputDecoration(
+                  //     labelText: 'Department',
+                  //     hintText: 'Enter department',
+                  //     prefixIcon: Icon(Icons.business),
+                  //     border: OutlineInputBorder(),
+                  //   ),
+                  //   validator: (value) {
+                  //     if (value == null || value.trim().isEmpty) {
+                  //       return 'Please enter department';
+                  //     }
+                  //     return null;
+                  //   },
+                  // ),
+                  // const SizedBox(height: 12),
+                  // DropdownButtonFormField<String>(
+                  //   initialValue: selectedRole,
+                  //   decoration: const InputDecoration(
+                  //     labelText: 'Role',
+                  //     prefixIcon: Icon(Icons.badge),
+                  //     border: OutlineInputBorder(),
+                  //   ),
+                  //   items: const [
+                  //     DropdownMenuItem(value: 'USER', child: Text('USER')),
+                  //     DropdownMenuItem(
+                  //         value: 'MANAGER', child: Text('MANAGER')),
+                  //     DropdownMenuItem(value: 'ADMIN', child: Text('ADMIN')),
+                  //   ],
+                  //   onChanged: (value) {
+                  //     setDialogState(() {
+                  //       selectedRole = value!;
+                  //     });
+                  //   },
+                  // ),
                 ],
               ),
             ),
@@ -193,12 +210,14 @@ class _AddUserScreenState extends State<AddUserScreen>
               onPressed: () async {
                 if (formKey.currentState!.validate()) {
                   Navigator.pop(dialogContext);
+                  final provider = context.read<UserProvider>();
+                  final department = provider.currentUser?.department;
                   await _addUser(
                     displayNameController.text.trim(),
                     usernameController.text.trim(),
                     passwordController.text.trim(),
                     selectedRole,
-                    departmentController.text.trim(),
+                    department ?? 'ادراة البرامج وصيانتها',
                   );
                 }
               },
@@ -492,13 +511,190 @@ class _AddUserScreenState extends State<AddUserScreen>
               ),
             ],
           ),
-          trailing: Icon(
-            user.enabled == true ? Icons.check_circle : Icons.cancel,
-            color: user.enabled == true ? Colors.green : Colors.red,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.orange.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    user.enabled == true ? Icons.block : Icons.check_circle,
+                    color: Colors.orange,
+                  ),
+                  tooltip: user.enabled == true ? 'Disable' : 'Enable',
+                  onPressed: () => _showEnableDisableDialog(user),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  tooltip: 'Delete',
+                  onPressed: () => _showDeleteConfirmation(user),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  void _showEnableDisableDialog(dynamic user) async {
+    final hasConnection = await _connectivity.hasConnection();
+    if (!hasConnection) {
+      _showNoInternetDialog();
+      return;
+    }
+
+    final bool enable = user.enabled != true;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                enable ? Icons.check_circle : Icons.block,
+                color: Colors.orange,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(enable ? 'Enable User' : 'Disable User'),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to ${enable ? 'enable' : 'disable'} "${user.displayName}"?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(enable ? 'Enable' : 'Disable'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      final userId = int.tryParse(user.id.toString());
+      if (userId != null) {
+        await context.read<UserProvider>().setUserEnabled(userId, enable);
+      }
+
+      if (mounted) {
+        final provider = context.read<UserProvider>();
+        if (provider.error != null) {
+          ReusableToast.showToast(
+            message: provider.error!,
+            bgColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16,
+          );
+          provider.clearError();
+        } else {
+          ReusableToast.showToast(
+            message: enable
+                ? 'User enabled successfully'
+                : 'User disabled successfully',
+            bgColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16,
+          );
+        }
+      }
+    }
+  }
+
+  void _showDeleteConfirmation(dynamic user) async {
+    final hasConnection = await _connectivity.hasConnection();
+    if (!hasConnection) {
+      _showNoInternetDialog();
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.delete_outline, color: Colors.red),
+            ),
+            const SizedBox(width: 12),
+            const Text('Delete User'),
+          ],
+        ),
+        content: Text(
+            'Are you sure you want to delete "${user.displayName}"? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      final userId = int.tryParse(user.id.toString());
+      if (userId != null) {
+        await context.read<UserProvider>().deleteUser(userId);
+      }
+
+      if (mounted) {
+        final provider = context.read<UserProvider>();
+        if (provider.error != null) {
+          ReusableToast.showToast(
+            message: provider.error!,
+            bgColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16,
+          );
+          provider.clearError();
+        } else {
+          ReusableToast.showToast(
+            message: 'User deleted successfully',
+            bgColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16,
+          );
+          _fetchData();
+        }
+      }
+    }
   }
 
   Color _getRoleColor(String? role) {

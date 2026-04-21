@@ -37,8 +37,8 @@ class _TaskScreenState extends State<TaskScreen> {
       _showNoInternetDialog();
       return;
     }
-    await context.read<UserProvider>().fetchAllUsers();
-    await context.read<UserProvider>().fetchUsersByRole('USER');
+    await context.read<UserProvider>().fetchEnabledUsersByRole('USER', true);
+    // await context.read<UserProvider>().fetchUsersByRole('USER');
   }
 
   List<dynamic> getFilteredTasks(List<dynamic> tasks) {

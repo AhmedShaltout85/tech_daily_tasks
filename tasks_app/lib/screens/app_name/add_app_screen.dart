@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/app_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
+import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
 class AddAppScreen extends StatefulWidget {
@@ -46,7 +47,9 @@ class _AddAppScreenState extends State<AddAppScreen>
       _showNoInternetDialog();
       return;
     }
-    await context.read<AppNameProvider>().fetchAllAppNames();
+    final userProvider = context.read<UserProvider>();
+   final department = userProvider.currentUser?.department;
+    await context.read<AppNameProvider>().fetchAppsByDepartment(department!);
     _animationController.forward();
   }
 
@@ -69,7 +72,8 @@ class _AddAppScreenState extends State<AddAppScreen>
   }
 
   void _showAddDialog() {
-    final controller = TextEditingController();
+    final appNameController = TextEditingController();
+    // final departmentController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -84,20 +88,41 @@ class _AddAppScreenState extends State<AddAppScreen>
         ),
         content: Form(
           key: formKey,
-          child: TextFormField(
-            controller: controller,
-            decoration: const InputDecoration(
-              labelText: 'App Name',
-              hintText: 'Enter app name',
-              prefixIcon: Icon(Icons.apps),
-              border: OutlineInputBorder(),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter app name';
-              }
-              return null;
-            },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: appNameController,
+                decoration: const InputDecoration(
+                  labelText: 'App Name',
+                  hintText: 'Enter app name',
+                  prefixIcon: Icon(Icons.apps),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter app name';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              // TextFormField(
+              //   controller: departmentController,
+              //   decoration: const InputDecoration(
+              //     labelText: 'Department',
+              //     hintText: 'Enter department',
+              //     prefixIcon: Icon(Icons.business),
+              //     border: OutlineInputBorder(),
+              //   ),
+              //   validator: (value) {
+              //     if (value == null || value.trim().isEmpty) {
+              //       return 'Please enter department';
+              //     }
+              //     return null;
+              //   },
+              // ),
+            ],
           ),
         ),
         actions: [
@@ -108,8 +133,13 @@ class _AddAppScreenState extends State<AddAppScreen>
           ElevatedButton(
             onPressed: () async {
               if (formKey.currentState!.validate()) {
+                final userProvider = context.read<UserProvider>();
+                final department = userProvider.currentUser?.department;
                 Navigator.pop(context);
-                await _addApp(controller.text.trim());
+                await _addApp(
+                  appNameController.text.trim(),
+                  department!,
+                );
               }
             },
             child: const Text('Add'),
@@ -119,14 +149,14 @@ class _AddAppScreenState extends State<AddAppScreen>
     );
   }
 
-  Future<void> _addApp(String name) async {
+  Future<void> _addApp(String name, String department) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
       _showNoInternetDialog();
       return;
     }
 
-    await context.read<AppNameProvider>().addAppName(name);
+    await context.read<AppNameProvider>().addAppName(name, department);
 
     if (mounted) {
       final provider = context.read<AppNameProvider>();

@@ -18,4 +18,7 @@ public class AppsName implements Serializable {
 
     @Column(name = "app_name", nullable = false)
     private String appName;
+
+    @Column(name = "department", nullable = false)
+    private String department;
 }

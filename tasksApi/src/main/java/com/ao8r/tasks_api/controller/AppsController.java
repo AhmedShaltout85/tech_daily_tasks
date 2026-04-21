@@ -43,6 +43,13 @@ public class AppsController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/department/{department}")
+    public ResponseEntity<List<AppsNameResponse>> getAppsByDepartment(@PathVariable String department) {
+        log.debug("Get apps by department request received: {}", department);
+        List<AppsNameResponse> apps = appsNameService.getAppsByDepartment(department);
+        return ResponseEntity.ok(apps);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<AppsNameResponse> updateApp(@PathVariable Long id, @Valid @RequestBody AppsNameRequest request) {
         log.debug("Update app request received for ID: {}", id);

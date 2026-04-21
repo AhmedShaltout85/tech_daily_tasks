@@ -1,5 +1,5 @@
 class UserModel {
-  final String? id;
+  final int? id;
   final String displayName;
   final String username;
   final String? password;
@@ -23,7 +23,7 @@ class UserModel {
 //FromJson
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id']?.toString(),
+      id: json['id'] as int,
       displayName: json['displayName'] ?? '',
       username: json['username'] ?? '',
       password: json['password'],
@@ -49,7 +49,7 @@ class UserModel {
 
   //CopyWith
   UserModel copyWith({
-    String? id,
+    int? id,
     String? displayName,
     String? username,
     String? password,

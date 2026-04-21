@@ -1,8 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/services/connectivity_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -12,6 +13,30 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final ConnectivityService _connectivity = ConnectivityService();
+
+  Future<bool> _checkConnectivity() async {
+    return await _connectivity.hasConnection();
+  }
+
+  void _showNoInternetDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('No Internet'),
+        content: const Text(
+          'No internet found. Please check your internet connection and try again.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showChangePasswordDialog(bool isDark, ColorScheme colorScheme) {
     final formKey = GlobalKey<FormState>();
     final currentPasswordController = TextEditingController();
@@ -25,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => Dialog(
+        builder: (dialogContext, setDialogState) => Dialog(
           backgroundColor: isDark ? colorScheme.surface : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -44,7 +69,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: colorScheme.primary.withOpacity(0.1),
+                          color: colorScheme.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
@@ -67,8 +92,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
-
-                  // Current Password
                   TextFormField(
                     controller: currentPasswordController,
                     obscureText: !showCurrentPassword,
@@ -106,7 +129,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       filled: true,
                       fillColor: isDark
-                          ? colorScheme.surface.withOpacity(0.5)
+                          ? colorScheme.surface.withValues(alpha: 0.5)
                           : Colors.grey[50],
                     ),
                     validator: (value) {
@@ -117,8 +140,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-
-                  // New Password
                   TextFormField(
                     controller: newPasswordController,
                     obscureText: !showNewPassword,
@@ -153,7 +174,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       filled: true,
                       fillColor: isDark
-                          ? colorScheme.surface.withOpacity(0.5)
+                          ? colorScheme.surface.withValues(alpha: 0.5)
                           : Colors.grey[50],
                     ),
                     validator: (value) {
@@ -167,8 +188,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-
-                  // Confirm Password
                   TextFormField(
                     controller: confirmPasswordController,
                     obscureText: !showConfirmPassword,
@@ -206,7 +225,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       filled: true,
                       fillColor: isDark
-                          ? colorScheme.surface.withOpacity(0.5)
+                          ? colorScheme.surface.withValues(alpha: 0.5)
                           : Colors.grey[50],
                     ),
                     validator: (value) {
@@ -220,14 +239,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                   const SizedBox(height: 24),
-
-                  // Action Buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed:
-                            isLoading ? null : () => Navigator.pop(context),
+                        onPressed: isLoading
+                            ? null
+                            : () => Navigator.pop(dialogContext),
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 24,
@@ -248,111 +266,61 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ? null
                             : () async {
                                 if (formKey.currentState!.validate()) {
+                                  final hasConnection =
+                                      await _checkConnectivity();
+                                  if (!hasConnection) {
+                                    _showNoInternetDialog();
+                                    return;
+                                  }
+
                                   setDialogState(() {
                                     isLoading = true;
                                   });
 
                                   try {
-                                    final user =
-                                        FirebaseAuth.instance.currentUser;
-                                    if (user != null && user.email != null) {
-                                      // Re-authenticate user
-                                      final credential =
-                                          EmailAuthProvider.credential(
-                                        email: user.email!,
-                                        password:
-                                            currentPasswordController.text,
+                                    final userProvider =
+                                        Provider.of<UserProvider>(
+                                      dialogContext,
+                                      listen: false,
+                                    );
+
+                                    await userProvider.changePassword(
+                                      currentPassword:
+                                          currentPasswordController.text,
+                                      newPassword: newPasswordController.text,
+                                    );
+
+                                    if (!dialogContext.mounted) return;
+
+                                    if (userProvider.error != null) {
+                                      ReusableToast.showToast(
+                                        message: userProvider.error!,
+                                        bgColor: Colors.red,
+                                        textColor: Colors.white,
+                                        fontSize: 16,
                                       );
-
-                                      await user.reauthenticateWithCredential(
-                                        credential,
-                                      );
-                                      //update password with new password in firebase db
-
-                                      // await Provider.of<UserProvider>(
-                                      //   context,
-                                      //   listen: false,
-                                      // ).updateUserPasswordByEmail(
-                                      //   user.email!,
-                                      //   newPasswordController.text,
-                                      // );
-
-                                      // Update password
-                                      await user.updatePassword(
-                                        newPasswordController.text,
-                                      );
-
-                                      if (context.mounted) {
-                                        Navigator.pop(context);
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.check_circle,
-                                                  color: Colors.white,
-                                                ),
-                                                SizedBox(width: 12),
-                                                Text(
-                                                  'Password changed successfully',
-                                                ),
-                                              ],
-                                            ),
-                                            backgroundColor: Colors.green,
-                                            behavior: SnackBarBehavior.floating,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    }
-                                  } on FirebaseAuthException catch (e) {
-                                    String errorMessage = 'An error occurred';
-
-                                    if (e.code == 'wrong-password') {
-                                      errorMessage =
-                                          'Current password is incorrect';
-                                    } else if (e.code == 'weak-password') {
-                                      errorMessage = 'Password is too weak';
-                                    } else if (e.code ==
-                                        'requires-recent-login') {
-                                      errorMessage =
-                                          'Please log out and log in again';
-                                    }
-
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.error_outline,
-                                                color: Colors.white,
-                                              ),
-                                              SizedBox(width: 12),
-                                              Expanded(
-                                                child: Text(errorMessage),
-                                              ),
-                                            ],
-                                          ),
-                                          backgroundColor: Colors.red,
-                                          behavior: SnackBarBehavior.floating,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
-                                        ),
+                                      userProvider.clearError();
+                                    } else {
+                                      Navigator.pop(dialogContext);
+                                      ReusableToast.showToast(
+                                        message:
+                                            'Password changed successfully',
+                                        bgColor: Colors.green,
+                                        textColor: Colors.white,
+                                        fontSize: 16,
                                       );
                                     }
+                                  } catch (e) {
+                                    if (!dialogContext.mounted) return;
+                                    ReusableToast.showToast(
+                                      message:
+                                          'Failed to change password. Please try again.',
+                                      bgColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16,
+                                    );
                                   } finally {
-                                    if (context.mounted) {
+                                    if (dialogContext.mounted) {
                                       setDialogState(() {
                                         isLoading = false;
                                       });
@@ -378,7 +346,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   color: isDark ? Colors.black87 : Colors.white,
                                 ),
                               )
-                            : Text(
+                            : const Text(
                                 'Change Password',
                                 style: TextStyle(fontSize: 16),
                               ),
@@ -406,7 +374,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Account Section
           Text(
             'Account',
             style: TextStyle(
@@ -417,8 +384,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 12),
-
-          // User Info Card
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -431,7 +396,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ? null
                   : [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 2),
                       ),
@@ -446,7 +411,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       radius: 30,
                       backgroundColor: colorScheme.primary,
                       child: Text(
-                        '${user?.username.substring(0, 1).toUpperCase()}',
+                        '${user?.displayName.substring(0, 1).toUpperCase()}',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -460,7 +425,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${user?.username.toUpperCase()}',
+                            '${user?.displayName}',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
@@ -469,8 +434,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '',
-                            // user.email ?? 'No email',
+                            user?.department ?? '',
                             style: TextStyle(
                               fontSize: 14,
                               color:
@@ -486,8 +450,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 24),
-
-          // Security Section
           Text(
             'Security',
             style: TextStyle(
@@ -498,8 +460,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 12),
-
-          // Change Password Card
           Container(
             decoration: BoxDecoration(
               color: isDark ? colorScheme.surface : Colors.white,
@@ -511,7 +471,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ? null
                   : [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 2),
                       ),
@@ -525,7 +485,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: colorScheme.primary.withOpacity(0.1),
+                  color: colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(Icons.lock_reset, color: colorScheme.primary),
@@ -557,8 +517,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 24),
-
-          // Appearance Section
           Text(
             'Appearance',
             style: TextStyle(
@@ -569,8 +527,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 12),
-
-          // Theme Toggle Card
           Container(
             decoration: BoxDecoration(
               color: isDark ? colorScheme.surface : Colors.white,
@@ -582,7 +538,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ? null
                   : [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 2),
                       ),
@@ -596,7 +552,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               secondary: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: colorScheme.primary.withOpacity(0.1),
+                  color: colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(

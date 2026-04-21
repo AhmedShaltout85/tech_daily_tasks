@@ -18,4 +18,6 @@ public interface AppsNameService {
     AppsNameResponse updateApp(Long id, AppsNameRequest request);
 
     void deleteApp(Long id);
+
+    List<AppsNameResponse> getAppsByDepartment(String department);
 }
