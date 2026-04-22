@@ -62,7 +62,7 @@ mvn package -DskipTests
 | GET | `/api/users/department/{department}` | Get users by department (full objects) | ADMIN/MANAGER |
 | GET | `/api/users/role/{role}` | Get users by role (full objects) | ADMIN/MANAGER |
 | GET | `/api/users/role/{role}/enabled/{enabled}` | Get users by role and enabled status (full objects) | ADMIN/MANAGER |
-| PUT | `/api/users/{id}/enable?enabled=true` | Enable/disable user | ADMIN |
+| PUT | `/api/users/{id}/enable?enabled=true` | Enable/disable user (returns full User object) | ADMIN |
 | PUT | `/api/users/change-password` | Change password (requires old password) | AUTHENTICATED |
 | DELETE | `/api/users/{id}` | Delete user by ID | ADMIN |
 | GET | `/api/users/roles` | Get all roles as list of strings | ADMIN/MANAGER |
@@ -90,6 +90,8 @@ mvn package -DskipTests
 | GET | `/api/daily-tasks/app/{appName}` | Get tasks by app name | AUTHENTICATED |
 | GET | `/api/daily-tasks/status/{taskStatus}` | Get tasks by status | AUTHENTICATED |
 | GET | `/api/daily-tasks/priority/{taskPriority}` | Get tasks by priority | AUTHENTICATED |
+| GET | `/api/daily-tasks/assigned-to/{username}/remote/{isRemote}` | Get tasks assigned to user filtered by remote | AUTHENTICATED |
+| GET | `/api/daily-tasks/remote/{isRemote}` | Get tasks filtered by remote | AUTHENTICATED |
 
 ### AboutApp Controller (`/api/about-apps`)
 | Method | Endpoint | Description | Auth Required |

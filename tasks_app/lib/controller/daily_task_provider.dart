@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 
 import '../models/daily_task_model.dart';
-import '../newtork_repos/remote_repo/api_repos/api_network_task_repos_impl.dart';
+import '../newtork_repos/remote_repo/api_repos/api_network_daily_task_repos_impl.dart';
 
-class TaskProvider with ChangeNotifier {
-  final ApiNetworkTaskReposImpl _api = ApiNetworkTaskReposImpl();
+class DailyTaskProvider with ChangeNotifier {
+  final ApiNetworkDailyTaskReposImpl _api = ApiNetworkDailyTaskReposImpl();
 
   List<DailyTaskModel> _tasks = [];
   bool _isLoading = false;
@@ -18,6 +18,68 @@ class TaskProvider with ChangeNotifier {
     _setLoading(true);
     try {
       _tasks = await _api.getAllTasks();
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> fetchTaskById(int id) async {
+    _setLoading(true);
+    try {
+      final task = await _api.getTaskById(id);
+      final index = _tasks.indexWhere((t) => t.id == id);
+      if (index != -1) {
+        _tasks[index] = task;
+      } else {
+        _tasks.add(task);
+      }
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> fetchTasksAssignedTo(String username) async {
+    _setLoading(true);
+    try {
+      _tasks = await _api.getTasksAssignedTo(username);
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> fetchTasksAssignedBy(String username) async {
+    _setLoading(true);
+    try {
+      _tasks = await _api.getTasksAssignedBy(username);
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> fetchTasksByAppName(String appName) async {
+    _setLoading(true);
+    try {
+      _tasks = await _api.getTasksByAppName(appName);
       _error = null;
       notifyListeners();
     } catch (e) {
@@ -42,38 +104,39 @@ class TaskProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchTasksByEmployee(String employeeName) async {
-    _setLoading(true);
-    try {
-      _tasks = await _api.getTasksByEmployee(employeeName);
-      _error = null;
-      notifyListeners();
-    } catch (e) {
-      _error = e.toString();
-      notifyListeners();
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  Future<void> fetchTasksByApp(String appName) async {
-    _setLoading(true);
-    try {
-      _tasks = await _api.getTasksByApp(appName);
-      _error = null;
-      notifyListeners();
-    } catch (e) {
-      _error = e.toString();
-      notifyListeners();
-    } finally {
-      _setLoading(false);
-    }
-  }
-
   Future<void> fetchTasksByPriority(String priority) async {
     _setLoading(true);
     try {
       _tasks = await _api.getTasksByPriority(priority);
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> fetchTasksAssignedToAndIsRemote(
+      String username, bool isRemote) async {
+    _setLoading(true);
+    try {
+      _tasks = await _api.getTasksAssignedToAndIsRemote(username, isRemote);
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> fetchTasksByIsRemote(bool isRemote) async {
+    _setLoading(true);
+    try {
+      _tasks = await _api.getTasksByIsRemote(isRemote);
       _error = null;
       notifyListeners();
     } catch (e) {
@@ -99,10 +162,10 @@ class TaskProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateTask(String id, Map<String, dynamic> data) async {
+  Future<void> updateTask(int id, DailyTaskModel task) async {
     _setLoading(true);
     try {
-      final updatedTask = await _api.updateTask(id, data);
+      final updatedTask = await _api.updateTask(id, task);
       final index = _tasks.indexWhere((t) => t.id == id);
       if (index != -1) {
         _tasks[index] = updatedTask;
@@ -117,7 +180,7 @@ class TaskProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteTask(String id) async {
+  Future<void> deleteTask(int id) async {
     _setLoading(true);
     try {
       await _api.deleteTask(id);

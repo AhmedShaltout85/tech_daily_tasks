@@ -1,17 +1,13 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tasks_app/common_widgets/resuable_widgets/resuable_widgets.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
-import 'package:tasks_app/screens/app_name/add_app_screen.dart';
-import 'package:tasks_app/screens/login/login_screen.dart';
+import 'package:tasks_app/screens/app_name/manage_app_screen.dart';
+import 'package:tasks_app/screens/places/manage_place_screen.dart';
 import 'package:tasks_app/screens/report/report_screen.dart';
 import 'package:tasks_app/screens/settings/settings_screen.dart';
-import 'package:tasks_app/screens/user/add_user_screen.dart';
-import 'package:tasks_app/utils/app_route.dart';
+import 'package:tasks_app/screens/user/manage_user_screen.dart';
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({super.key});
@@ -95,7 +91,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                       context,
                       index: 2,
                       icon: Icons.badge_rounded,
-                      title: 'Add Users',
+                      title: 'Manage Users',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () async {
@@ -104,7 +100,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const AddUserScreen(),
+                            builder: (context) => const ManageUserScreen(),
                           ),
                         );
                       },
@@ -113,7 +109,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                       context,
                       index: 3,
                       icon: Icons.apps_rounded,
-                      title: 'Added Applications',
+                      title: 'Manage Applications',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () async {
@@ -122,7 +118,25 @@ class _CustomDrawerState extends State<CustomDrawer>
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const AddAppScreen(),
+                            builder: (context) => const ManageAppScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      index: 6,
+                      icon: Icons.location_on_rounded,
+                      title: 'Manage Places',
+                      isDark: isDark,
+                      colorScheme: colorScheme,
+                      onTap: () async {
+                        setState(() => _selectedIndex = 6);
+                        Navigator.pop(context);
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ManagePlaceScreen(),
                           ),
                         );
                       },

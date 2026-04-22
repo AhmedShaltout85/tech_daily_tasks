@@ -26,4 +26,8 @@ public interface DailyTaskService {
     List<DailyTaskResponse> getTasksByStatus(boolean taskStatus);
 
     List<DailyTaskResponse> getTasksByPriority(String taskPriority);
+
+    List<DailyTaskResponse> getTasksByAssignedToAndIsRemote(String assignedTo, boolean isRemote);
+
+    List<DailyTaskResponse> getTasksByIsRemote(boolean isRemote);
 }

@@ -1,6 +1,6 @@
 class DailyTaskModel {
   //Properties
-  final String? id;
+  final int? id;
   final String taskTitle;
   final bool taskStatus;
   final String appName;
@@ -36,27 +36,30 @@ class DailyTaskModel {
   //fromJson
   factory DailyTaskModel.fromJson(Map<String, dynamic> json) {
     return DailyTaskModel(
-      id: json['id'],
-      taskTitle: json['taskTitle'],
-      taskStatus: json['taskStatus'],
-      appName: json['appName'],
-      visitPlace: json['visitPlace'],
-      subPlace: json['subPlace'],
-      assignedTo: json['assignedTo'],
-      assignedBy: json['assignedBy'],
-      coOperator: json['coOperator'],
-      expectedCompletionDate: json['expectedCompletionDate'].toDate(),
-      taskPriority: json['taskPriority'],
+      id: json['id'] as int,
+      taskTitle: json['taskTitle'] ?? '',
+      taskStatus: json['taskStatus'] ?? false,
+      appName: json['appName'] ?? '',
+      visitPlace: json['visitPlace'] ?? '',
+      subPlace: json['subPlace'] ?? '',
+      assignedTo: json['assignedTo'] ?? '',
+      assignedBy: json['assignedBy'] ?? '',
+      coOperator: json['coOperator'] ?? [],
+      expectedCompletionDate: json['expectedCompletionDate'] != null
+          ? DateTime.parse(json['expectedCompletionDate'])
+          : DateTime.now(),
+      taskPriority: json['taskPriority'] ?? 'MEDIUM',
       taskNote: json['taskNote'],
-      isRemote: json['isRemote'],
-      createdAt: json['createdAt'].toDate(),
+      isRemote: json['isRemote'] ?? false,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : DateTime.now(),
     );
   }
 
   //toJson
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'taskTitle': taskTitle,
       'taskStatus': taskStatus,
       'appName': appName,
@@ -65,17 +68,16 @@ class DailyTaskModel {
       'assignedTo': assignedTo,
       'assignedBy': assignedBy,
       'coOperator': coOperator,
-      'expectedCompletionDate': expectedCompletionDate,
+      'expectedCompletionDate': expectedCompletionDate.toIso8601String(),
       'taskPriority': taskPriority,
       'taskNote': taskNote,
       'isRemote': isRemote,
-      'createdAt': createdAt
     };
   }
 
   //copyWith
   DailyTaskModel copyWith({
-    String? id,
+    int? id,
     String? taskTitle,
     bool? taskStatus,
     String? appName,

@@ -92,4 +92,20 @@ public class DailyTaskController {
         List<DailyTaskResponse> tasks = dailyTaskService.getTasksByPriority(taskPriority);
         return ResponseEntity.ok(tasks);
     }
+
+    @GetMapping("/assigned-to/{username}/remote/{isRemote}")
+    public ResponseEntity<List<DailyTaskResponse>> getTasksByAssignedToAndIsRemote(
+            @PathVariable String username,
+            @PathVariable boolean isRemote) {
+        log.debug("Fetching daily tasks assigned to: {} with isRemote: {}", username, isRemote);
+        List<DailyTaskResponse> tasks = dailyTaskService.getTasksByAssignedToAndIsRemote(username, isRemote);
+        return ResponseEntity.ok(tasks);
+    }
+
+    @GetMapping("/remote/{isRemote}")
+    public ResponseEntity<List<DailyTaskResponse>> getTasksByIsRemote(@PathVariable boolean isRemote) {
+        log.debug("Fetching daily tasks with isRemote: {}", isRemote);
+        List<DailyTaskResponse> tasks = dailyTaskService.getTasksByIsRemote(isRemote);
+        return ResponseEntity.ok(tasks);
+    }
 }

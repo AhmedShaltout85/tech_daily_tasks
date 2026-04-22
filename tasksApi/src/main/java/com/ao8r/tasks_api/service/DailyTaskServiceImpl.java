@@ -83,7 +83,6 @@ public class DailyTaskServiceImpl implements DailyTaskService {
         task.setTaskPriority(request.getTaskPriority());
         task.setTaskNote(request.getTaskNote() != null ? request.getTaskNote() : "none");
         task.setIsRemote(request.getIsRemote() != null ? request.getIsRemote() : false);
-        task.setIsRemote(request.getIsRemote());
 
         DailyTask updatedTask = dailyTaskRepository.save(task);
         log.info("Daily task updated successfully with id: {}", updatedTask.getId());
@@ -140,6 +139,22 @@ public class DailyTaskServiceImpl implements DailyTaskService {
     public List<DailyTaskResponse> getTasksByPriority(String taskPriority) {
         log.debug("Fetching daily tasks by priority: {}", taskPriority);
         return dailyTaskRepository.findByTaskPriority(taskPriority).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DailyTaskResponse> getTasksByAssignedToAndIsRemote(String assignedTo, boolean isRemote) {
+        log.debug("Fetching daily tasks assigned to: {} with isRemote: {}", assignedTo, isRemote);
+        return dailyTaskRepository.findByAssignedToAndIsRemote(assignedTo, isRemote).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DailyTaskResponse> getTasksByIsRemote(boolean isRemote) {
+        log.debug("Fetching daily tasks with isRemote: {}", isRemote);
+        return dailyTaskRepository.findByIsRemote(isRemote).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

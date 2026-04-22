@@ -66,12 +66,12 @@ public class UserController {
 
     @PutMapping("/{id}/enable")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<MessageResponse> updateUserEnabled(
+    public ResponseEntity<User> updateUserEnabled(
             @PathVariable Long id,
             @RequestParam boolean enabled) {
         log.debug("Updating user {} enabled status to: {}", id, enabled);
-        userService.updateUserEnabled(id, enabled);
-        return ResponseEntity.ok(new MessageResponse("User enabled status updated successfully!"));
+        User updatedUser = userService.updateUserEnabled(id, enabled);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")

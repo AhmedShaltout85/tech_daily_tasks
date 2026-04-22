@@ -8,6 +8,7 @@ class AppRoute {
   static const String authWrapperRouteName = '/auth-wrapper';
   static const String reportRouteName = '/report-screen';
   static const String manageUsersRouteName = '/manage-users-screen';
-  static const String addUserRouteName = '/add-user-screen';
-  static const String addAppRouteName = '/add-app-screen';
+  static const String manageUserRouteName = '/manage-user-screen';
+  static const String manageAppRouteName = '/manage-app-screen';
+  static const String managePlaceRouteName = '/manage-place-screen';
 }

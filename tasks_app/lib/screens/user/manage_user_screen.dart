@@ -6,14 +6,14 @@ import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
-class AddUserScreen extends StatefulWidget {
-  const AddUserScreen({super.key});
+class ManageUserScreen extends StatefulWidget {
+  const ManageUserScreen({super.key});
 
   @override
-  State<AddUserScreen> createState() => _AddUserScreenState();
+  State<ManageUserScreen> createState() => _ManageUserScreenState();
 }
 
-class _AddUserScreenState extends State<AddUserScreen>
+class _ManageUserScreenState extends State<ManageUserScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -596,7 +596,9 @@ class _AddUserScreenState extends State<AddUserScreen>
     );
 
     if (confirmed == true) {
-      final userId = int.tryParse(user.id.toString());
+      final userId =
+          user.id is int ? user.id as int : int.tryParse(user.id.toString());
+      log('userId: $userId, type: ${user.id.runtimeType}');
       if (userId != null) {
         await context.read<UserProvider>().setUserEnabled(userId, enable);
       }

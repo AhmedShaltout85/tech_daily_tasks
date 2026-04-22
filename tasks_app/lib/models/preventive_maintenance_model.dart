@@ -1,5 +1,5 @@
 class PreventiveMaintenanceModel {
-  final String? id;
+  final int? id;
   final String appName;
   final String placeName;
   final String? subPlace;
@@ -21,7 +21,7 @@ class PreventiveMaintenanceModel {
   // From JSON method
   factory PreventiveMaintenanceModel.fromJson(Map<String, dynamic> json) {
     return PreventiveMaintenanceModel(
-      id: json['id'],
+      id: json['id'] as int?,
       appName: json['appName'],
       placeName: json['placeName'],
       subPlace: json['subPlace'],
@@ -46,7 +46,7 @@ class PreventiveMaintenanceModel {
 
   // Copy with method
   PreventiveMaintenanceModel copyWith({
-    String? id,
+    int? id,
     String? appName,
     String? placeName,
     String? subPlace,

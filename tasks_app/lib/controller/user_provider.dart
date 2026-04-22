@@ -218,10 +218,14 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> setUserEnabled(int id, bool enabled) async {
+    log('setUserEnabled called - id: $id, enabled: $enabled');
     _setLoading(true);
     try {
       final updatedUser = await _api.setUserEnabled(id, enabled);
+      log('Updated user: ${updatedUser.id}, enabled: ${updatedUser.enabled}');
+      log('Users in list: ${_users.map((u) => '${u.id}:${u.displayName}').toList()}');
       final index = _users.indexWhere((u) => u.id == id);
+      log('Index found: $index');
       if (index != -1) {
         _users[index] = updatedUser;
       }

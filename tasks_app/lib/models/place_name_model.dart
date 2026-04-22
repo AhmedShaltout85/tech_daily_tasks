@@ -1,27 +1,26 @@
 class PlaceNameModel {
-  final String? placeId;
+  final int? id;
   final String placeName;
 
 //constructor
   PlaceNameModel({
-    this.placeId,
+    this.id,
     required this.placeName,
   });
 
 //fromJson
   factory PlaceNameModel.fromJson(Map<String, dynamic> json) {
     return PlaceNameModel(
-      placeId: json['placeId'],
+      id: json['id'] as int?,
       placeName: json['placeName'],
     );
   }
 
 //toJson
+
   Map<String, dynamic> toJson() {
     return {
-      'placeId': placeId,
       'placeName': placeName,
     };
   }
-
 }

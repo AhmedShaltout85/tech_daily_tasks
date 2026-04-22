@@ -1,5 +1,5 @@
 class PreventiveItemModel {
-  final String? id;
+  final int? id;
   final String appName;
   final String action;
 //Constructor
@@ -11,7 +11,7 @@ class PreventiveItemModel {
 //fromJson
   factory PreventiveItemModel.fromJson(Map<String, dynamic> json) {
     return PreventiveItemModel(
-      id: json['id'],
+      id: json['id'] as int?,
       appName: json['appName'],
       action: json['action'],
     );
@@ -28,7 +28,7 @@ class PreventiveItemModel {
 
 //copyWith
   PreventiveItemModel copyWith({
-    String? id,
+    int? id,
     String? appName,
     String? action,
   }) {

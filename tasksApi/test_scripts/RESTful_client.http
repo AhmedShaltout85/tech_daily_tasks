@@ -123,11 +123,11 @@ Authorization: Bearer {{adminToken}}
 GET http://localhost:9999/tasks-api/api/users/role/USER/enabled/false
 Authorization: Bearer {{adminToken}}
 
-### 18. Disable User (Set enabled=false)
+### 18. Disable User (Set enabled=false) - Returns updated User object
 PUT http://localhost:9999/tasks-api/api/users/3/enable?enabled=false
 Authorization: Bearer {{adminToken}}
 
-### 19. Enable User (Set enabled=true)
+### 19. Enable User (Set enabled=true) - Returns updated User object
 PUT http://localhost:9999/tasks-api/api/users/3/enable?enabled=true
 Authorization: Bearer {{adminToken}}
 
@@ -490,6 +490,14 @@ Authorization: Bearer {{adminToken}}
 GET http://localhost:9999/tasks-api/api/daily-tasks/priority/HIGH
 Authorization: Bearer {{adminToken}}
 
+### 89. Get Tasks Assigned To User By Remote Status
+GET http://localhost:9999/tasks-api/api/daily-tasks/assigned-to/user/remote/false
+Authorization: Bearer {{adminToken}}
+
+### 90. Get Tasks By Remote Status
+GET http://localhost:9999/tasks-api/api/daily-tasks/remote/false
+Authorization: Bearer {{adminToken}}
+
 ### ======================================================
 ### ENVIRONMENT VARIABLES
 ### ======================================================
@@ -502,7 +510,8 @@ Authorization: Bearer {{adminToken}}
 ### ======================================================
 ### ERROR RESPONSES
 ### ======================================================
-# Success (200): {"message": "..."}
+# Success - Enable/Disable User (200): Returns full User object with updated enabled status
+# Success - Other operations (200): {"message": "..."}
 # Not Found (404): {"error": "User not found with id: X"}
 # Bad Request (400): {"error": "Error: Username is already taken!"}
 # Unauthorized (401): {"error": "Invalid username or password"}
