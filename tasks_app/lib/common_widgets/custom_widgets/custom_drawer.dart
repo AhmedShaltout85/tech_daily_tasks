@@ -10,7 +10,14 @@ import 'package:tasks_app/screens/settings/settings_screen.dart';
 import 'package:tasks_app/screens/user/manage_user_screen.dart';
 
 class CustomDrawer extends StatefulWidget {
-  const CustomDrawer({super.key});
+  final int selectedIndex;
+  final Function(int)? onIndexChanged;
+
+  const CustomDrawer({
+    super.key,
+    this.selectedIndex = 1,
+    this.onIndexChanged,
+  });
 
   @override
   State<CustomDrawer> createState() => _CustomDrawerState();
@@ -20,12 +27,13 @@ class _CustomDrawerState extends State<CustomDrawer>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  int _selectedIndex = 1;
+  late int _selectedIndex;
   late UserProvider _userProvider;
 
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.selectedIndex;
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -79,11 +87,12 @@ class _CustomDrawerState extends State<CustomDrawer>
                       context,
                       index: 1,
                       icon: Icons.people_rounded,
-                      title: 'Manage Users',
+                      title: 'Dashboard',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
                         setState(() => _selectedIndex = 1);
+                        widget.onIndexChanged?.call(1);
                         Navigator.pop(context);
                       },
                     ),
@@ -96,6 +105,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                       colorScheme: colorScheme,
                       onTap: () async {
                         setState(() => _selectedIndex = 2);
+                        widget.onIndexChanged?.call(2);
                         Navigator.pop(context);
                         await Navigator.push(
                           context,
@@ -114,6 +124,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                       colorScheme: colorScheme,
                       onTap: () async {
                         setState(() => _selectedIndex = 3);
+                        widget.onIndexChanged?.call(3);
                         Navigator.pop(context);
                         await Navigator.push(
                           context,
@@ -125,13 +136,14 @@ class _CustomDrawerState extends State<CustomDrawer>
                     ),
                     _buildDrawerItem(
                       context,
-                      index: 6,
+                      index: 4,
                       icon: Icons.location_on_rounded,
                       title: 'Manage Places',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () async {
-                        setState(() => _selectedIndex = 6);
+                        setState(() => _selectedIndex = 4);
+                        widget.onIndexChanged?.call(4);
                         Navigator.pop(context);
                         await Navigator.push(
                           context,
@@ -143,13 +155,14 @@ class _CustomDrawerState extends State<CustomDrawer>
                     ),
                     _buildDrawerItem(
                       context,
-                      index: 4,
+                      index: 5,
                       icon: Icons.assessment_rounded,
                       title: 'Reports',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
-                        setState(() => _selectedIndex = 4);
+                        setState(() => _selectedIndex = 5);
+                        widget.onIndexChanged?.call(5);
                         Navigator.pop(context);
                         Navigator.push(
                           context,
@@ -161,7 +174,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                     ),
                     _buildDrawerItem(
                       context,
-                      index: 5,
+                      index: 6,
                       icon: isDark
                           ? Icons.light_mode_outlined
                           : Icons.dark_mode_outlined,
@@ -169,20 +182,22 @@ class _CustomDrawerState extends State<CustomDrawer>
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
-                        setState(() => _selectedIndex = 5);
+                        setState(() => _selectedIndex = 6);
+                        widget.onIndexChanged?.call(6);
                         Navigator.pop(context);
                         themeProvider.toggleTheme();
                       },
                     ),
                     _buildDrawerItem(
                       context,
-                      index: 6,
+                      index: 7,
                       icon: Icons.settings_rounded,
                       title: 'Settings',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
-                        setState(() => _selectedIndex = 6);
+                        setState(() => _selectedIndex = 7);
+                        widget.onIndexChanged?.call(7);
                         Navigator.pop(context);
                         Navigator.push(
                           context,

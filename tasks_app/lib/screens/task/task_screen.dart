@@ -22,6 +22,7 @@ class _TaskScreenState extends State<TaskScreen> {
   bool? isActiveFilter;
   bool showFilters = false;
   final ConnectivityService _connectivity = ConnectivityService();
+  int _selectedDrawerIndex = 1;
 
   @override
   void initState() {
@@ -473,7 +474,12 @@ class _TaskScreenState extends State<TaskScreen> {
           ),
         ],
       ),
-      drawer: const CustomDrawer(),
+      drawer: CustomDrawer(
+        selectedIndex: _selectedDrawerIndex,
+        onIndexChanged: (index) {
+          setState(() => _selectedDrawerIndex = index);
+        },
+      ),
     );
   }
 }
