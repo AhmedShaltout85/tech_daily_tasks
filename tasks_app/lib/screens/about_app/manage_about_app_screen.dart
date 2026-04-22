@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
+import 'package:tasks_app/controller/app_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
+import 'package:tasks_app/screens/about_app/app_recommended_details_screen.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
 class ManageAboutAppScreen extends StatefulWidget {
@@ -17,6 +19,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   final ConnectivityService _connectivity = ConnectivityService();
+  late AppNameProvider _appNameProvider;
 
   @override
   void initState() {
@@ -29,15 +32,36 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
       parent: _animationController,
       curve: Curves.easeInOut,
     );
+
+    // Listen to AppNameProvider changes
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _appNameProvider = context.read<AppNameProvider>();
+      _appNameProvider.addListener(_onAppNameChanged);
       _fetchData();
     });
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh data when screen becomes visible
+    _fetchData();
+  }
+
+  @override
   void dispose() {
     _animationController.dispose();
+    // Remove listener safely
+    if (_appNameProvider != null) {
+      _appNameProvider.removeListener(_onAppNameChanged);
+    }
     super.dispose();
+  }
+
+  void _onAppNameChanged() {
+    if (mounted) {
+      _fetchData();
+    }
   }
 
   Future<void> _fetchData() async {
@@ -152,6 +176,8 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
     }
 
     await context.read<AboutAppProvider>().addAboutApp(appName, recommended);
+    // Trigger sync - notify AppNameProvider to refresh
+    context.read<AppNameProvider>().notifyListeners();
 
     if (mounted) {
       final provider = context.read<AboutAppProvider>();
@@ -264,6 +290,8 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
     await context
         .read<AboutAppProvider>()
         .updateAboutApp(id, appName, recommended);
+    // Trigger sync - notify AppNameProvider to refresh
+    context.read<AppNameProvider>().notifyListeners();
 
     if (mounted) {
       final provider = context.read<AboutAppProvider>();
@@ -326,6 +354,8 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
       final id = int.tryParse(aboutApp.id.toString());
       if (id != null) {
         await context.read<AboutAppProvider>().deleteAboutApp(id);
+        // Trigger sync - notify AppNameProvider to refresh
+        context.read<AppNameProvider>().notifyListeners();
       }
 
       if (mounted) {
@@ -351,6 +381,18 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
     }
   }
 
+  Map<String, List<dynamic>> _groupByAppName(List<dynamic> aboutApps) {
+    final Map<String, List<dynamic>> grouped = {};
+    for (var app in aboutApps) {
+      if (grouped.containsKey(app.appName)) {
+        grouped[app.appName]!.add(app);
+      } else {
+        grouped[app.appName] = [app];
+      }
+    }
+    return grouped;
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -360,7 +402,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About Apps'),
+        title: const Text('Manage Applications'),
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 8),
@@ -402,7 +444,8 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
             );
           }
 
-          final aboutApps = provider.aboutApps;
+          final groupedApps = _groupByAppName(provider.aboutApps);
+          final appNames = groupedApps.keys.toList();
 
           return FadeTransition(
             opacity: _fadeAnimation,
@@ -439,7 +482,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          '${aboutApps.length}',
+                          '${appNames.length}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: appColor,
@@ -450,7 +493,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
                   ),
                 ),
                 Expanded(
-                  child: aboutApps.isEmpty
+                  child: appNames.isEmpty
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -481,11 +524,18 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
                           onRefresh: _fetchData,
                           child: ListView.builder(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: aboutApps.length,
+                            itemCount: appNames.length,
                             itemBuilder: (context, index) {
-                              final aboutApp = aboutApps[index];
-                              return _buildAboutAppCard(aboutApp, index, isDark,
-                                  colorScheme, appColor);
+                              final appName = appNames[index];
+                              final apps = groupedApps[appName]!;
+                              return _buildAppCard(
+                                appName,
+                                apps.length,
+                                index,
+                                isDark,
+                                colorScheme,
+                                appColor,
+                              );
                             },
                           ),
                         ),
@@ -498,8 +548,14 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
     );
   }
 
-  Widget _buildAboutAppCard(dynamic aboutApp, int index, bool isDark,
-      ColorScheme colorScheme, Color appColor) {
+  Widget _buildAppCard(
+    String appName,
+    int recommendedCount,
+    int index,
+    bool isDark,
+    ColorScheme colorScheme,
+    Color appColor,
+  ) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 300 + (index * 50)),
@@ -536,7 +592,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
             ),
           ),
           title: Text(
-            aboutApp.appName,
+            appName,
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: isDark ? Colors.white : Colors.black87,
@@ -550,14 +606,10 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
                 color: isDark ? Colors.grey[400] : Colors.grey[600],
               ),
               const SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  aboutApp.recommended,
-                  style: TextStyle(
-                    color: isDark ? Colors.grey[400] : Colors.grey[600],
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+              Text(
+                '$recommendedCount recommended value${recommendedCount != 1 ? 's' : ''}',
+                style: TextStyle(
+                  color: isDark ? Colors.grey[400] : Colors.grey[600],
                 ),
               ),
             ],
@@ -572,7 +624,15 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => _showEditDialog(aboutApp),
+                  onPressed: () {
+                    final provider = context.read<AboutAppProvider>();
+                    final apps = provider.aboutApps
+                        .where((a) => a.appName == appName)
+                        .toList();
+                    if (apps.isNotEmpty) {
+                      _showEditDialog(apps.first);
+                    }
+                  },
                 ),
               ),
               const SizedBox(width: 8),
@@ -583,11 +643,36 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: () => _showDeleteConfirmation(aboutApp),
+                  onPressed: () {
+                    final provider = context.read<AboutAppProvider>();
+                    final apps = provider.aboutApps
+                        .where((a) => a.appName == appName)
+                        .toList();
+                    if (apps.isNotEmpty) {
+                      _showDeleteConfirmation(apps.first);
+                    }
+                  },
                 ),
               ),
             ],
           ),
+          onTap: () async {
+            final provider = context.read<AboutAppProvider>();
+            final apps =
+                provider.aboutApps.where((a) => a.appName == appName).toList();
+            if (apps.isNotEmpty) {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AppRecommendedDetailsScreen(
+                    appName: appName,
+                    appId: apps.first.id!,
+                  ),
+                ),
+              );
+              _fetchData();
+            }
+          },
         ),
       ),
     );

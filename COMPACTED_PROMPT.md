@@ -21,12 +21,13 @@ Flutter web app + Spring Boot backend for task management with user auth, user m
 ### New Files Created (Flutter)
 - `api_network_daily_task_repos.dart` + `_impl.dart`
 - `api_network_place_name_repos.dart` + `_impl.dart`
-- `api_network_about_app_repos.dart` + `_impl.dart` (NEW)
+- `api_network_about_app_repos.dart` + `_impl.dart`
 - `daily_task_provider.dart`
 - `place_name_provider.dart`
-- `about_app_provider.dart` (NEW)
+- `about_app_provider.dart`
 - `screens/places/manage_place_screen.dart`
-- `screens/about_app/manage_about_app_screen.dart` (NEW)
+- `screens/about_app/manage_about_app_screen.dart` - Lists apps grouped by appName, tap to view details
+- `screens/about_app/app_recommended_details_screen.dart` - Shows recommended values for selected app (NEW)
 - Updated `main.dart` (added AboutAppProvider)
 - Updated `custom_drawer.dart` (added About Apps menu)
 

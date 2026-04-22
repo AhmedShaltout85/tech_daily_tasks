@@ -4,22 +4,30 @@ import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
 import 'package:tasks_app/controller/app_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
-import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
-class ManageAppScreen extends StatefulWidget {
-  const ManageAppScreen({super.key});
+class AppRecommendedDetailsScreen extends StatefulWidget {
+  final String appName;
+  final int appId;
+
+  const AppRecommendedDetailsScreen({
+    super.key,
+    required this.appName,
+    required this.appId,
+  });
 
   @override
-  State<ManageAppScreen> createState() => _ManageAppScreenState();
+  State<AppRecommendedDetailsScreen> createState() =>
+      _AppRecommendedDetailsScreenState();
 }
 
-class _ManageAppScreenState extends State<ManageAppScreen>
+class _AppRecommendedDetailsScreenState
+    extends State<AppRecommendedDetailsScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   final ConnectivityService _connectivity = ConnectivityService();
-  late AboutAppProvider _aboutAppProvider;
+  List<String> _recommendedItems = [];
 
   @override
   void initState() {
@@ -32,11 +40,7 @@ class _ManageAppScreenState extends State<ManageAppScreen>
       parent: _animationController,
       curve: Curves.easeInOut,
     );
-
-    // Listen to AboutAppProvider changes
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _aboutAppProvider = context.read<AboutAppProvider>();
-      _aboutAppProvider.addListener(_onAboutAppChanged);
       _fetchData();
     });
   }
@@ -44,17 +48,7 @@ class _ManageAppScreenState extends State<ManageAppScreen>
   @override
   void dispose() {
     _animationController.dispose();
-    // Remove listener safely
-    if (_aboutAppProvider != null) {
-      _aboutAppProvider.removeListener(_onAboutAppChanged);
-    }
     super.dispose();
-  }
-
-  void _onAboutAppChanged() {
-    if (mounted) {
-      _fetchData();
-    }
   }
 
   Future<void> _fetchData() async {
@@ -63,9 +57,15 @@ class _ManageAppScreenState extends State<ManageAppScreen>
       _showNoInternetDialog();
       return;
     }
-    final userProvider = context.read<UserProvider>();
-    final department = userProvider.currentUser?.department;
-    await context.read<AppNameProvider>().fetchAppsByDepartment(department!);
+    await context.read<AboutAppProvider>().fetchAllAboutApps();
+    final provider = context.read<AboutAppProvider>();
+    final aboutApp = provider.aboutApps.firstWhere(
+      (a) => a.appName == widget.appName,
+      orElse: () => throw Exception('App not found'),
+    );
+    setState(() {
+      _recommendedItems = [aboutApp.recommended];
+    });
     _animationController.forward();
   }
 
@@ -88,118 +88,7 @@ class _ManageAppScreenState extends State<ManageAppScreen>
   }
 
   void _showAddDialog() {
-    final appNameController = TextEditingController();
-    // final departmentController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.apps, color: Colors.blue),
-            SizedBox(width: 12),
-            Text('Add App'),
-          ],
-        ),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: appNameController,
-                decoration: const InputDecoration(
-                  labelText: 'App Name',
-                  hintText: 'Enter app name',
-                  prefixIcon: Icon(Icons.apps),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter app name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              // TextFormField(
-              //   controller: departmentController,
-              //   decoration: const InputDecoration(
-              //     labelText: 'Department',
-              //     hintText: 'Enter department',
-              //     prefixIcon: Icon(Icons.business),
-              //     border: OutlineInputBorder(),
-              //   ),
-              //   validator: (value) {
-              //     if (value == null || value.trim().isEmpty) {
-              //       return 'Please enter department';
-              //     }
-              //     return null;
-              //   },
-              // ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (formKey.currentState!.validate()) {
-                final userProvider = context.read<UserProvider>();
-                final department = userProvider.currentUser?.department;
-                Navigator.pop(context);
-                await _addApp(
-                  appNameController.text.trim(),
-                  department!,
-                );
-              }
-            },
-            child: const Text('Add'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _addApp(String name, String department) async {
-    final hasConnection = await _connectivity.hasConnection();
-    if (!hasConnection) {
-      _showNoInternetDialog();
-      return;
-    }
-
-    await context.read<AppNameProvider>().addAppName(name, department);
-    // Trigger sync - notify AboutAppProvider to refresh
-    context.read<AboutAppProvider>().notifyListeners();
-
-    if (mounted) {
-      final provider = context.read<AppNameProvider>();
-      if (provider.error != null) {
-        ReusableToast.showToast(
-          message: provider.error!,
-          bgColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16,
-        );
-        provider.clearError();
-      } else {
-        ReusableToast.showToast(
-          message: 'App added successfully',
-          bgColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16,
-        );
-        _fetchData();
-      }
-    }
-  }
-
-  void _showEditDialog(dynamic app) {
-    final appNameController = TextEditingController(text: app.appName);
+    final recommendedController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -207,24 +96,24 @@ class _ManageAppScreenState extends State<ManageAppScreen>
       builder: (dialogContext) => AlertDialog(
         title: const Row(
           children: [
-            Icon(Icons.edit, color: Colors.blue),
+            Icon(Icons.add_circle_outline, color: Colors.blue),
             SizedBox(width: 12),
-            Text('Edit App'),
+            Text('Add Recommended'),
           ],
         ),
         content: Form(
           key: formKey,
           child: TextFormField(
-            controller: appNameController,
+            controller: recommendedController,
             decoration: const InputDecoration(
-              labelText: 'App Name',
-              hintText: 'Enter app name',
-              prefixIcon: Icon(Icons.apps),
+              labelText: 'Recommended Value',
+              hintText: 'Enter recommended value',
+              prefixIcon: Icon(Icons.thumb_up_outlined),
               border: OutlineInputBorder(),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter app name';
+                return 'Please enter recommended value';
               }
               return null;
             },
@@ -238,36 +127,32 @@ class _ManageAppScreenState extends State<ManageAppScreen>
           ElevatedButton(
             onPressed: () async {
               if (formKey.currentState!.validate()) {
-                final userProvider = context.read<UserProvider>();
-                final department = userProvider.currentUser?.department;
                 Navigator.pop(dialogContext);
-                await _updateApp(
-                  int.tryParse(app.id.toString()) ?? 0,
-                  appNameController.text.trim(),
-                  department!,
-                );
+                await _addRecommended(recommendedController.text.trim());
               }
             },
-            child: const Text('Update'),
+            child: const Text('Add'),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _updateApp(int id, String name, String department) async {
+  Future<void> _addRecommended(String recommended) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
       _showNoInternetDialog();
       return;
     }
 
-    await context.read<AppNameProvider>().updateAppName(id, name, department);
-    // Trigger sync - notify AboutAppProvider to refresh
-    context.read<AboutAppProvider>().notifyListeners();
+    await context
+        .read<AboutAppProvider>()
+        .addAboutApp(widget.appName, recommended);
+    // Trigger sync - notify AppNameProvider to refresh
+    context.read<AppNameProvider>().notifyListeners();
 
     if (mounted) {
-      final provider = context.read<AppNameProvider>();
+      final provider = context.read<AboutAppProvider>();
       if (provider.error != null) {
         ReusableToast.showToast(
           message: provider.error!,
@@ -278,7 +163,7 @@ class _ManageAppScreenState extends State<ManageAppScreen>
         provider.clearError();
       } else {
         ReusableToast.showToast(
-          message: 'App updated successfully',
+          message: 'Recommended added successfully',
           bgColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16,
@@ -288,7 +173,101 @@ class _ManageAppScreenState extends State<ManageAppScreen>
     }
   }
 
-  Future<void> _showDeleteConfirmation(dynamic app) async {
+  void _showEditDialog(int index, String currentRecommended) {
+    final recommendedController =
+        TextEditingController(text: currentRecommended);
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.edit_note, color: Colors.orange),
+            SizedBox(width: 12),
+            Text('Edit Recommended'),
+          ],
+        ),
+        content: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: recommendedController,
+            decoration: const InputDecoration(
+              labelText: 'Recommended Value',
+              hintText: 'Enter recommended value',
+              prefixIcon: Icon(Icons.thumb_up_outlined),
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter recommended value';
+              }
+              return null;
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(dialogContext);
+                await _updateRecommended(
+                  index,
+                  recommendedController.text.trim(),
+                );
+              }
+            },
+            child: const Text('Update'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _updateRecommended(int index, String recommended) async {
+    final hasConnection = await _connectivity.hasConnection();
+    if (!hasConnection) {
+      _showNoInternetDialog();
+      return;
+    }
+
+    final provider = context.read<AboutAppProvider>();
+    final aboutApp = provider.aboutApps.firstWhere(
+      (a) => a.appName == widget.appName,
+      orElse: () => throw Exception('App not found'),
+    );
+
+    await provider.updateAboutApp(aboutApp.id!, widget.appName, recommended);
+    // Trigger sync - notify AppNameProvider to refresh
+    context.read<AppNameProvider>().notifyListeners();
+
+    if (mounted) {
+      final newProvider = context.read<AboutAppProvider>();
+      if (newProvider.error != null) {
+        ReusableToast.showToast(
+          message: newProvider.error!,
+          bgColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16,
+        );
+        newProvider.clearError();
+      } else {
+        ReusableToast.showToast(
+          message: 'Recommended updated successfully',
+          bgColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16,
+        );
+        _fetchData();
+      }
+    }
+  }
+
+  Future<void> _showDeleteConfirmation(int index, String recommended) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
       _showNoInternetDialog();
@@ -302,10 +281,10 @@ class _ManageAppScreenState extends State<ManageAppScreen>
           children: [
             Icon(Icons.delete_outline, color: Colors.red),
             SizedBox(width: 12),
-            Text('Delete App'),
+            Text('Delete Recommended'),
           ],
         ),
-        content: Text('Are you sure you want to delete "${app.appName}"?'),
+        content: Text('Are you sure you want to delete "$recommended"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -324,26 +303,29 @@ class _ManageAppScreenState extends State<ManageAppScreen>
     );
 
     if (confirmed == true) {
-      final id = int.tryParse(app.id.toString());
-      if (id != null) {
-        await context.read<AppNameProvider>().deleteAppName(id);
-        // Trigger sync - notify AboutAppProvider to refresh
-        context.read<AboutAppProvider>().notifyListeners();
-      }
+      final provider = context.read<AboutAppProvider>();
+      final aboutApp = provider.aboutApps.firstWhere(
+        (a) => a.appName == widget.appName,
+        orElse: () => throw Exception('App not found'),
+      );
+
+      await provider.deleteAboutApp(aboutApp.id!);
+      // Trigger sync - notify AppNameProvider to refresh
+      context.read<AppNameProvider>().notifyListeners();
 
       if (mounted) {
-        final provider = context.read<AppNameProvider>();
-        if (provider.error != null) {
+        final newProvider = context.read<AboutAppProvider>();
+        if (newProvider.error != null) {
           ReusableToast.showToast(
-            message: provider.error!,
+            message: newProvider.error!,
             bgColor: Colors.red,
             textColor: Colors.white,
             fontSize: 16,
           );
-          provider.clearError();
+          newProvider.clearError();
         } else {
           ReusableToast.showToast(
-            message: 'App deleted successfully',
+            message: 'Recommended deleted successfully',
             bgColor: Colors.green,
             textColor: Colors.white,
             fontSize: 16,
@@ -359,10 +341,11 @@ class _ManageAppScreenState extends State<ManageAppScreen>
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.isDark;
     final colorScheme = Theme.of(context).colorScheme;
+    final appColor = Colors.blue;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('App Names'),
+        title: Text(widget.appName),
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 8),
@@ -384,9 +367,9 @@ class _ManageAppScreenState extends State<ManageAppScreen>
           ),
         ],
       ),
-      body: Consumer<AppNameProvider>(
+      body: Consumer<AboutAppProvider>(
         builder: (context, provider, child) {
-          if (provider.isLoading && provider.appNames.isEmpty) {
+          if (provider.isLoading && provider.aboutApps.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -404,7 +387,9 @@ class _ManageAppScreenState extends State<ManageAppScreen>
             );
           }
 
-          final apps = provider.appNames;
+          final aboutApps = provider.aboutApps
+              .where((a) => a.appName == widget.appName)
+              .toList();
 
           return FadeTransition(
             opacity: _fadeAnimation,
@@ -418,18 +403,18 @@ class _ManageAppScreenState extends State<ManageAppScreen>
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: colorScheme.primary.withValues(alpha: 0.1),
+                          color: appColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Icon(Icons.apps, color: colorScheme.primary),
+                        child: Icon(Icons.thumb_up, color: appColor),
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'App Names',
+                        'Recommended Values',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: colorScheme.primary,
+                          color: appColor,
                         ),
                       ),
                       const Spacer(),
@@ -437,14 +422,14 @@ class _ManageAppScreenState extends State<ManageAppScreen>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: colorScheme.primary.withValues(alpha: 0.1),
+                          color: appColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          '${apps.length}',
+                          '${aboutApps.length}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: colorScheme.primary,
+                            color: appColor,
                           ),
                         ),
                       ),
@@ -452,19 +437,19 @@ class _ManageAppScreenState extends State<ManageAppScreen>
                   ),
                 ),
                 Expanded(
-                  child: apps.isEmpty
+                  child: aboutApps.isEmpty
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.apps_outlined,
+                                Icons.thumb_up_outlined,
                                 size: 64,
                                 color: Colors.grey[400],
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'No app names added yet',
+                                'No recommended values yet',
                                 style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.grey[600],
@@ -474,7 +459,7 @@ class _ManageAppScreenState extends State<ManageAppScreen>
                               ElevatedButton.icon(
                                 onPressed: _showAddDialog,
                                 icon: const Icon(Icons.add),
-                                label: const Text('Add App'),
+                                label: const Text('Add Recommended'),
                               ),
                             ],
                           ),
@@ -483,11 +468,16 @@ class _ManageAppScreenState extends State<ManageAppScreen>
                           onRefresh: _fetchData,
                           child: ListView.builder(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: apps.length,
+                            itemCount: aboutApps.length,
                             itemBuilder: (context, index) {
-                              final app = apps[index];
-                              return _buildAppCard(
-                                  app, index, isDark, colorScheme);
+                              final aboutApp = aboutApps[index];
+                              return _buildRecommendedCard(
+                                aboutApp,
+                                index,
+                                isDark,
+                                colorScheme,
+                                appColor,
+                              );
                             },
                           ),
                         ),
@@ -500,8 +490,13 @@ class _ManageAppScreenState extends State<ManageAppScreen>
     );
   }
 
-  Widget _buildAppCard(
-      dynamic app, int index, bool isDark, ColorScheme colorScheme) {
+  Widget _buildRecommendedCard(
+    dynamic aboutApp,
+    int index,
+    bool isDark,
+    ColorScheme colorScheme,
+    Color appColor,
+  ) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 300 + (index * 50)),
@@ -530,7 +525,7 @@ class _ManageAppScreenState extends State<ManageAppScreen>
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           leading: CircleAvatar(
-            backgroundColor: colorScheme.primary,
+            backgroundColor: appColor,
             child: Text(
               '${index + 1}',
               style: const TextStyle(
@@ -538,16 +533,27 @@ class _ManageAppScreenState extends State<ManageAppScreen>
             ),
           ),
           title: Text(
-            app.appName,
+            aboutApp.recommended,
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: isDark ? Colors.white : Colors.black87,
             ),
           ),
-          subtitle: Text(
-            'Application',
-            style:
-                TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
+          subtitle: Row(
+            children: [
+              Icon(
+                Icons.thumb_up_outlined,
+                size: 14,
+                color: isDark ? Colors.grey[400] : Colors.grey[600],
+              ),
+              const SizedBox(width: 4),
+              Text(
+                'Recommended',
+                style: TextStyle(
+                  color: isDark ? Colors.grey[400] : Colors.grey[600],
+                ),
+              ),
+            ],
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
@@ -559,7 +565,7 @@ class _ManageAppScreenState extends State<ManageAppScreen>
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => _showEditDialog(app),
+                  onPressed: () => _showEditDialog(index, aboutApp.recommended),
                 ),
               ),
               const SizedBox(width: 8),
@@ -570,7 +576,8 @@ class _ManageAppScreenState extends State<ManageAppScreen>
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: () => _showDeleteConfirmation(app),
+                  onPressed: () =>
+                      _showDeleteConfirmation(index, aboutApp.recommended),
                 ),
               ),
             ],

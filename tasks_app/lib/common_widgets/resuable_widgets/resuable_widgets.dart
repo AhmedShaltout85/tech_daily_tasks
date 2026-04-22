@@ -2,12 +2,11 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
-
 import '../custom_widgets/custom_bottom_sheet.dart';
 
 void showSnackBar(String message, BuildContext context) => ScaffoldMessenger.of(
-  context,
-).showSnackBar(SnackBar(content: Text(message)));
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
 
 //navigation function using MaterialPageRoute
 void navigateTo(BuildContext context, Widget widget) =>
@@ -35,6 +34,7 @@ void showCustomBottomSheet({
   required List<String> appNames,
   required List<String> employeeNames,
   required List<String> employeeNamesWithoutNone,
+  List<String>? placeNames,
 }) {
   CustomBottomSheet.show(
     context: context,
@@ -88,22 +88,28 @@ void showCustomBottomSheet({
           return null;
         },
       ),
-      TextFieldConfig(
+      DropdownFieldConfig(
         key: 'visit-place',
         label: 'Visit Place',
-        hint: 'Enter visit place',
         icon: Icons.location_on,
+        items: placeNames ?? [],
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Please enter a visit place';
+            return 'Please select a visit place';
           }
           return null;
         },
       ),
+      TextFieldConfig(
+        key: 'sub-place',
+        label: 'Sub Place',
+        hint: 'Enter sub place (optional)',
+        icon: Icons.location_on_outlined,
+      ),
       DropdownFieldConfig(
         key: 'task-priority',
         label: 'Enter task priority',
-        items: ['High', 'Medium', 'Low'],
+        items: ['HIGH', 'MEDIUM', 'LOW'],
         icon: Icons.priority_high,
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -161,43 +167,8 @@ void showCustomBottomSheet({
     submitButtonText: 'Save',
     onSubmit: (values) async {
       log('Form submitted: $values');
-      // try {
-      //   await context.read<TaskProviders>().addTask({
-      //     'id': DateTime.now().millisecondsSinceEpoch.toString(),
-      //     'taskTitle': values['title'],
-      //     'applicationName': values['app-name'],
-      //     'taskNote': values['task-note'],
-      //     'assignedBy': values['assign-by'],
-      //     'assignedTo': values['assign-to'],
-      //     'visitPlace': values['visit-place'],
-      //     'taskPriority': values['task-priority'],
-      //     'coOperator': values['co-operator'],
-      //     'taskStatus': true,
-      //     'expectedCompletionDate': DateTime.now().add(
-      //       Duration(
-      //         days: int.parse(values['expected-completion-date'] as String),
-      //       ),
-      //     ),
-      //   });
-      //   log('Task added successfully');
-      //   ReusableToast.showToast(
-      //     message: 'Task added successfully',
-      //     bgColor: Colors.green,
-      //     textColor: Colors.white,
-      //     fontSize: 16,
-      //   );
-      // } catch (e) {
-      //   log('Error adding task: $e');
-      //   ReusableToast.showToast(
-      //     message: 'Error adding task: $e',
-      //     bgColor: Colors.red,
-      //     textColor: Colors.white,
-      //     fontSize: 16,
-      //   );
-      // }
     },
     onCancel: () {
-      // Just log the cancellation, don't call Navigator.pop
       log('Bottom sheet cancelled');
     },
   );
