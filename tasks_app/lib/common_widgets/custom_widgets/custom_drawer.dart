@@ -4,6 +4,7 @@ import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/screens/app_name/manage_app_screen.dart';
+import 'package:tasks_app/screens/about_app/manage_about_app_screen.dart';
 import 'package:tasks_app/screens/places/manage_place_screen.dart';
 import 'package:tasks_app/screens/report/report_screen.dart';
 import 'package:tasks_app/screens/settings/settings_screen.dart';
@@ -137,13 +138,32 @@ class _CustomDrawerState extends State<CustomDrawer>
                     _buildDrawerItem(
                       context,
                       index: 4,
-                      icon: Icons.location_on_rounded,
-                      title: 'Manage Places',
+                      icon: Icons.info_outline_rounded,
+                      title: 'Manage About Apps',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () async {
                         setState(() => _selectedIndex = 4);
                         widget.onIndexChanged?.call(4);
+                        Navigator.pop(context);
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ManageAboutAppScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      index: 5,
+                      icon: Icons.location_on_rounded,
+                      title: 'Manage Places',
+                      isDark: isDark,
+                      colorScheme: colorScheme,
+                      onTap: () async {
+                        setState(() => _selectedIndex = 5);
+                        widget.onIndexChanged?.call(5);
                         Navigator.pop(context);
                         await Navigator.push(
                           context,
@@ -155,14 +175,14 @@ class _CustomDrawerState extends State<CustomDrawer>
                     ),
                     _buildDrawerItem(
                       context,
-                      index: 5,
+                      index: 6,
                       icon: Icons.assessment_rounded,
                       title: 'Reports',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
-                        setState(() => _selectedIndex = 5);
-                        widget.onIndexChanged?.call(5);
+                        setState(() => _selectedIndex = 6);
+                        widget.onIndexChanged?.call(6);
                         Navigator.pop(context);
                         Navigator.push(
                           context,
@@ -174,7 +194,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                     ),
                     _buildDrawerItem(
                       context,
-                      index: 6,
+                      index: 7,
                       icon: isDark
                           ? Icons.light_mode_outlined
                           : Icons.dark_mode_outlined,
@@ -182,22 +202,22 @@ class _CustomDrawerState extends State<CustomDrawer>
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
-                        setState(() => _selectedIndex = 6);
-                        widget.onIndexChanged?.call(6);
+                        setState(() => _selectedIndex = 7);
+                        widget.onIndexChanged?.call(7);
                         Navigator.pop(context);
                         themeProvider.toggleTheme();
                       },
                     ),
                     _buildDrawerItem(
                       context,
-                      index: 7,
+                      index: 8,
                       icon: Icons.settings_rounded,
                       title: 'Settings',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
-                        setState(() => _selectedIndex = 7);
-                        widget.onIndexChanged?.call(7);
+                        setState(() => _selectedIndex = 8);
+                        widget.onIndexChanged?.call(8);
                         Navigator.pop(context);
                         Navigator.push(
                           context,

@@ -7,6 +7,8 @@ import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/controller/app_name_provider.dart';
 import 'package:tasks_app/controller/place_name_provider.dart';
 import 'package:tasks_app/controller/daily_task_provider.dart';
+import 'package:tasks_app/controller/about_app_provider.dart';
+import 'package:tasks_app/screens/about_app/manage_about_app_screen.dart';
 import 'package:tasks_app/screens/app_name/manage_app_screen.dart';
 import 'package:tasks_app/screens/auth/auth_wrapper.dart';
 import 'package:tasks_app/screens/login/login_screen.dart';
@@ -33,6 +35,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AppNameProvider()),
         ChangeNotifierProvider(create: (_) => PlaceNameProvider()),
         ChangeNotifierProvider(create: (_) => DailyTaskProvider()),
+        ChangeNotifierProvider(create: (_) => AboutAppProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
       child: MyApp(),
@@ -62,10 +65,13 @@ class MyApp extends StatelessWidget {
             AppRoute.userTaskRouteName: (context) => const UserTaskScreen(),
             AppRoute.authWrapperRouteName: (context) => const AuthWrapper(),
             AppRoute.reportRouteName: (context) => const ReportScreen(),
-            AppRoute.manageUsersRouteName: (context) => const ManageUsersScreen(),
+            AppRoute.manageUsersRouteName: (context) =>
+                const ManageUsersScreen(),
             AppRoute.manageUserRouteName: (context) => const ManageUserScreen(),
             AppRoute.manageAppRouteName: (context) => const ManageAppScreen(),
-            AppRoute.managePlaceRouteName: (context) => const ManagePlaceScreen(),
+            AppRoute.managePlaceRouteName: (context) =>
+                const ManagePlaceScreen(),
+            AppRoute.manageAboutAppRouteName: (context) => const ManageAboutAppScreen(),
           },
         );
       },

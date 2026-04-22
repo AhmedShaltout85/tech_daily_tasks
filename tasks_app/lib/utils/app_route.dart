@@ -11,4 +11,5 @@ class AppRoute {
   static const String manageUserRouteName = '/manage-user-screen';
   static const String manageAppRouteName = '/manage-app-screen';
   static const String managePlaceRouteName = '/manage-place-screen';
+  static const String manageAboutAppRouteName = '/manage-about-app-screen';
 }
