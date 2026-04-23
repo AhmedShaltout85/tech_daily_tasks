@@ -148,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final userProvider = context.read<UserProvider>();
       await userProvider.forgotPassword(
         username: username,
-        newPassword: 'temporary123',
+        newPassword: '100100123',
       );
 
       if (!mounted) return;

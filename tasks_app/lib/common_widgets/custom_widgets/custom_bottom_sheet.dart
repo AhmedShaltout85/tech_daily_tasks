@@ -142,9 +142,8 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
             borderSide: BorderSide(color: colorScheme.primary, width: 2),
           ),
           filled: true,
-          fillColor: isDark
-              ? colorScheme.surface.withOpacity(0.5)
-              : Colors.grey[50],
+          fillColor:
+              isDark ? colorScheme.surface.withOpacity(0.5) : Colors.grey[50],
         ),
         keyboardType: field.keyboardType,
         maxLines: field.maxLines,
@@ -180,9 +179,8 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
             borderSide: BorderSide(color: colorScheme.primary, width: 2),
           ),
           filled: true,
-          fillColor: isDark
-              ? colorScheme.surface.withOpacity(0.5)
-              : Colors.grey[50],
+          fillColor:
+              isDark ? colorScheme.surface.withOpacity(0.5) : Colors.grey[50],
         ),
         items: field.items.map((item) {
           return DropdownMenuItem<String>(
@@ -199,6 +197,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
           setState(() {
             _dropdownValues[field.key] = value;
           });
+          field.onChanged?.call(value);
         },
         validator: field.validator,
       );
@@ -230,8 +229,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
             includeSearch: field.includeSearch,
             includeSelectAll: field.includeSelectAll,
             isLarge: field.isLarge,
-            boxDecoration:
-                field.boxDecoration ??
+            boxDecoration: field.boxDecoration ??
                 BoxDecoration(
                   color: isDark
                       ? colorScheme.surface.withOpacity(0.5)
@@ -345,13 +343,11 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         side: BorderSide(
-                          color: isDark
-                              ? Colors.grey[700]!
-                              : colorScheme.primary,
+                          color:
+                              isDark ? Colors.grey[700]! : colorScheme.primary,
                         ),
-                        foregroundColor: isDark
-                            ? Colors.grey[300]
-                            : colorScheme.primary,
+                        foregroundColor:
+                            isDark ? Colors.grey[300] : colorScheme.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -423,6 +419,7 @@ class DropdownFieldConfig extends FieldConfig {
   final List<String> items;
   final String? initialValue;
   final String? Function(String?)? validator;
+  final Function(String?)? onChanged;
 
   const DropdownFieldConfig({
     required super.key,
@@ -432,6 +429,7 @@ class DropdownFieldConfig extends FieldConfig {
     super.hint,
     super.icon,
     this.validator,
+    this.onChanged,
   });
 }
 

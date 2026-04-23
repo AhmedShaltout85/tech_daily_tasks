@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,8 @@ public class AboutAppServiceImpl implements AboutAppService {
 
         AboutApp aboutApp = AboutApp.builder()
                 .appName(request.getAppName())
-                .recommended(request.getRecommended())
+                .department(request.getDepartment())
+                .recommended(request.getRecommended() != null ? request.getRecommended() : new ArrayList<>())
                 .build();
 
         AboutApp savedApp = aboutAppRepository.save(aboutApp);
@@ -63,7 +65,9 @@ public class AboutAppServiceImpl implements AboutAppService {
     @Override
     public List<String> getRecommendedByAppName(String appName) {
         log.debug("Fetching recommended values by app name: {}", appName);
-        return aboutAppRepository.findRecommendedByAppName(appName);
+        AboutApp aboutApp = aboutAppRepository.findByAppName(appName)
+                .orElseThrow(() -> new ResourceNotFoundException("About app not found with app name: " + appName));
+        return aboutApp.getRecommended() != null ? aboutApp.getRecommended() : new ArrayList<>();
     }
 
     @Override
@@ -75,7 +79,10 @@ public class AboutAppServiceImpl implements AboutAppService {
                 .orElseThrow(() -> new ResourceNotFoundException("About app not found with id: " + id));
 
         aboutApp.setAppName(request.getAppName());
-        aboutApp.setRecommended(request.getRecommended());
+        aboutApp.setDepartment(request.getDepartment());
+        if (request.getRecommended() != null) {
+            aboutApp.setRecommended(request.getRecommended());
+        }
 
         AboutApp updatedApp = aboutAppRepository.save(aboutApp);
         log.info("About app updated successfully with id: {}", updatedApp.getId());
@@ -96,11 +103,20 @@ public class AboutAppServiceImpl implements AboutAppService {
         log.info("About app deleted successfully with id: {}", id);
     }
 
+    @Override
+    public List<AboutAppResponse> getAppsByDepartment(String department) {
+        log.debug("Fetching about apps by department: {}", department);
+        return aboutAppRepository.findByDepartment(department).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
     private AboutAppResponse mapToResponse(AboutApp aboutApp) {
         return AboutAppResponse.builder()
                 .id(aboutApp.getId())
                 .appName(aboutApp.getAppName())
-                .recommended(aboutApp.getRecommended())
+                .department(aboutApp.getDepartment())
+                .recommended(aboutApp.getRecommended() != null ? aboutApp.getRecommended() : new ArrayList<>())
                 .build();
     }
 }

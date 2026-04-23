@@ -1,44 +1,47 @@
 class AboutApp {
   final int? id;
   final String appName;
-  final String recommended;
+  final String department;
+  final List<String> recommended;
 
-  // Constructor
   AboutApp({
     this.id,
     required this.appName,
+    required this.department,
     required this.recommended,
   });
 
-  // toJson
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'appName': appName,
+      'department': department,
       'recommended': recommended,
     };
   }
 
-  // Extract a AboutApps object from a Map object
   factory AboutApp.fromMap(Map<String, dynamic> map) {
     return AboutApp(
       id: map['id'],
-      appName: map['appName'],
-      recommended: map['recommended'],
+      appName: map['appName'] ?? '',
+      department: map['department'] ?? '',
+      recommended: map['recommended'] != null
+          ? List<String>.from(map['recommended'])
+          : [],
     );
   }
 
-  //copyWith
   AboutApp copyWith({
     int? id,
     String? appName,
-    String? recommended,
+    String? department,
+    List<String>? recommended,
   }) {
     return AboutApp(
       id: id ?? this.id,
       appName: appName ?? this.appName,
+      department: department ?? this.department,
       recommended: recommended ?? this.recommended,
     );
   }
-  
 }

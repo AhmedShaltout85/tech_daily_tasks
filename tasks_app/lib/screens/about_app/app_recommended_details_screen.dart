@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
-import 'package:tasks_app/controller/app_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
@@ -64,7 +63,7 @@ class _AppRecommendedDetailsScreenState
       orElse: () => throw Exception('App not found'),
     );
     setState(() {
-      _recommendedItems = [aboutApp.recommended];
+      _recommendedItems = aboutApp.recommended ?? [];
     });
     _animationController.forward();
   }
@@ -145,11 +144,23 @@ class _AppRecommendedDetailsScreenState
       return;
     }
 
-    await context
-        .read<AboutAppProvider>()
-        .addAboutApp(widget.appName, recommended);
+    // Get existing recommended list and add the new one
+    final provider = context.read<AboutAppProvider>();
+    final aboutApp = provider.aboutApps.firstWhere(
+      (a) => a.appName == widget.appName,
+      orElse: () => throw Exception('App not found'),
+    );
+
+    final currentRecommended = List<String>.from(aboutApp.recommended ?? []);
+    currentRecommended.add(recommended);
+
+    await provider.updateAboutApp(
+      aboutApp.id!,
+      widget.appName,
+      aboutApp.department ?? 'IT',
+      currentRecommended,
+    );
     // Trigger sync - notify AppNameProvider to refresh
-    context.read<AppNameProvider>().notifyListeners();
 
     if (mounted) {
       final provider = context.read<AboutAppProvider>();
@@ -241,9 +252,19 @@ class _AppRecommendedDetailsScreenState
       orElse: () => throw Exception('App not found'),
     );
 
-    await provider.updateAboutApp(aboutApp.id!, widget.appName, recommended);
+    // Update the specific recommended value at index
+    final currentRecommended = List<String>.from(aboutApp.recommended ?? []);
+    if (index < currentRecommended.length) {
+      currentRecommended[index] = recommended;
+    }
+
+    await provider.updateAboutApp(
+      aboutApp.id!,
+      widget.appName,
+      aboutApp.department ?? 'IT',
+      currentRecommended,
+    );
     // Trigger sync - notify AppNameProvider to refresh
-    context.read<AppNameProvider>().notifyListeners();
 
     if (mounted) {
       final newProvider = context.read<AboutAppProvider>();
@@ -311,7 +332,6 @@ class _AppRecommendedDetailsScreenState
 
       await provider.deleteAboutApp(aboutApp.id!);
       // Trigger sync - notify AppNameProvider to refresh
-      context.read<AppNameProvider>().notifyListeners();
 
       if (mounted) {
         final newProvider = context.read<AboutAppProvider>();
@@ -497,6 +517,10 @@ class _AppRecommendedDetailsScreenState
     ColorScheme colorScheme,
     Color appColor,
   ) {
+    // Use the state's _recommendedItems list for displaying
+    final recommendedValue =
+        index < _recommendedItems.length ? _recommendedItems[index] : '';
+
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 300 + (index * 50)),
@@ -533,7 +557,7 @@ class _AppRecommendedDetailsScreenState
             ),
           ),
           title: Text(
-            aboutApp.recommended,
+            recommendedValue,
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: isDark ? Colors.white : Colors.black87,
@@ -565,7 +589,7 @@ class _AppRecommendedDetailsScreenState
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => _showEditDialog(index, aboutApp.recommended),
+                  onPressed: () => _showEditDialog(index, recommendedValue),
                 ),
               ),
               const SizedBox(width: 8),
@@ -577,7 +601,7 @@ class _AppRecommendedDetailsScreenState
                 child: IconButton(
                   icon: const Icon(Icons.delete_outline, color: Colors.red),
                   onPressed: () =>
-                      _showDeleteConfirmation(index, aboutApp.recommended),
+                      _showDeleteConfirmation(index, recommendedValue),
                 ),
               ),
             ],

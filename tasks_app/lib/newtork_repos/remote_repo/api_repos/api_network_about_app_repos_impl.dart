@@ -39,19 +39,22 @@ class ApiNetworkAboutAppReposImpl implements ApiNetworkAboutAppRepos {
   }
 
   @override
-  Future<AboutApp> addAboutApp(String appName, String recommended) async {
+  Future<AboutApp> addAboutApp(
+      String appName, String department, List<String> recommended) async {
     final response = await _client.dio.post('/about-apps', data: {
       'appName': appName,
+      'department': department,
       'recommended': recommended,
     });
     return AboutApp.fromMap(response.data);
   }
 
   @override
-  Future<AboutApp> updateAboutApp(
-      int id, String appName, String recommended) async {
+  Future<AboutApp> updateAboutApp(int id, String appName, String department,
+      List<String> recommended) async {
     final response = await _client.dio.put('/about-apps/$id', data: {
       'appName': appName,
+      'department': department,
       'recommended': recommended,
     });
     return AboutApp.fromMap(response.data);
@@ -59,31 +62,6 @@ class ApiNetworkAboutAppReposImpl implements ApiNetworkAboutAppRepos {
 
   @override
   Future<void> deleteAboutApp(int id) async {
-    await _client.dio.delete('/about-apps/$id');
-  }
-
-  @override
-  Future<AboutApp> addRecommendedValue(
-      String appName, String recommended) async {
-    final response = await _client.dio.post('/about-apps', data: {
-      'appName': appName,
-      'recommended': recommended,
-    });
-    return AboutApp.fromMap(response.data);
-  }
-
-  @override
-  Future<AboutApp> updateRecommendedValue(int id, String recommended) async {
-    final current = await getAboutAppById(id);
-    final response = await _client.dio.put('/about-apps/$id', data: {
-      'appName': current.appName,
-      'recommended': recommended,
-    });
-    return AboutApp.fromMap(response.data);
-  }
-
-  @override
-  Future<void> deleteRecommendedValue(int id) async {
     await _client.dio.delete('/about-apps/$id');
   }
 }

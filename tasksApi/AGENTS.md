@@ -98,6 +98,7 @@ mvn package -DskipTests
 |--------|----------|-------------|---------------|
 | POST | `/api/about-apps` | Create new about app | AUTHENTICATED |
 | GET | `/api/about-apps` | Get all about apps | AUTHENTICATED |
+| GET | `/api/about-apps/department/{department}` | Get about apps by department | AUTHENTICATED |
 | GET | `/api/about-apps/{id}` | Get about app by ID | AUTHENTICATED |
 | GET | `/api/about-apps/name/{appName}` | Get about app by app name | AUTHENTICATED |
 | GET | `/api/about-apps/name/{appName}/recommended` | Get recommended values by app name | AUTHENTICATED |
@@ -297,7 +298,8 @@ mvn package -DskipTests
 |-------|------|-------------|
 | id | Long | Primary key |
 | appName | String | Application name |
-| recommended | String | Recommended value |
+| department | String | Department (NOT NULL) |
+| recommended | List<String> | Recommended values (nullable, stored in separate table) |
 
 ### PreventiveItem Entity Fields
 | Field | Type | Description |
@@ -350,8 +352,8 @@ mvn package -DskipTests
 - `MessageResponse`: message
 - `AppsNameRequest`: appName, department
 - `AppsNameResponse`: id, appName, department
-- `AboutAppRequest`: appName, recommended
-- `AboutAppResponse`: id, appName, recommended
+- `AboutAppRequest`: appName, department, recommended (List)
+- `AboutAppResponse`: id, appName, department, recommended (List)
 - `PreventiveItemRequest`: appName, action
 - `PreventiveItemResponse`: id, appName, action
 - `PlaceItemRequest`: placeName
@@ -386,7 +388,14 @@ CREATE TABLE apps_name (
 CREATE TABLE about_app (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
     app_name NVARCHAR(255) NOT NULL,
-    recommended NVARCHAR(255) NOT NULL
+    department NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE about_app_recommended (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    about_app_id BIGINT NOT NULL,
+    recommended_value NVARCHAR(255) NOT NULL,
+    CONSTRAINT fk_about_app FOREIGN KEY (about_app_id) REFERENCES about_app(id)
 );
 
 CREATE TABLE preventive_item (

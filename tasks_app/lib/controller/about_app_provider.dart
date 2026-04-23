@@ -28,10 +28,12 @@ class AboutAppProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addAboutApp(String appName, String recommended) async {
+  Future<void> addAboutApp(
+      String appName, String department, List<String>? recommended) async {
     _setLoading(true);
     try {
-      final newApp = await _api.addAboutApp(appName, recommended);
+      final newApp =
+          await _api.addAboutApp(appName, department, recommended ?? []);
       _aboutApps.add(newApp);
       _error = null;
       notifyListeners();
@@ -43,11 +45,12 @@ class AboutAppProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateAboutApp(
-      int id, String appName, String recommended) async {
+  Future<void> updateAboutApp(int id, String appName, String department,
+      List<String>? recommended) async {
     _setLoading(true);
     try {
-      final updatedApp = await _api.updateAboutApp(id, appName, recommended);
+      final updatedApp =
+          await _api.updateAboutApp(id, appName, department, recommended ?? []);
       final index = _aboutApps.indexWhere((a) => a.id == id);
       if (index != -1) {
         _aboutApps[index] = updatedApp;

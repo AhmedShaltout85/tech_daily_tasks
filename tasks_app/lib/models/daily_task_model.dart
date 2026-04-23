@@ -28,7 +28,7 @@ class DailyTaskModel {
     required this.coOperator,
     required this.expectedCompletionDate,
     required this.taskPriority,
-    this.taskNote,
+    this.taskNote = 'none',
     this.isRemote,
     required this.createdAt,
   });

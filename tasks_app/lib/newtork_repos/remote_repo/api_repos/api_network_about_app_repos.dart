@@ -9,15 +9,11 @@ abstract class ApiNetworkAboutAppRepos {
 
   Future<List<String>> getRecommendedValuesByAppName(String appName);
 
-  Future<AboutApp> addAboutApp(String appName, String recommended);
+  Future<AboutApp> addAboutApp(
+      String appName, String department, List<String> recommended);
 
-  Future<AboutApp> updateAboutApp(int id, String appName, String recommended);
+  Future<AboutApp> updateAboutApp(
+      int id, String appName, String department, List<String> recommended);
 
   Future<void> deleteAboutApp(int id);
-
-  Future<AboutApp> addRecommendedValue(String appName, String recommended);
-
-  Future<AboutApp> updateRecommendedValue(int id, String recommended);
-
-  Future<void> deleteRecommendedValue(int id);
 }

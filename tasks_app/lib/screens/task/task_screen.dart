@@ -3,12 +3,14 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/custom_widgets/custom_drawer.dart';
+import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/resuable_widgets.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
 import 'package:tasks_app/controller/daily_task_provider.dart';
 import 'package:tasks_app/controller/place_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/models/daily_task_model.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
 class TaskScreen extends StatefulWidget {
@@ -42,10 +44,74 @@ class _TaskScreenState extends State<TaskScreen> {
     }
     final userProvider = context.read<UserProvider>();
     final department = userProvider.currentUser?.department;
+
     await context.read<DailyTaskProvider>().fetchAllTasks();
-    await context.read<UserProvider>().fetchUsersByDepartment(department!);
+
+    if (department != null && department.isNotEmpty) {
+      await userProvider.fetchUsersByDepartment(department);
+    }
     await context.read<AboutAppProvider>().fetchAllAboutApps();
     await context.read<PlaceNameProvider>().fetchPlaceNameStrings();
+  }
+
+  Future<void> _createTask(Map<String, dynamic> values) async {
+    final hasConnection = await _connectivity.hasConnection();
+    if (!hasConnection) {
+      _showNoInternetDialog();
+      return;
+    }
+
+    final userProvider = context.read<UserProvider>();
+    final currentUser = userProvider.currentUser;
+
+    int daysUntilDue =
+        int.tryParse(values['expected-completion-date'] ?? '7') ?? 7;
+
+    // Filter out the selected assignee from co-operators
+    final assignedTo = values['assign-to'] ?? '';
+    List<dynamic> coOperators = values['co-operator'] ?? [];
+    if (coOperators is List) {
+      coOperators = coOperators.where((op) => op != assignedTo).toList();
+    }
+
+    final newTask = DailyTaskModel(
+      taskTitle: values['title'] ?? '',
+      taskStatus: true,
+      appName: values['app-name'] ?? '',
+      visitPlace: values['visit-place'] ?? '',
+      subPlace: values['sub-place'] ?? '',
+      assignedTo: assignedTo,
+      assignedBy: currentUser?.username ?? '',
+      coOperator: coOperators,
+      expectedCompletionDate: DateTime.now().add(Duration(days: daysUntilDue)),
+      taskPriority: values['task-priority'] ?? 'MEDIUM',
+      taskNote: values['task-note'] ?? 'none',
+      isRemote: false,
+      createdAt: DateTime.now(),
+    );
+
+    await context.read<DailyTaskProvider>().createTask(newTask);
+
+    if (mounted) {
+      final provider = context.read<DailyTaskProvider>();
+      if (provider.error != null) {
+        ReusableToast.showToast(
+          message: provider.error!,
+          bgColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16,
+        );
+        provider.clearError();
+      } else {
+        ReusableToast.showToast(
+          message: 'Task added successfully',
+          bgColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16,
+        );
+        _fetchData();
+      }
+    }
   }
 
   void _showNoInternetDialog() {
@@ -113,6 +179,7 @@ class _TaskScreenState extends State<TaskScreen> {
     final aboutAppProvider = context.watch<AboutAppProvider>();
     final placeNameProvider = context.watch<PlaceNameProvider>();
 
+    //Filter out the admin
     List<String> employeeNames = userProvider.users
         .map((u) => u.username)
         .where((username) => username != 'admin')
@@ -161,14 +228,20 @@ class _TaskScreenState extends State<TaskScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             icon: const Icon(Icons.add),
             onPressed: () {
+              final currentUsername = userProvider.currentUser?.username ?? '';
+
               showCustomBottomSheet(
                 context: context,
                 appNames: appNames,
                 employeeNames: uniqueEmployeeNames,
                 employeeNamesWithoutNone: uniqueEmployeeNames
-                    .where((name) => name != 'none')
+                    .where((name) => name != 'none' && name != currentUsername)
                     .toList(),
                 placeNames: placeNames,
+                selectedAssignee: currentUsername,
+                onSubmitTask: (values) async {
+                  await _createTask(values);
+                },
               );
             },
           ),
@@ -1024,7 +1097,8 @@ class _TaskScreenState extends State<TaskScreen> {
   void _showDeleteConfirmation(dynamic task, DailyTaskProvider provider) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
@@ -1086,12 +1160,42 @@ class _TaskScreenState extends State<TaskScreen> {
               ),
             ),
             onPressed: () async {
-              Navigator.pop(context);
+              final dialogContext = context;
+              Navigator.pop(dialogContext);
+
+              // Show loading indicator
+              if (mounted) {
+                ScaffoldMessenger.of(dialogContext).showSnackBar(
+                  const SnackBar(
+                    content: Row(
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Text('Deleting task...'),
+                      ],
+                    ),
+                    backgroundColor: Colors.orange,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+
               try {
-                await provider.deleteTask(task.id);
+                final taskId = task.id is int
+                    ? task.id
+                    : int.tryParse(task.id.toString()) ?? 0;
+                await provider.deleteTask(taskId);
 
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  ScaffoldMessenger.of(dialogContext).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
                     SnackBar(
                       content: Row(
                         children: const [
@@ -1115,7 +1219,8 @@ class _TaskScreenState extends State<TaskScreen> {
                 }
               } catch (e) {
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  ScaffoldMessenger.of(dialogContext).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
                     SnackBar(
                       content: Row(
                         children: [

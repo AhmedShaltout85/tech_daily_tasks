@@ -213,36 +213,42 @@ Authorization: Bearer {{adminToken}}
 
 {
   "appName": "Test Application",
-  "recommended": "Recommended value for the app"
+  "department": "IT",
+  "recommended": ["Option 1", "Option 2", "Option 3"]
 }
 
 ### 25. Get All About Apps
 GET http://localhost:9999/tasks-api/api/about-apps
 Authorization: Bearer {{adminToken}}
 
-### 26. Get About App by ID
+### 26. Get About Apps by Department
+GET http://localhost:9999/tasks-api/api/about-apps/department/IT
+Authorization: Bearer {{adminToken}}
+
+### 27. Get About App by ID
 GET http://localhost:9999/tasks-api/api/about-apps/1
 Authorization: Bearer {{adminToken}}
 
-### 27. Get About App by App Name
+### 28. Get About App by App Name
 GET http://localhost:9999/tasks-api/api/about-apps/name/Test%20Application
 Authorization: Bearer {{adminToken}}
 
-### 28. Get Recommended Values by App Name
+### 29. Get Recommended Values by App Name
 GET http://localhost:9999/tasks-api/api/about-apps/name/Test%20Application/recommended
 Authorization: Bearer {{adminToken}}
 
-### 29. Update About App by ID
+### 30. Update About App by ID
 PUT http://localhost:9999/tasks-api/api/about-apps/1
 Content-Type: application/json
 Authorization: Bearer {{adminToken}}
 
 {
   "appName": "Updated Application",
-  "recommended": "Updated recommended value"
+  "department": "IT",
+  "recommended": ["New Option 1", "New Option 2"]
 }
 
-### 29. Delete About App by ID
+### 31. Delete About App by ID
 DELETE http://localhost:9999/tasks-api/api/about-apps/1
 Authorization: Bearer {{adminToken}}
 

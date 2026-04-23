@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
-import 'package:tasks_app/controller/app_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/screens/about_app/app_recommended_details_screen.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
@@ -19,7 +18,6 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   final ConnectivityService _connectivity = ConnectivityService();
-  late AppNameProvider _appNameProvider;
 
   @override
   void initState() {
@@ -32,13 +30,6 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
       parent: _animationController,
       curve: Curves.easeInOut,
     );
-
-    // Listen to AppNameProvider changes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _appNameProvider = context.read<AppNameProvider>();
-      _appNameProvider.addListener(_onAppNameChanged);
-      _fetchData();
-    });
   }
 
   @override
@@ -51,10 +42,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
   @override
   void dispose() {
     _animationController.dispose();
-    // Remove listener safely
-    if (_appNameProvider != null) {
-      _appNameProvider.removeListener(_onAppNameChanged);
-    }
+
     super.dispose();
   }
 
@@ -131,17 +119,11 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
               TextFormField(
                 controller: recommendedController,
                 decoration: const InputDecoration(
-                  labelText: 'Recommended',
+                  labelText: 'Recommended (optional)',
                   hintText: 'Enter recommended value',
                   prefixIcon: Icon(Icons.thumb_up_outlined),
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter recommended value';
-                  }
-                  return null;
-                },
               ),
             ],
           ),
@@ -155,9 +137,10 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
             onPressed: () async {
               if (formKey.currentState!.validate()) {
                 Navigator.pop(dialogContext);
+                final recommended = recommendedController.text.trim();
                 await _addAboutApp(
                   appNameController.text.trim(),
-                  recommendedController.text.trim(),
+                  recommended.isNotEmpty ? [recommended] : [],
                 );
               }
             },
@@ -168,16 +151,17 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
     );
   }
 
-  Future<void> _addAboutApp(String appName, String recommended) async {
+  Future<void> _addAboutApp(String appName, List<String> recommended) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
       _showNoInternetDialog();
       return;
     }
 
-    await context.read<AboutAppProvider>().addAboutApp(appName, recommended);
+    await context
+        .read<AboutAppProvider>()
+        .addAboutApp(appName, 'IT', recommended);
     // Trigger sync - notify AppNameProvider to refresh
-    context.read<AppNameProvider>().notifyListeners();
 
     if (mounted) {
       final provider = context.read<AboutAppProvider>();
@@ -203,8 +187,10 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
 
   void _showEditDialog(dynamic aboutApp) {
     final appNameController = TextEditingController(text: aboutApp.appName);
-    final recommendedController =
-        TextEditingController(text: aboutApp.recommended);
+    final recommendedText = aboutApp.recommended is List
+        ? (aboutApp.recommended as List).join(', ')
+        : aboutApp.recommended?.toString() ?? '';
+    final recommendedController = TextEditingController(text: recommendedText);
     final formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -241,17 +227,11 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
               TextFormField(
                 controller: recommendedController,
                 decoration: const InputDecoration(
-                  labelText: 'Recommended',
-                  hintText: 'Enter recommended value',
+                  labelText: 'Recommended (optional)',
+                  hintText: 'Enter recommended values (comma separated)',
                   prefixIcon: Icon(Icons.thumb_up_outlined),
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter recommended value';
-                  }
-                  return null;
-                },
               ),
             ],
           ),
@@ -265,10 +245,14 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
             onPressed: () async {
               if (formKey.currentState!.validate()) {
                 Navigator.pop(dialogContext);
+                final recommended = recommendedController.text.trim();
+                final recommendedList = recommended.isNotEmpty
+                    ? recommended.split(',').map((e) => e.trim()).toList()
+                    : <String>[];
                 await _updateAboutApp(
                   int.tryParse(aboutApp.id.toString()) ?? 0,
                   appNameController.text.trim(),
-                  recommendedController.text.trim(),
+                  recommendedList,
                 );
               }
             },
@@ -280,7 +264,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
   }
 
   Future<void> _updateAboutApp(
-      int id, String appName, String recommended) async {
+      int id, String appName, List<String> recommended) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
       _showNoInternetDialog();
@@ -289,9 +273,8 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
 
     await context
         .read<AboutAppProvider>()
-        .updateAboutApp(id, appName, recommended);
+        .updateAboutApp(id, appName, 'IT', recommended);
     // Trigger sync - notify AppNameProvider to refresh
-    context.read<AppNameProvider>().notifyListeners();
 
     if (mounted) {
       final provider = context.read<AboutAppProvider>();
@@ -355,7 +338,6 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
       if (id != null) {
         await context.read<AboutAppProvider>().deleteAboutApp(id);
         // Trigger sync - notify AppNameProvider to refresh
-        context.read<AppNameProvider>().notifyListeners();
       }
 
       if (mounted) {
