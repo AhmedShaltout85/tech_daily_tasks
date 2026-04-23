@@ -70,6 +70,7 @@ class _TaskScreenState extends State<TaskScreen> {
     // Filter out the selected assignee from co-operators
     final assignedTo = values['assign-to'] ?? '';
     List<dynamic> coOperators = values['co-operator'] ?? [];
+    // ignore: unnecessary_type_check
     if (coOperators is List) {
       coOperators = coOperators.where((op) => op != assignedTo).toList();
     }
