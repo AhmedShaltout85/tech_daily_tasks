@@ -605,7 +605,9 @@ class _TaskScreenState extends State<TaskScreen> {
                   );
                 }
 
-                final filteredTasks = getFilteredTasks(provider.tasks);
+                final filteredTasks = getFilteredTasks(provider.tasks).where(
+                  (task) => task.taskStatus == true,
+                ).toList();
 
                 if (filteredTasks.isEmpty && hasActiveFilters) {
                   return Center(
@@ -834,16 +836,17 @@ class _TaskScreenState extends State<TaskScreen> {
                 Row(
                   children: [
                     Expanded(
+                      flex: 2,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
-                          vertical: 8,
+                          vertical: 13,
                         ),
                         decoration: BoxDecoration(
                           color: task.taskStatus == true
                               ? Colors.green.shade100
                               : Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(7),
                           border: Border.all(
                             color: task.taskStatus == true
                                 ? Colors.green.shade400
@@ -878,40 +881,44 @@ class _TaskScreenState extends State<TaskScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Material(
-                      color: task.taskStatus == true
-                          ? Colors.green.shade600
-                          : Colors.grey.shade500,
-                      borderRadius: BorderRadius.circular(12),
-                      child: InkWell(
-                        onTap: () => _toggleTaskStatus(task, provider),
+                    const SizedBox(width: 120),
+                    Expanded(
+                      child: Material(
+                        color: task.taskStatus == true
+                            ? Colors.green.shade600
+                            : Colors.grey.shade500,
                         borderRadius: BorderRadius.circular(12),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Icon(
-                            task.taskStatus == true
-                                ? Icons.toggle_on
-                                : Icons.toggle_off,
-                            color: Colors.white,
-                            size: 28,
+                        child: InkWell(
+                          onTap: () => _toggleTaskStatus(task, provider),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Icon(
+                              task.taskStatus == true
+                                  ? Icons.toggle_on
+                                  : Icons.toggle_off,
+                              color: Colors.white,
+                              size: 28,
+                            ),
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Material(
-                      color: Colors.red.shade600,
-                      borderRadius: BorderRadius.circular(12),
-                      child: InkWell(
-                        onTap: () => _showDeleteConfirmation(task, provider),
+                    Expanded(
+                      child: Material(
+                        color: Colors.red.shade600,
                         borderRadius: BorderRadius.circular(12),
-                        child: const Padding(
-                          padding: EdgeInsets.all(12.0),
-                          child: Icon(
-                            Icons.delete_outline,
-                            color: Colors.white,
-                            size: 28,
+                        child: InkWell(
+                          onTap: () => _showDeleteConfirmation(task, provider),
+                          borderRadius: BorderRadius.circular(12),
+                          child: const Padding(
+                            padding: EdgeInsets.all(12.0),
+                            child: Icon(
+                              Icons.delete_outline,
+                              color: Colors.white,
+                              size: 28,
+                            ),
                           ),
                         ),
                       ),

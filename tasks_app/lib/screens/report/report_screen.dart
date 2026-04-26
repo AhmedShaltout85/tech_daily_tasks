@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -469,6 +468,7 @@ class _ReportScreenState extends State<ReportScreen>
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: _buildStatusDropdown(
+                                        label: 'Status',
                                         value:
                                             statusList.contains(selectedStatus)
                                                 ? selectedStatus!
@@ -484,6 +484,7 @@ class _ReportScreenState extends State<ReportScreen>
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: _buildIsRemoteDropdown(
+                                        label: 'Work Type',
                                         value: isRemoteList
                                                 .contains(selectedIsRemote)
                                             ? selectedIsRemote!
@@ -662,154 +663,129 @@ class _ReportScreenState extends State<ReportScreen>
     required IconData icon,
     required Function(String?) onChanged,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-          isExpanded: true,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
             color: Colors.grey.shade600,
-          ),
-          style: const TextStyle(
-            fontSize: 14,
-            color: Color(0xFF1E293B),
             fontWeight: FontWeight.w500,
           ),
-          items: items.map((item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(icon, size: 18, color: Colors.grey.shade600),
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: Text(
-                      item,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-          onChanged: onChanged,
         ),
-      ),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: value,
+              isExpanded: true,
+              icon: Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: Colors.grey.shade600,
+              ),
+              style: const TextStyle(
+                fontSize: 14,
+                color: Color(0xFF1E293B),
+                fontWeight: FontWeight.w500,
+              ),
+              items: items.map((item) {
+                return DropdownMenuItem<String>(
+                  value: item,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(icon, size: 18, color: Colors.grey.shade600),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          item,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildStatusDropdown({
+    required String label,
     required String value,
     required List<String> items,
     required Function(String?) onChanged,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-          isExpanded: true,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: Colors.grey.shade600,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(12),
           ),
-          style: const TextStyle(
-            fontSize: 14,
-            color: Color(0xFF1E293B),
-            fontWeight: FontWeight.w500,
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: value,
+              isExpanded: true,
+              items: items
+                  .map((status) =>
+                      DropdownMenuItem(value: status, child: Text(status)))
+                  .toList(),
+              onChanged: onChanged,
+            ),
           ),
-          items: items.map((status) {
-            return DropdownMenuItem<String>(
-              value: status,
-              child: Row(
-                children: [
-                  if (status != 'All')
-                    Container(
-                      width: 10,
-                      height: 10,
-                      margin: const EdgeInsets.only(right: 12),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _getStatusColor(status),
-                      ),
-                    )
-                  else
-                    Icon(
-                      Icons.info_outline_rounded,
-                      size: 18,
-                      color: Colors.grey.shade600,
-                    ),
-                  if (status == 'All') const SizedBox(width: 12),
-                  Text(status),
-                ],
-              ),
-            );
-          }).toList(),
-          onChanged: onChanged,
         ),
-      ),
+      ],
     );
   }
 
   Widget _buildIsRemoteDropdown({
+    required String label,
     required String value,
     required List<String> items,
     required Function(String?) onChanged,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-          isExpanded: true,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: Colors.grey.shade600,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(12),
           ),
-          style: const TextStyle(
-            fontSize: 14,
-            color: Color(0xFF1E293B),
-            fontWeight: FontWeight.w500,
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: value,
+              isExpanded: true,
+              items: items
+                  .map((type) =>
+                      DropdownMenuItem(value: type, child: Text(type)))
+                  .toList(),
+              onChanged: onChanged,
+            ),
           ),
-          items: items.map((type) {
-            return DropdownMenuItem<String>(
-              value: type,
-              child: Row(
-                children: [
-                  Icon(
-                    type == 'Remote'
-                        ? Icons.home_work_rounded
-                        : type == 'Onsite'
-                            ? Icons.location_on_rounded
-                            : Icons.info_outline_rounded,
-                    size: 18,
-                    color: Colors.grey.shade600,
-                  ),
-                  const SizedBox(width: 12),
-                  Text(type),
-                ],
-              ),
-            );
-          }).toList(),
-          onChanged: onChanged,
         ),
-      ),
+      ],
     );
   }
 
