@@ -5,6 +5,7 @@ import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/screens/about_app/manage_about_app_screen.dart';
 import 'package:tasks_app/screens/places/manage_place_screen.dart';
+import 'package:tasks_app/screens/preventive/preventive_item_screen.dart';
 import 'package:tasks_app/screens/report/report_screen.dart';
 import 'package:tasks_app/screens/settings/settings_screen.dart';
 import 'package:tasks_app/screens/user/manage_user_screen.dart';
@@ -86,21 +87,27 @@ class _CustomDrawerState extends State<CustomDrawer>
                     _buildDrawerItem(
                       context,
                       index: 1,
-                      icon: Icons.task,
-                      title: 'Dashboard',
+                      icon: Icons.people_rounded,
+                      title: 'Manage Users',
                       isDark: isDark,
                       colorScheme: colorScheme,
-                      onTap: () {
+                      onTap: () async {
                         setState(() => _selectedIndex = 1);
                         widget.onIndexChanged?.call(1);
                         Navigator.pop(context);
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ManageUserScreen(),
+                          ),
+                        );
                       },
                     ),
                     _buildDrawerItem(
                       context,
                       index: 2,
-                      icon: Icons.people_rounded,
-                      title: 'Manage Users',
+                      icon: Icons.shield_outlined,
+                      title: 'Preventive Items',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () async {
@@ -110,7 +117,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const ManageUserScreen(),
+                            builder: (context) => const PreventiveItemScreen(),
                           ),
                         );
                       },
@@ -123,8 +130,8 @@ class _CustomDrawerState extends State<CustomDrawer>
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () async {
-                        setState(() => _selectedIndex = 4);
-                        widget.onIndexChanged?.call(4);
+                        setState(() => _selectedIndex = 3);
+                        widget.onIndexChanged?.call(3);
                         Navigator.pop(context);
                         await Navigator.push(
                           context,

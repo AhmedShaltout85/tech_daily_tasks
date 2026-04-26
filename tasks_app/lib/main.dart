@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:tasks_app/controller/local_control/cache_helper.dart';
+import 'package:tasks_app/controller/preventive_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/controller/place_name_provider.dart';
@@ -11,6 +12,7 @@ import 'package:tasks_app/screens/about_app/manage_about_app_screen.dart';
 import 'package:tasks_app/screens/auth/auth_wrapper.dart';
 import 'package:tasks_app/screens/login/login_screen.dart';
 import 'package:tasks_app/screens/places/manage_place_screen.dart';
+import 'package:tasks_app/screens/preventive/preventive_item_screen.dart';
 import 'package:tasks_app/screens/report/report_screen.dart';
 import 'package:tasks_app/screens/user/manage_user_screen.dart';
 import 'package:tasks_app/screens/user/manage_users.dart';
@@ -33,6 +35,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => PlaceNameProvider()),
         ChangeNotifierProvider(create: (_) => DailyTaskProvider()),
         ChangeNotifierProvider(create: (_) => AboutAppProvider()),
+        ChangeNotifierProvider(create: (_) => PreventiveProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
       child: MyApp(),
@@ -65,10 +68,11 @@ class MyApp extends StatelessWidget {
             AppRoute.manageUsersRouteName: (context) =>
                 const ManageUsersScreen(),
             AppRoute.manageUserRouteName: (context) => const ManageUserScreen(),
-            
             AppRoute.managePlaceRouteName: (context) =>
                 const ManagePlaceScreen(),
-            AppRoute.manageAboutAppRouteName: (context) => const ManageAboutAppScreen(),
+            AppRoute.manageAboutAppRouteName: (context) =>
+                const ManageAboutAppScreen(),
+                AppRoute.preventiveItemRouteName: (context) => const PreventiveItemScreen(),
           },
         );
       },
