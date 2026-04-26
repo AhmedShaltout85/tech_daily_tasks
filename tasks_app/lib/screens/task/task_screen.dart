@@ -49,8 +49,10 @@ class _TaskScreenState extends State<TaskScreen> {
 
     if (department != null && department.isNotEmpty) {
       await userProvider.fetchUsersByDepartment(department);
+      await context.read<AboutAppProvider>().fetchAppsByDepartment(department);
+    } else {
+      await context.read<AboutAppProvider>().fetchAllAboutApps();
     }
-    await context.read<AboutAppProvider>().fetchAllAboutApps();
     await context.read<PlaceNameProvider>().fetchPlaceNameStrings();
   }
 

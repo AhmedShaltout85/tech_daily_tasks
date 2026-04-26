@@ -86,7 +86,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                     _buildDrawerItem(
                       context,
                       index: 1,
-                      icon: Icons.people_rounded,
+                      icon: Icons.task,
                       title: 'Dashboard',
                       isDark: isDark,
                       colorScheme: colorScheme,
@@ -99,7 +99,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                     _buildDrawerItem(
                       context,
                       index: 2,
-                      icon: Icons.badge_rounded,
+                      icon: Icons.people_rounded,
                       title: 'Manage Users',
                       isDark: isDark,
                       colorScheme: colorScheme,
@@ -118,7 +118,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                     _buildDrawerItem(
                       context,
                       index: 3,
-                      icon: Icons.info_outline_rounded,
+                      icon: Icons.apps_outage,
                       title: 'Manage Apps',
                       isDark: isDark,
                       colorScheme: colorScheme,

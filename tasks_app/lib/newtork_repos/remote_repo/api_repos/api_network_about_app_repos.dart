@@ -3,6 +3,8 @@ import '../../../models/about_app_model.dart';
 abstract class ApiNetworkAboutAppRepos {
   Future<List<AboutApp>> getAllAboutApps();
 
+  Future<List<AboutApp>> getAppsByDepartment(String department);
+
   Future<AboutApp> getAboutAppById(int id);
 
   Future<AboutApp> getAboutAppByAppName(String appName);

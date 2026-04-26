@@ -1,11 +1,16 @@
+import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
-import 'package:tasks_app/controller/theme_provider.dart';
+import 'package:tasks_app/controller/about_app_provider.dart';
+import 'package:tasks_app/controller/daily_task_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
-import 'package:tasks_app/models/user_model.dart';
+import 'package:tasks_app/controller/place_name_provider.dart';
+import 'package:tasks_app/models/daily_task_model.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
+import 'package:tasks_app/screens/report/widgets/generate_pdf.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
@@ -19,21 +24,26 @@ class _ReportScreenState extends State<ReportScreen>
   DateTime? startDate;
   DateTime? endDate;
   String? selectedAssignee;
-  String? selectedDepartment;
-  String? selectedRole;
+  String? selectedApplication;
+  String? selectedVisitPlace;
+  String? selectedStatus;
+  String? selectedIsRemote;
   bool _isFilterExpanded = true;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
-  final List<String> roleList = ['All', 'USER', 'MANAGER', 'ADMIN'];
+  final List<String> statusList = ['All', 'Pending', 'Completed'];
+  final List<String> isRemoteList = ['All', 'Remote', 'Onsite'];
   final ConnectivityService _connectivity = ConnectivityService();
 
   @override
   void initState() {
     super.initState();
     selectedAssignee = 'All';
-    selectedDepartment = 'All';
-    selectedRole = 'All';
+    selectedApplication = 'All';
+    selectedVisitPlace = 'All';
+    selectedStatus = 'All';
+    selectedIsRemote = 'All';
 
     _animationController = AnimationController(
       vsync: this,
@@ -57,15 +67,23 @@ class _ReportScreenState extends State<ReportScreen>
   }
 
   Future<void> _fetchData() async {
-    final hasConnection = await _connectivity.hasConnection();
-    if (!hasConnection) {
-      _showNoInternetDialog();
-      return;
+    try {
+      // Fire and forget - don't await to prevent hanging
+      context.read<DailyTaskProvider>().fetchAllTasks();
+      context.read<PlaceNameProvider>().fetchPlaceNameStrings();
+
+      final userProvider = context.read<UserProvider>();
+      final department = userProvider.currentUser?.department;
+
+      if (department != null && department.isNotEmpty) {
+        userProvider.fetchUsersByDepartment(department);
+        context.read<AboutAppProvider>().fetchAppsByDepartment(department);
+      } else {
+        context.read<AboutAppProvider>().fetchAllAboutApps();
+      }
+    } catch (e) {
+      debugPrint('Error in _fetchData: $e');
     }
-    final userProvider = context.read<UserProvider>();
-    final department = userProvider.currentUser?.department;
-    await context.read<UserProvider>().fetchUsersByDepartment(department!);
-    // await context.read<UserProvider>().fetchAllUsers();
   }
 
   void _showNoInternetDialog() {
@@ -92,6 +110,20 @@ class _ReportScreenState extends State<ReportScreen>
       initialDate: DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFF2196F3),
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black87,
+            ),
+            dialogTheme: DialogThemeData(backgroundColor: Colors.white),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
@@ -105,25 +137,55 @@ class _ReportScreenState extends State<ReportScreen>
     }
   }
 
-  List<UserModel> getFilteredData(List<UserModel> users) {
-    return users.where((user) {
+  List<DailyTaskModel> getFilteredData(List<DailyTaskModel> tasks) {
+    return tasks.where((task) {
+      bool matchesDate = true;
       bool matchesAssignee = true;
-      bool matchesDepartment = true;
-      bool matchesRole = true;
+      bool matchesApplication = true;
+      bool matchesVisitPlace = true;
+      bool matchesStatus = true;
+      bool matchesIsRemote = true;
+
+      if (startDate != null || endDate != null) {
+        DateTime? taskDate = task.createdAt;
+        if (startDate != null && taskDate.isBefore(startDate!)) {
+          matchesDate = false;
+        }
+        if (endDate != null &&
+            taskDate.isAfter(endDate!.add(const Duration(days: 1)))) {
+          matchesDate = false;
+        }
+      }
 
       if (selectedAssignee != null && selectedAssignee != 'All') {
-        matchesAssignee = user.username == selectedAssignee;
+        matchesAssignee = task.assignedTo == selectedAssignee;
       }
 
-      if (selectedDepartment != null && selectedDepartment != 'All') {
-        matchesDepartment = user.department == selectedDepartment;
+      if (selectedApplication != null && selectedApplication != 'All') {
+        matchesApplication = task.appName == selectedApplication;
       }
 
-      if (selectedRole != null && selectedRole != 'All') {
-        matchesRole = user.role == selectedRole;
+      if (selectedVisitPlace != null && selectedVisitPlace != 'All') {
+        matchesVisitPlace = task.visitPlace == selectedVisitPlace;
       }
 
-      return matchesAssignee && matchesDepartment && matchesRole;
+      if (selectedStatus != null && selectedStatus != 'All') {
+        String taskStatusString = task.taskStatus ? 'Pending' : 'Completed';
+        matchesStatus = taskStatusString == selectedStatus;
+      }
+
+      if (selectedIsRemote != null && selectedIsRemote != 'All') {
+        bool taskIsRemote = task.isRemote ?? false;
+        String isRemoteString = taskIsRemote ? 'Remote' : 'Onsite';
+        matchesIsRemote = isRemoteString == selectedIsRemote;
+      }
+
+      return matchesDate &&
+          matchesAssignee &&
+          matchesApplication &&
+          matchesVisitPlace &&
+          matchesStatus &&
+          matchesIsRemote;
     }).toList();
   }
 
@@ -132,8 +194,10 @@ class _ReportScreenState extends State<ReportScreen>
       startDate = null;
       endDate = null;
       selectedAssignee = 'All';
-      selectedDepartment = 'All';
-      selectedRole = 'All';
+      selectedApplication = 'All';
+      selectedVisitPlace = 'All';
+      selectedStatus = 'All';
+      selectedIsRemote = 'All';
     });
     ReusableToast.showToast(
       message: 'Filters cleared',
@@ -145,23 +209,19 @@ class _ReportScreenState extends State<ReportScreen>
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDark = themeProvider.isDark;
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reports & Analytics'),
         actions: [
-          Consumer<UserProvider>(
-            builder: (context, userProvider, child) {
-              final filteredData = getFilteredData(userProvider.users);
+          Consumer<DailyTaskProvider>(
+            builder: (context, taskProvider, child) {
+              final filteredData = getFilteredData(taskProvider.tasks);
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 decoration: BoxDecoration(
                   color: filteredData.isEmpty
                       ? Colors.grey.shade200
-                      : colorScheme.primary,
+                      : Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: IconButton(
@@ -170,9 +230,19 @@ class _ReportScreenState extends State<ReportScreen>
                   onPressed: filteredData.isEmpty
                       ? null
                       : () {
+                          generatePDF(
+                            filteredData: filteredData,
+                            startDate: startDate,
+                            endDate: endDate,
+                            selectedStatus: selectedStatus,
+                            selectedAssignee: selectedAssignee,
+                            selectedApplication: selectedApplication,
+                            selectedVisitPlace: selectedVisitPlace,
+                            selectedIsRemote: selectedIsRemote,
+                          );
                           ReusableToast.showToast(
-                            message: 'PDF generation coming soon',
-                            bgColor: Colors.grey,
+                            message: 'PDF generated successfully!',
+                            bgColor: Colors.green,
                             textColor: Colors.white,
                             fontSize: 16,
                           );
@@ -184,30 +254,44 @@ class _ReportScreenState extends State<ReportScreen>
           ),
         ],
       ),
-      body: Consumer<UserProvider>(
-        builder: (context, userProvider, child) {
-          final users = userProvider.users;
-          final assigneeList = [
-            'All',
-            ...users.map((u) => u.username).toSet().toList()
-          ];
-          final departmentList = [
-            'All',
-            ...users
-                .map((u) => u.department ?? '')
-                .toSet()
-                .where((d) => d.isNotEmpty)
-                .toList()
-          ];
-          final filteredData = getFilteredData(users);
-          final isLoading = userProvider.isLoading;
+      body: Consumer<DailyTaskProvider>(
+        builder: (context, taskProvider, child) {
+          final tasks = taskProvider.tasks;
+          final userProvider = context.read<UserProvider>();
+          final aboutAppProvider = context.read<AboutAppProvider>();
+
+          // Get app names from AboutAppProvider (filtered by department)
+          final appNames =
+              aboutAppProvider.aboutApps.map((a) => a.appName).toSet().toList();
+
+          // Get place names from PlaceNameProvider
+          final placeProvider = context.read<PlaceNameProvider>();
+          final visitPlaceNames = placeProvider.placeNameStrings;
+
+          // Get employee names from UserProvider
+          final employeeNames = userProvider.users
+              .map((u) => u.username)
+              .toSet()
+              .toList()
+            ..removeWhere((element) => element.contains('admin'));
+
+          final filteredData = getFilteredData(tasks);
+          final assigneeList = ['All', ...employeeNames];
+          final applicationList = ['All', ...appNames];
+          final visitPlaceList = ['All', ...visitPlaceNames];
+          final isLoading = taskProvider.isLoading ||
+              userProvider.isLoading ||
+              aboutAppProvider.isLoading ||
+              placeProvider.isLoading;
 
           if (isLoading) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(color: colorScheme.primary),
+                  CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'Loading reports...',
@@ -224,10 +308,11 @@ class _ReportScreenState extends State<ReportScreen>
               children: [
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
                   child: Container(
                     margin: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: isDark ? colorScheme.surface : Colors.white,
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
@@ -260,25 +345,26 @@ class _ReportScreenState extends State<ReportScreen>
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: colorScheme.primary
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary
                                         .withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Icon(
                                     Icons.filter_alt_rounded,
-                                    color: colorScheme.primary,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     size: 20,
                                   ),
                                 ),
                                 const SizedBox(width: 12),
-                                Text(
+                                const Text(
                                   'Search Filters',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
-                                    color: isDark
-                                        ? Colors.white
-                                        : const Color(0xFF1E293B),
+                                    color: Color(0xFF1E293B),
                                   ),
                                 ),
                                 const Spacer(),
@@ -325,32 +411,36 @@ class _ReportScreenState extends State<ReportScreen>
                                   children: [
                                     Expanded(
                                       child: _buildDropdown(
-                                        label: 'Username',
-                                        value: assigneeList
-                                                .contains(selectedAssignee)
+                                        label: 'Assigned To',
+                                        value: assigneeList.contains(
+                                          selectedAssignee,
+                                        )
                                             ? selectedAssignee!
                                             : 'All',
                                         items: assigneeList,
                                         icon: Icons.person_outline_rounded,
                                         onChanged: (value) {
                                           setState(
-                                              () => selectedAssignee = value);
+                                            () => selectedAssignee = value,
+                                          );
                                         },
                                       ),
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: _buildDropdown(
-                                        label: 'Department',
-                                        value: departmentList
-                                                .contains(selectedDepartment)
-                                            ? selectedDepartment!
+                                        label: 'Application',
+                                        value: applicationList.contains(
+                                          selectedApplication,
+                                        )
+                                            ? selectedApplication!
                                             : 'All',
-                                        items: departmentList,
-                                        icon: Icons.business_outlined,
+                                        items: applicationList,
+                                        icon: Icons.apps_rounded,
                                         onChanged: (value) {
                                           setState(
-                                              () => selectedDepartment = value);
+                                            () => selectedApplication = value,
+                                          );
                                         },
                                       ),
                                     ),
@@ -360,32 +450,76 @@ class _ReportScreenState extends State<ReportScreen>
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: _buildRoleDropdown(
-                                        value: roleList.contains(selectedRole)
-                                            ? selectedRole!
+                                      child: _buildDropdown(
+                                        label: 'Visit Place',
+                                        value: visitPlaceList.contains(
+                                          selectedVisitPlace,
+                                        )
+                                            ? selectedVisitPlace!
                                             : 'All',
-                                        items: roleList,
+                                        items: visitPlaceList,
+                                        icon: Icons.location_on_rounded,
                                         onChanged: (value) {
-                                          setState(() => selectedRole = value);
+                                          setState(
+                                            () => selectedVisitPlace = value,
+                                          );
                                         },
                                       ),
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
+                                      child: _buildStatusDropdown(
+                                        value:
+                                            statusList.contains(selectedStatus)
+                                                ? selectedStatus!
+                                                : 'All',
+                                        items: statusList,
+                                        onChanged: (value) {
+                                          setState(
+                                            () => selectedStatus = value,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: _buildIsRemoteDropdown(
+                                        value: isRemoteList
+                                                .contains(selectedIsRemote)
+                                            ? selectedIsRemote!
+                                            : 'All',
+                                        items: isRemoteList,
+                                        onChanged: (value) {
+                                          setState(
+                                            () => selectedIsRemote = value,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Expanded(
                                       child: ElevatedButton.icon(
                                         onPressed: _clearFilters,
-                                        icon: const Icon(Icons.clear_rounded,
-                                            size: 20),
+                                        icon: const Icon(
+                                          Icons.clear_rounded,
+                                          size: 20,
+                                        ),
                                         label: const Text('Clear Filters'),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.grey.shade100,
                                           foregroundColor: Colors.grey.shade700,
                                           elevation: 0,
                                           padding: const EdgeInsets.symmetric(
-                                              vertical: 16),
+                                            vertical: 16,
+                                          ),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -411,18 +545,18 @@ class _ReportScreenState extends State<ReportScreen>
                       children: [
                         Expanded(
                           child: _buildStatCard(
-                            'Total Users',
+                            'Total Tasks',
                             filteredData.length.toString(),
-                            colorScheme.primary,
+                            Theme.of(context).colorScheme.primary,
                             Icons.list_alt_rounded,
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: _buildStatCard(
-                            'Active',
+                            'Completed',
                             filteredData
-                                .where((u) => u.enabled == true)
+                                .where((t) => !t.taskStatus)
                                 .length
                                 .toString(),
                             Colors.green,
@@ -432,9 +566,9 @@ class _ReportScreenState extends State<ReportScreen>
                         const SizedBox(width: 12),
                         Expanded(
                           child: _buildStatCard(
-                            'Inactive',
+                            'Pending',
                             filteredData
-                                .where((u) => u.enabled == false)
+                                .where((t) => t.taskStatus)
                                 .length
                                 .toString(),
                             Colors.orange,
@@ -452,8 +586,8 @@ class _ReportScreenState extends State<ReportScreen>
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           itemCount: filteredData.length,
                           itemBuilder: (context, index) {
-                            final user = filteredData[index];
-                            return _buildUserCard(user, index);
+                            final task = filteredData[index];
+                            return _buildTaskCard(task, index);
                           },
                         ),
                 ),
@@ -481,8 +615,11 @@ class _ReportScreenState extends State<ReportScreen>
         ),
         child: Row(
           children: [
-            Icon(Icons.calendar_today_rounded,
-                size: 20, color: Colors.grey.shade600),
+            Icon(
+              Icons.calendar_today_rounded,
+              size: 20,
+              color: Colors.grey.shade600,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -491,9 +628,10 @@ class _ReportScreenState extends State<ReportScreen>
                   Text(
                     label,
                     style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.w500),
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -534,20 +672,30 @@ class _ReportScreenState extends State<ReportScreen>
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          icon: Icon(Icons.keyboard_arrow_down_rounded,
-              color: Colors.grey.shade600),
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: Colors.grey.shade600,
+          ),
           style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFF1E293B),
-              fontWeight: FontWeight.w500),
+            fontSize: 14,
+            color: Color(0xFF1E293B),
+            fontWeight: FontWeight.w500,
+          ),
           items: items.map((item) {
             return DropdownMenuItem<String>(
               value: item,
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(icon, size: 18, color: Colors.grey.shade600),
-                  const SizedBox(width: 12),
-                  Text(item),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      item,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -558,7 +706,7 @@ class _ReportScreenState extends State<ReportScreen>
     );
   }
 
-  Widget _buildRoleDropdown({
+  Widget _buildStatusDropdown({
     required String value,
     required List<String> items,
     required Function(String?) onChanged,
@@ -573,12 +721,15 @@ class _ReportScreenState extends State<ReportScreen>
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          icon: Icon(Icons.keyboard_arrow_down_rounded,
-              color: Colors.grey.shade600),
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: Colors.grey.shade600,
+          ),
           style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFF1E293B),
-              fontWeight: FontWeight.w500),
+            fontSize: 14,
+            color: Color(0xFF1E293B),
+            fontWeight: FontWeight.w500,
+          ),
           items: items.map((status) {
             return DropdownMenuItem<String>(
               value: status,
@@ -595,8 +746,11 @@ class _ReportScreenState extends State<ReportScreen>
                       ),
                     )
                   else
-                    Icon(Icons.info_outline_rounded,
-                        size: 18, color: Colors.grey.shade600),
+                    Icon(
+                      Icons.info_outline_rounded,
+                      size: 18,
+                      color: Colors.grey.shade600,
+                    ),
                   if (status == 'All') const SizedBox(width: 12),
                   Text(status),
                 ],
@@ -609,8 +763,62 @@ class _ReportScreenState extends State<ReportScreen>
     );
   }
 
+  Widget _buildIsRemoteDropdown({
+    required String value,
+    required List<String> items,
+    required Function(String?) onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: value,
+          isExpanded: true,
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: Colors.grey.shade600,
+          ),
+          style: const TextStyle(
+            fontSize: 14,
+            color: Color(0xFF1E293B),
+            fontWeight: FontWeight.w500,
+          ),
+          items: items.map((type) {
+            return DropdownMenuItem<String>(
+              value: type,
+              child: Row(
+                children: [
+                  Icon(
+                    type == 'Remote'
+                        ? Icons.home_work_rounded
+                        : type == 'Onsite'
+                            ? Icons.location_on_rounded
+                            : Icons.info_outline_rounded,
+                    size: 18,
+                    color: Colors.grey.shade600,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(type),
+                ],
+              ),
+            );
+          }).toList(),
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+
   Widget _buildStatCard(
-      String title, String value, Color color, IconData icon) {
+    String title,
+    String value,
+    Color color,
+    IconData icon,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -628,22 +836,32 @@ class _ReportScreenState extends State<ReportScreen>
         children: [
           Icon(icon, color: color, size: 24),
           const SizedBox(height: 8),
-          Text(value,
-              style: TextStyle(
-                  fontSize: 24, fontWeight: FontWeight.bold, color: color)),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(title,
-              style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.w500)),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildUserCard(UserModel user, int index) {
-    final status = user.enabled == true ? 'Active' : 'Inactive';
+  Widget _buildTaskCard(DailyTaskModel task, int index) {
+    final status = task.taskStatus ? 'Pending' : 'Completed';
+    final date = DateFormat('MMM dd, yyyy').format(task.createdAt);
+    final isRemote = task.isRemote ?? false ? 'Remote' : 'Onsite';
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
@@ -682,7 +900,7 @@ class _ReportScreenState extends State<ReportScreen>
                     children: [
                       Expanded(
                         child: Text(
-                          user.displayName,
+                          task.taskTitle,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -692,7 +910,9 @@ class _ReportScreenState extends State<ReportScreen>
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: _getStatusColor(status).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
@@ -723,14 +943,43 @@ class _ReportScreenState extends State<ReportScreen>
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _buildInfoRow(Icons.person_outline, user.username,
-                      const Color(0xFF2196F3)),
+                  _buildInfoRow(
+                    Icons.apps_rounded,
+                    task.appName,
+                    const Color(0xFF2196F3),
+                  ),
                   const SizedBox(height: 8),
-                  _buildInfoRow(Icons.business_outlined,
-                      user.department ?? 'N/A', const Color(0xFF64748B)),
+                  _buildInfoRow(
+                    Icons.person,
+                    task.assignedBy,
+                    const Color.fromARGB(255, 25, 109, 225),
+                  ),
                   const SizedBox(height: 8),
-                  _buildInfoRow(Icons.badge_outlined, user.role ?? 'USER',
-                      const Color(0xFF69948B)),
+                  _buildInfoRow(
+                    Icons.person_outline_rounded,
+                    task.assignedTo,
+                    const Color(0xFF64748B),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildInfoRow(
+                    Icons.calendar_today_rounded,
+                    date,
+                    const Color(0xFF60048B),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildInfoRow(
+                    Icons.home_work_rounded,
+                    isRemote,
+                    const Color(0xFF69948B),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildInfoRow(
+                    Icons.group,
+                    task.coOperator.length > 0
+                        ? '${task.coOperator.toString().replaceAll('[', ' ').replaceAll(']', ' ')} Co-Operators'
+                        : 'No Co-Operators',
+                    const Color(0xFF69948B),
+                  ),
                 ],
               ),
             ),
@@ -746,8 +995,10 @@ class _ReportScreenState extends State<ReportScreen>
         Icon(icon, size: 16, color: iconColor),
         const SizedBox(width: 8),
         Expanded(
-          child: Text(text,
-              style: const TextStyle(fontSize: 14, color: Color(0xFF64748B))),
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+          ),
         ),
       ],
     );
@@ -764,16 +1015,20 @@ class _ReportScreenState extends State<ReportScreen>
               color: Colors.grey.shade100,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.search_off_rounded,
-                size: 64, color: Colors.grey.shade400),
+            child: Icon(
+              Icons.search_off_rounded,
+              size: 64,
+              color: Colors.grey.shade400,
+            ),
           ),
           const SizedBox(height: 24),
           const Text(
             'No Results Found',
             style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF1E293B)),
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1E293B),
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -788,16 +1043,17 @@ class _ReportScreenState extends State<ReportScreen>
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'active':
+      case 'completed':
+      case 'done':
         return Colors.green;
-      case 'inactive':
+      case 'in progress':
+      case 'ongoing':
         return Colors.orange;
-      case 'admin':
-        return Colors.blue;
-      case 'manager':
-        return Colors.purple;
-      case 'user':
+      case 'pending':
         return const Color(0xFF2196F3);
+      case 'cancelled':
+      case 'failed':
+        return Colors.red;
       default:
         return Colors.grey;
     }

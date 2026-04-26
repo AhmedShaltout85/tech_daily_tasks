@@ -28,6 +28,20 @@ class AboutAppProvider with ChangeNotifier {
     }
   }
 
+  Future<void> fetchAppsByDepartment(String department) async {
+    _setLoading(true);
+    try {
+      _aboutApps = await _api.getAppsByDepartment(department);
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   Future<void> addAboutApp(
       String appName, String department, List<String>? recommended) async {
     _setLoading(true);

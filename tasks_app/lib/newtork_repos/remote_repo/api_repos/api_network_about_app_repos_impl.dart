@@ -20,6 +20,15 @@ class ApiNetworkAboutAppReposImpl implements ApiNetworkAboutAppRepos {
   }
 
   @override
+  Future<List<AboutApp>> getAppsByDepartment(String department) async {
+    final response =
+        await _client.dio.get('/about-apps/department/$department');
+    return (response.data as List)
+        .map((json) => AboutApp.fromMap(json))
+        .toList();
+  }
+
+  @override
   Future<AboutApp> getAboutAppById(int id) async {
     final response = await _client.dio.get('/about-apps/$id');
     return AboutApp.fromMap(response.data);

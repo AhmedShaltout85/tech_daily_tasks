@@ -10,7 +10,9 @@ Future<void> generatePDF({
   DateTime? endDate,
   String? selectedAssignee,
   String? selectedApplication,
+  String? selectedVisitPlace,
   String? selectedStatus,
+  String? selectedIsRemote,
 }) async {
   final pdf = pw.Document();
 
@@ -90,11 +92,27 @@ Future<void> generatePDF({
                 style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
               ),
             ),
+          if (selectedVisitPlace != null && selectedVisitPlace != 'All')
+            pw.Directionality(
+              textDirection: pw.TextDirection.rtl,
+              child: pw.Text(
+                'مكان الزيارة - Visit Place: $selectedVisitPlace',
+                style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
+              ),
+            ),
           if (selectedStatus != null && selectedStatus != 'All')
             pw.Directionality(
               textDirection: pw.TextDirection.rtl,
               child: pw.Text(
                 'الحالة - Status: $selectedStatus',
+                style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
+              ),
+            ),
+          if (selectedIsRemote != null && selectedIsRemote != 'All')
+            pw.Directionality(
+              textDirection: pw.TextDirection.rtl,
+              child: pw.Text(
+                'نوع العمل - Work Type: $selectedIsRemote',
                 style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
               ),
             ),
@@ -144,6 +162,11 @@ Future<void> generatePDF({
                     ),
                     headerCellBilingual(
                       'الأولوية\nPriority',
+                      cellPadding,
+                      headerTextStyle,
+                    ),
+                    headerCellBilingual(
+                      'نوع العمل\nWork Type',
                       cellPadding,
                       headerTextStyle,
                     ),
@@ -203,6 +226,13 @@ Future<void> generatePDF({
                       contentCellBilingual(
                         cellPadding,
                         task.taskPriority,
+                        contentTextStyle,
+                      ),
+                      contentCellBilingual(
+                        cellPadding,
+                        (task.isRemote ?? false)
+                            ? 'Remote\nRemote'
+                            : 'Onsite\nOnsite',
                         contentTextStyle,
                       ),
                       contentCellBilingual(

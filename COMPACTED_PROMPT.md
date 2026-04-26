@@ -59,3 +59,25 @@ Flutter web app + Spring Boot backend for task management with user auth, user m
 - Check internet before API calls
 - Show "No Internet" dialog when offline
 - Handle API errors with user-friendly messages
+
+## Recent Updates (Today)
+
+### report_screen.dart (Flutter)
+- Rewrote to use DailyTaskProvider instead of UserProvider
+- Uses UserProvider for assignee list (usernames)
+- Uses PlaceNameProvider for application list (placeNameStrings)
+- Added isRemote filter (Remote/Onsite dropdown)
+- Shows task cards with status, appName, assignedBy, assignedTo, date, isRemote, co-operators
+- Stats: Total Tasks, Completed, Pending
+
+### generate_pdf.dart (Flutter)
+- Added selectedIsRemote parameter
+- Added "Work Type" column (Remote/Onsite) in PDF table
+- Added filter display for isRemote in PDF header
+
+### fetchAppsByDepartment (Flutter)
+- Added getAppsByDepartment to ApiNetworkAboutAppRepos interface
+- Added getAppsByDepartment to ApiNetworkAboutAppReposImpl (/about-apps/department/{department})
+- Added fetchAppsByDepartment to AboutAppProvider
+- Updated task_screen.dart to use fetchAppsByDepartment (by user department)
+- Updated report_screen.dart to use fetchAppsByDepartment (by user department)
