@@ -18,8 +18,10 @@ class ApiNetworkPreventiveItemReposImpl
   // ======================
 
   @override
-  Future<List<PreventiveItemModel>> getAllPreventiveItems() async {
-    final response = await _client.dio.get('/preventive-items');
+  Future<List<PreventiveItemModel>> getAllPreventiveItemsByDepartment(
+      String department) async {
+    final response =
+        await _client.dio.get('/preventive-items/department/$department');
     return (response.data as List)
         .map((json) => PreventiveItemModel.fromJson(json))
         .toList();
@@ -46,20 +48,22 @@ class ApiNetworkPreventiveItemReposImpl
 
   @override
   Future<PreventiveItemModel> addPreventiveItem(
-      String appName, String action) async {
+      String appName, String action, String department) async {
     final response = await _client.dio.post('/preventive-items', data: {
       'appName': appName,
       'action': action,
+      'department': department,
     });
     return PreventiveItemModel.fromJson(response.data);
   }
 
   @override
   Future<PreventiveItemModel> updatePreventiveItem(
-      int id, String appName, String action) async {
+      int id, String appName, String action, String department) async {
     final response = await _client.dio.put('/preventive-items/$id', data: {
       'appName': appName,
       'action': action,
+      'department': department,
     });
     return PreventiveItemModel.fromJson(response.data);
   }
@@ -74,8 +78,10 @@ class ApiNetworkPreventiveItemReposImpl
   // ==========================
 
   @override
-  Future<List<PreventiveMaintenanceModel>> getAllPreventiveMaintenance() async {
-    final response = await _client.dio.get('/preventive-maintenance');
+  Future<List<PreventiveMaintenanceModel>>
+      getAllPreventiveMaintenanceByDepartment(String department) async {
+    final response =
+        await _client.dio.get('/preventive-maintenance/department/$department');
     return (response.data as List)
         .map((json) => PreventiveMaintenanceModel.fromJson(json))
         .toList();
@@ -96,6 +102,7 @@ class ApiNetworkPreventiveItemReposImpl
     required String placeName,
     String? subPlace,
     bool? isRemote,
+    required String department,
   }) async {
     final response = await _client.dio.post('/preventive-maintenance', data: {
       'appName': appName,
@@ -104,6 +111,7 @@ class ApiNetworkPreventiveItemReposImpl
       'placeName': placeName,
       'subPlace': subPlace,
       'isRemote': isRemote,
+      'department': department,
     });
     return PreventiveMaintenanceModel.fromJson(response.data);
   }
@@ -117,6 +125,7 @@ class ApiNetworkPreventiveItemReposImpl
     required String placeName,
     String? subPlace,
     bool? isRemote,
+    required String department,
   }) async {
     final response =
         await _client.dio.put('/preventive-maintenance/$id', data: {
@@ -126,6 +135,7 @@ class ApiNetworkPreventiveItemReposImpl
       'placeName': placeName,
       'subPlace': subPlace,
       'isRemote': isRemote,
+      'department': department,
     });
     return PreventiveMaintenanceModel.fromJson(response.data);
   }

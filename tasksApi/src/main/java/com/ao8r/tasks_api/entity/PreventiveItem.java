@@ -21,4 +21,7 @@ public class PreventiveItem implements java.io.Serializable {
 
     @Column(name = "action", nullable = false)
     private String action;
+
+    @Column(name = "department", nullable = false)
+    private String department;
 }

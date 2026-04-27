@@ -13,6 +13,8 @@ public interface PreventiveItemRepository extends JpaRepository<PreventiveItem, 
 
     Optional<PreventiveItem> findByAppName(String appName);
 
+    List<PreventiveItem> findByDepartment(String department);
+
     @Query("SELECT p.action FROM PreventiveItem p WHERE p.appName = :appName")
     List<String> findActionByAppName(String appName);
 }

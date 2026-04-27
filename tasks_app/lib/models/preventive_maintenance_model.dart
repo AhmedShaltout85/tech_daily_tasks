@@ -1,11 +1,15 @@
+import 'package:intl/intl.dart';
+
 class PreventiveMaintenanceModel {
   final int? id;
   final String appName;
   final String placeName;
   final String? subPlace;
-  final String? isRemote;
+  final bool isRemote;
   final String username;
   final String action;
+  final String department;
+  final DateTime? createdAt;
 
   // Constructor
   PreventiveMaintenanceModel({
@@ -13,21 +17,30 @@ class PreventiveMaintenanceModel {
     required this.appName,
     required this.placeName,
     this.subPlace,
-    this.isRemote,
+    this.isRemote = false,
     required this.username,
     required this.action,
+    required this.department,
+    this.createdAt,
   });
 
   // From JSON method
   factory PreventiveMaintenanceModel.fromJson(Map<String, dynamic> json) {
+    final createdAtStr = json['createdAt'];
+    DateTime? parsedDate;
+    if (createdAtStr != null) {
+      parsedDate = DateTime.tryParse(createdAtStr.toString());
+    }
     return PreventiveMaintenanceModel(
       id: json['id'] as int?,
       appName: json['appName'],
       placeName: json['placeName'],
       subPlace: json['subPlace'],
-      isRemote: json['isRemote'],
+      isRemote: json['isRemote'] as bool? ?? false,
       username: json['username'],
       action: json['action'],
+      department: json['department'],
+      createdAt: parsedDate,
     );
   }
 
@@ -41,6 +54,7 @@ class PreventiveMaintenanceModel {
       'isRemote': isRemote,
       'username': username,
       'action': action,
+      'department': department,
     };
   }
 
@@ -50,9 +64,10 @@ class PreventiveMaintenanceModel {
     String? appName,
     String? placeName,
     String? subPlace,
-    String? isRemote,
+    bool? isRemote,
     String? username,
     String? action,
+    String? department,
   }) {
     return PreventiveMaintenanceModel(
       id: id ?? this.id,
@@ -62,6 +77,7 @@ class PreventiveMaintenanceModel {
       isRemote: isRemote ?? this.isRemote,
       username: username ?? this.username,
       action: action ?? this.action,
+      department: department ?? this.department,
     );
   }
 }

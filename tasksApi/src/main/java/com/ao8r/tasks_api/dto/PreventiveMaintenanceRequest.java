@@ -30,4 +30,8 @@ public class PreventiveMaintenanceRequest {
     private String subPlace;
 
     private Boolean isRemote = false;
+
+    @NotBlank(message = "Department is required")
+    @Size(max = 255, message = "Department must not exceed 255 characters")
+    private String department;
 }

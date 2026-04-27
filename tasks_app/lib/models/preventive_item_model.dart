@@ -2,11 +2,13 @@ class PreventiveItemModel {
   final int? id;
   final String appName;
   final String action;
-//Constructor
+  final String department;
+  //Constructor
   PreventiveItemModel({
     this.id,
     required this.appName,
     required this.action,
+    required this.department,
   });
 //fromJson
   factory PreventiveItemModel.fromJson(Map<String, dynamic> json) {
@@ -14,6 +16,7 @@ class PreventiveItemModel {
       id: json['id'] as int?,
       appName: json['appName'],
       action: json['action'],
+      department: json['department'],
     );
   }
 
@@ -23,6 +26,7 @@ class PreventiveItemModel {
       'id': id,
       'appName': appName,
       'action': action,
+      'department': department,
     };
   }
 
@@ -31,11 +35,13 @@ class PreventiveItemModel {
     int? id,
     String? appName,
     String? action,
+    String? department,
   }) {
     return PreventiveItemModel(
       id: id ?? this.id,
       appName: appName ?? this.appName,
       action: action ?? this.action,
+      department: department ?? this.department,
     );
   }
 }

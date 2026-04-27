@@ -263,7 +263,8 @@ Authorization: Bearer {{adminToken}}
 
 {
   "appName": "Test Application",
-  "action": "Check system logs"
+  "action": "Check system logs",
+  "department": "IT"
 }
 
 ### 31. Get All Preventive Items
@@ -280,6 +281,10 @@ Authorization: Bearer {{adminToken}}
 
 ### 34. Get Actions by App Name
 GET http://localhost:9999/tasks-api/api/preventive-items/app/Test%20Application/actions
+Authorization: Bearer {{adminToken}}
+
+### 35. Get Preventive Items by Department
+GET http://localhost:9999/tasks-api/api/preventive-items/department/IT
 Authorization: Bearer {{adminToken}}
 
 ### 35. Update Preventive Item by ID
@@ -349,7 +354,8 @@ Authorization: Bearer {{adminToken}}
   "username": "admin",
   "placeName": "Office Building",
   "subPlace": "Server Room",
-  "isRemote": false
+  "isRemote": false,
+  "department": "IT"
 }
 
 ### 64. Get All Preventive Maintenance
@@ -371,7 +377,8 @@ Authorization: Bearer {{adminToken}}
   "username": "admin",
   "placeName": "Updated Office",
   "subPlace": "Updated Room",
-  "isRemote": true
+  "isRemote": true,
+  "department": "IT"
 }
 
 ### 67. Delete Preventive Maintenance by ID
@@ -396,6 +403,10 @@ Authorization: Bearer {{adminToken}}
 
 ### 72. Get By IsRemote
 GET http://localhost:9999/tasks-api/api/preventive-maintenance/remote/false
+Authorization: Bearer {{adminToken}}
+
+### 72b. Get By Department
+GET http://localhost:9999/tasks-api/api/preventive-maintenance/department/IT
 Authorization: Bearer {{adminToken}}
 
 ### 73. Get By App Name and Username

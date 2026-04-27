@@ -3,7 +3,8 @@ import '../../../models/preventive_maintenance_model.dart';
 
 abstract class ApiNetworkPreventiveItemRepos {
   // Preventive Item endpoints
-  Future<List<PreventiveItemModel>> getAllPreventiveItems();
+  Future<List<PreventiveItemModel>> getAllPreventiveItemsByDepartment(
+      String department);
 
   Future<PreventiveItemModel> getPreventiveItemById(int id);
 
@@ -11,15 +12,17 @@ abstract class ApiNetworkPreventiveItemRepos {
 
   Future<List<String>> getActionsByAppName(String appName);
 
-  Future<PreventiveItemModel> addPreventiveItem(String appName, String action);
+  Future<PreventiveItemModel> addPreventiveItem(
+      String appName, String action, String department);
 
   Future<PreventiveItemModel> updatePreventiveItem(
-      int id, String appName, String action);
+      int id, String appName, String action, String department);
 
   Future<void> deletePreventiveItem(int id);
 
   // Preventive Maintenance endpoints
-  Future<List<PreventiveMaintenanceModel>> getAllPreventiveMaintenance();
+  Future<List<PreventiveMaintenanceModel>>
+      getAllPreventiveMaintenanceByDepartment(String department);
 
   Future<PreventiveMaintenanceModel> getPreventiveMaintenanceById(int id);
 
@@ -30,6 +33,7 @@ abstract class ApiNetworkPreventiveItemRepos {
     required String placeName,
     String? subPlace,
     bool? isRemote,
+    required String department,
   });
 
   Future<PreventiveMaintenanceModel> updatePreventiveMaintenance({
@@ -40,6 +44,7 @@ abstract class ApiNetworkPreventiveItemRepos {
     required String placeName,
     String? subPlace,
     bool? isRemote,
+    required String department,
   });
 
   Future<void> deletePreventiveMaintenance(int id);

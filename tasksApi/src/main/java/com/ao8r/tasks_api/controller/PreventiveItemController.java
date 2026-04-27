@@ -57,6 +57,13 @@ public class PreventiveItemController {
         return ResponseEntity.ok(actions);
     }
 
+    @GetMapping("/department/{department}")
+    public ResponseEntity<List<PreventiveItemResponse>> getByDepartment(@PathVariable String department) {
+        log.debug("Fetching preventive items by department: {}", department);
+        List<PreventiveItemResponse> items = preventiveItemService.getByDepartment(department);
+        return ResponseEntity.ok(items);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<PreventiveItemResponse> updateItem(@PathVariable Long id, 
                                                    @Valid @RequestBody PreventiveItemRequest request) {

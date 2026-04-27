@@ -6,6 +6,7 @@ import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/screens/about_app/manage_about_app_screen.dart';
 import 'package:tasks_app/screens/places/manage_place_screen.dart';
 import 'package:tasks_app/screens/preventive/preventive_item_screen.dart';
+import 'package:tasks_app/screens/report/preventive_maintenance_report_screen.dart';
 import 'package:tasks_app/screens/report/report_screen.dart';
 import 'package:tasks_app/screens/settings/settings_screen.dart';
 import 'package:tasks_app/screens/user/manage_user_screen.dart';
@@ -182,6 +183,26 @@ class _CustomDrawerState extends State<CustomDrawer>
                     _buildDrawerItem(
                       context,
                       index: 6,
+                      icon: Icons.build_circle_outlined,
+                      title: 'صيانة وقائية',
+                      isDark: isDark,
+                      colorScheme: colorScheme,
+                      onTap: () {
+                        setState(() => _selectedIndex = 6);
+                        widget.onIndexChanged?.call(6);
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const PreventiveMaintenanceReportScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      index: 7,
                       icon: isDark
                           ? Icons.light_mode_outlined
                           : Icons.dark_mode_outlined,

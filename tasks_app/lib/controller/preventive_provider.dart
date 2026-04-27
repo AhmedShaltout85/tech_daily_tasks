@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'dart:developer';
 import '../models/preventive_item_model.dart';
 import '../models/preventive_maintenance_model.dart';
 import '../newtork_repos/remote_repo/api_repos/api_network_preventive_repos_impl.dart';
@@ -41,12 +42,16 @@ class PreventiveProvider with ChangeNotifier {
   // PREVENTIVE ITEM METHODS
   // ============================
 
-  Future<void> fetchAllPreventiveItems() async {
+  Future<void> fetchAllPreventiveItemsByDepartment(String department) async {
     _setLoading(true, isItems: true);
     try {
-      _preventiveItems = await _api.getAllPreventiveItems();
+      log('Fetching preventive items for department: $department');
+      _preventiveItems =
+          await _api.getAllPreventiveItemsByDepartment(department);
+      log('Fetched ${_preventiveItems.length} preventive items');
       _errorItems = null;
     } catch (e) {
+      log('Error fetching items: $e');
       _errorItems = e.toString();
     } finally {
       _setLoading(false, isItems: true);
@@ -97,10 +102,11 @@ class PreventiveProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addPreventiveItem(String appName, String action) async {
+  Future<void> addPreventiveItem(
+      String appName, String action, String department) async {
     _setLoading(true, isItems: true);
     try {
-      final newItem = await _api.addPreventiveItem(appName, action);
+      final newItem = await _api.addPreventiveItem(appName, action, department);
       _preventiveItems.add(newItem);
       _errorItems = null;
     } catch (e) {
@@ -111,10 +117,11 @@ class PreventiveProvider with ChangeNotifier {
   }
 
   Future<void> updatePreventiveItem(
-      int id, String appName, String action) async {
+      int id, String appName, String action, String department) async {
     _setLoading(true, isItems: true);
     try {
-      final updatedItem = await _api.updatePreventiveItem(id, appName, action);
+      final updatedItem =
+          await _api.updatePreventiveItem(id, appName, action, department);
       final index = _preventiveItems.indexWhere((i) => i.id == id);
       if (index != -1) {
         _preventiveItems[index] = updatedItem;
@@ -144,12 +151,17 @@ class PreventiveProvider with ChangeNotifier {
   // PREVENTIVE MAINTENANCE METHODS
   // ==============================
 
-  Future<void> fetchAllPreventiveMaintenance() async {
+  Future<void> fetchAllPreventiveMaintenanceByDepartment(
+      String department) async {
     _setLoading(true, isItems: false);
     try {
-      _preventiveMaintenance = await _api.getAllPreventiveMaintenance();
+      log('Fetching preventive maintenance for department: $department');
+      _preventiveMaintenance =
+          await _api.getAllPreventiveMaintenanceByDepartment(department);
+      log('Fetched ${_preventiveMaintenance.length} items');
       _errorMaintenance = null;
     } catch (e) {
+      log('Error fetching: $e');
       _errorMaintenance = e.toString();
     } finally {
       _setLoading(false, isItems: false);
@@ -181,6 +193,7 @@ class PreventiveProvider with ChangeNotifier {
     required String placeName,
     String? subPlace,
     bool? isRemote,
+    required String department,
   }) async {
     _setLoading(true, isItems: false);
     try {
@@ -191,6 +204,7 @@ class PreventiveProvider with ChangeNotifier {
         placeName: placeName,
         subPlace: subPlace,
         isRemote: isRemote,
+        department: department,
       );
       _preventiveMaintenance.add(newItem);
       _errorMaintenance = null;
@@ -209,6 +223,7 @@ class PreventiveProvider with ChangeNotifier {
     required String placeName,
     String? subPlace,
     bool? isRemote,
+    required String department,
   }) async {
     _setLoading(true, isItems: false);
     try {
@@ -220,6 +235,7 @@ class PreventiveProvider with ChangeNotifier {
         placeName: placeName,
         subPlace: subPlace,
         isRemote: isRemote,
+        department: department,
       );
       final index = _preventiveMaintenance.indexWhere((i) => i.id == id);
       if (index != -1) {

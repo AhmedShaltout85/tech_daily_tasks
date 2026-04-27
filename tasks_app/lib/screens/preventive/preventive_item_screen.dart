@@ -46,10 +46,20 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
 
     if (department != null && department.isNotEmpty) {
       await context.read<AboutAppProvider>().fetchAppsByDepartment(department);
+      await context
+          .read<PreventiveProvider>()
+          .fetchAllPreventiveItemsByDepartment(department);
+
+      // If no results, try default department
+      final provider = context.read<PreventiveProvider>();
+      if (provider.preventiveItems.isEmpty) {
+        await context
+            .read<PreventiveProvider>()
+            .fetchAllPreventiveItemsByDepartment('IT');
+      }
     } else {
       await context.read<AboutAppProvider>().fetchAllAboutApps();
     }
-    await context.read<PreventiveProvider>().fetchAllPreventiveItems();
   }
 
   void _showNoInternetDialog() {
@@ -168,10 +178,14 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
     Navigator.pop(context);
     setState(() => _isLoading = true);
 
+    final userProvider = context.read<UserProvider>();
+    final department = userProvider.currentUser?.department ?? 'IT';
+
     try {
       final provider = context.read<PreventiveProvider>();
       if (item == null) {
-        await provider.addPreventiveItem(appName, _actionController.text);
+        await provider.addPreventiveItem(
+            appName, _actionController.text, department);
         ReusableToast.showToast(
           message: 'Action added successfully',
           bgColor: Colors.green,
@@ -180,7 +194,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
         );
       } else {
         await provider.updatePreventiveItem(
-            item.id!, appName, _actionController.text);
+            item.id!, appName, _actionController.text, department);
         ReusableToast.showToast(
           message: 'Action updated successfully',
           bgColor: Colors.green,

@@ -113,6 +113,7 @@ mvn package -DskipTests
 | GET | `/api/preventive-items/{id}` | Get preventive item by ID | AUTHENTICATED |
 | GET | `/api/preventive-items/app/{appName}` | Get preventive item by app name | AUTHENTICATED |
 | GET | `/api/preventive-items/app/{appName}/actions` | Get actions by app name | AUTHENTICATED |
+| GET | `/api/preventive-items/department/{department}` | Get preventive items by department | AUTHENTICATED |
 | PUT | `/api/preventive-items/{id}` | Update preventive item by ID | AUTHENTICATED |
 | DELETE | `/api/preventive-items/{id}` | Delete preventive item by ID | AUTHENTICATED |
 
@@ -139,6 +140,7 @@ mvn package -DskipTests
 | GET | `/api/preventive-maintenance/place/{placeName}` | Filter by place name | AUTHENTICATED |
 | GET | `/api/preventive-maintenance/sub-place/{subPlace}` | Filter by sub place | AUTHENTICATED |
 | GET | `/api/preventive-maintenance/remote/{isRemote}` | Filter by isRemote | AUTHENTICATED |
+| GET | `/api/preventive-maintenance/department/{department}` | Filter by department | AUTHENTICATED |
 | GET | `/api/preventive-maintenance/app/{appName}/user/{username}` | Filter by app and user | AUTHENTICATED |
 | GET | `/api/preventive-maintenance/app/{appName}/place/{placeName}` | Filter by app and place | AUTHENTICATED |
 | GET | `/api/preventive-maintenance/user/{username}/place/{placeName}` | Filter by user and place | AUTHENTICATED |
@@ -307,6 +309,7 @@ mvn package -DskipTests
 | id | Long | Primary key |
 | appName | String | Application name |
 | action | String | Action |
+| department | String | Department (NOT NULL) |
 
 ### PlaceItem Entity Fields
 | Field | Type | Description |
@@ -324,6 +327,7 @@ mvn package -DskipTests
 | placeName | String | Place name |
 | subPlace | String | Sub place |
 | isRemote | Boolean | Is remote flag |
+| department | String | Department (NOT NULL) |
 | createdAt | LocalDateTime | Creation timestamp |
 
 ### DailyTask Entity Fields
@@ -354,12 +358,12 @@ mvn package -DskipTests
 - `AppsNameResponse`: id, appName, department
 - `AboutAppRequest`: appName, department, recommended (List)
 - `AboutAppResponse`: id, appName, department, recommended (List)
-- `PreventiveItemRequest`: appName, action
-- `PreventiveItemResponse`: id, appName, action
+- `PreventiveItemRequest`: appName, action, department
+- `PreventiveItemResponse`: id, appName, action, department
 - `PlaceItemRequest`: placeName
 - `PlaceItemResponse`: id, placeName
-- `PreventiveMaintenanceRequest`: appName, action, username, placeName, subPlace, isRemote
-- `PreventiveMaintenanceResponse`: id, appName, action, username, placeName, subPlace, isRemote, createdAt
+- `PreventiveMaintenanceRequest`: appName, action, username, placeName, subPlace, isRemote, department
+- `PreventiveMaintenanceResponse`: id, appName, action, username, placeName, subPlace, isRemote, department, createdAt
 - `DailyTaskRequest`: taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator (List), expectedCompletionDate, taskPriority, taskNote, isRemote
 - `DailyTaskResponse`: id, taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator (List), createdAt, updatedAt, expectedCompletionDate, taskPriority, taskNote, isRemote
 
@@ -401,7 +405,8 @@ CREATE TABLE about_app_recommended (
 CREATE TABLE preventive_item (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
     app_name NVARCHAR(255) NOT NULL,
-    action NVARCHAR(255) NOT NULL
+    action NVARCHAR(255) NOT NULL,
+    department NVARCHAR(255) NOT NULL
 );
 
 CREATE TABLE place_item (
@@ -417,6 +422,7 @@ CREATE TABLE preventive_maintenance (
     place_name VARCHAR(255) NOT NULL,
     sub_place VARCHAR(255) NOT NULL DEFAULT 'none',
     is_remote BIT NOT NULL DEFAULT 0,
+    department VARCHAR(255) NOT NULL,
     created_at DATETIME2 NOT NULL DEFAULT GETDATE()
 );
 

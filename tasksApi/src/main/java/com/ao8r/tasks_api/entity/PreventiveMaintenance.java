@@ -37,6 +37,9 @@ public class PreventiveMaintenance implements java.io.Serializable {
     @Column(name = "is_remote", nullable = false)
     private Boolean isRemote;
 
+    @Column(name = "department", nullable = false)
+    private String department;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

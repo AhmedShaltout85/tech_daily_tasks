@@ -72,7 +72,8 @@ class MyApp extends StatelessWidget {
                 const ManagePlaceScreen(),
             AppRoute.manageAboutAppRouteName: (context) =>
                 const ManageAboutAppScreen(),
-                AppRoute.preventiveItemRouteName: (context) => const PreventiveItemScreen(),
+            AppRoute.preventiveItemRouteName: (context) =>
+                const PreventiveItemScreen(),
           },
         );
       },
