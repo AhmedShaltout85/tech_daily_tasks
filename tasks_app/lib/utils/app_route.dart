@@ -12,4 +12,6 @@ class AppRoute {
   static const String managePlaceRouteName = '/manage-place-screen';
   static const String manageAboutAppRouteName = '/manage-about-app-screen';
   static const String preventiveItemRouteName = '/preventive-item-screen';
+  static const String preventiveMaintenanceRouteName =
+      '/preventive-maintenance-screen';
 }

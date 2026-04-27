@@ -13,6 +13,7 @@ import 'package:tasks_app/screens/auth/auth_wrapper.dart';
 import 'package:tasks_app/screens/login/login_screen.dart';
 import 'package:tasks_app/screens/places/manage_place_screen.dart';
 import 'package:tasks_app/screens/preventive/preventive_item_screen.dart';
+import 'package:tasks_app/screens/preventive/manage_preventive_maintenance_screen.dart';
 import 'package:tasks_app/screens/report/report_screen.dart';
 import 'package:tasks_app/screens/user/manage_user_screen.dart';
 import 'package:tasks_app/screens/user/manage_users.dart';
@@ -74,6 +75,8 @@ class MyApp extends StatelessWidget {
                 const ManageAboutAppScreen(),
             AppRoute.preventiveItemRouteName: (context) =>
                 const PreventiveItemScreen(),
+            AppRoute.preventiveMaintenanceRouteName: (context) =>
+                const ManagePreventiveMaintenanceScreen(),
           },
         );
       },
