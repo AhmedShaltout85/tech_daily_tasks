@@ -90,7 +90,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                       context,
                       index: 1,
                       icon: Icons.people_rounded,
-                      title: 'Manage Users',
+                      title: 'أدارة المستخدمين',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () async {
@@ -109,7 +109,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                       context,
                       index: 2,
                       icon: Icons.shield_outlined,
-                      title: 'Preventive Items',
+                      title: 'عناصر وقائية',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () async {
@@ -128,7 +128,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                       context,
                       index: 3,
                       icon: Icons.apps_outage,
-                      title: 'Manage Apps',
+                      title: 'إدارة التطبيقات',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () async {
@@ -147,7 +147,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                       context,
                       index: 4,
                       icon: Icons.location_on_rounded,
-                      title: 'Manage Places',
+                      title: 'إدارة المواقع',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () async {
@@ -166,7 +166,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                       context,
                       index: 5,
                       icon: Icons.assessment_rounded,
-                      title: 'Reports',
+                      title: 'التقارير اليومية',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
@@ -185,7 +185,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                       context,
                       index: 6,
                       icon: Icons.build_circle_outlined,
-                      title: 'صيانة وقائية',
+                      title: 'تقارير صيانة وقائية',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
@@ -205,7 +205,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                       context,
                       index: 7,
                       icon: Icons.add_circle_outline,
-                      title: 'إضافة صيانة',
+                      title: 'إضافة صيانة وقائية',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
@@ -227,7 +227,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                       icon: isDark
                           ? Icons.light_mode_outlined
                           : Icons.dark_mode_outlined,
-                      title: isDark ? 'Light Mode' : 'Dark Mode',
+                      title: isDark ? 'مظهر فاتح' : 'مظهر غامق',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
@@ -239,9 +239,9 @@ class _CustomDrawerState extends State<CustomDrawer>
                     ),
                     _buildDrawerItem(
                       context,
-                      index: 8,
+                      index: 9,
                       icon: Icons.settings_rounded,
-                      title: 'Settings',
+                      title: 'الضبط والاعدادات',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
@@ -504,7 +504,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  'Logout',
+                  'تسجيل الخروج',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -545,7 +545,7 @@ class _CustomDrawerState extends State<CustomDrawer>
             ),
             const SizedBox(width: 10),
             Text(
-              'Logout',
+              'تسجيل الخروج',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -555,7 +555,7 @@ class _CustomDrawerState extends State<CustomDrawer>
           ],
         ),
         content: Text(
-          'Are you sure you want to logout?',
+          'هل أنت متاكد أنك تريد تسجيل الخروج؟',
           style: TextStyle(
             fontSize: 16,
             color: isDark ? Colors.grey.shade300 : Colors.black87,
@@ -571,7 +571,7 @@ class _CustomDrawerState extends State<CustomDrawer>
               ),
             ),
             child: Text(
-              'Cancel',
+              'تجاهل',
               style: TextStyle(
                 fontSize: 16,
                 color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
@@ -585,7 +585,7 @@ class _CustomDrawerState extends State<CustomDrawer>
               // Clear user data and navigate
               _userProvider.clearUserData();
               ReusableToast.showToast(
-                message: 'Logged out successfully',
+                message: 'تم تسجيل الخروج بنجاح',
                 bgColor: Colors.green,
                 textColor: Colors.white,
                 fontSize: 16,
@@ -601,7 +601,7 @@ class _CustomDrawerState extends State<CustomDrawer>
               elevation: 2,
             ),
             child: const Text(
-              'Logout',
+              'تسجيل الخروج',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),

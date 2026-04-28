@@ -54,14 +54,14 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('No Internet'),
+        title: const Text('لا يوجد اتصال بالانترنت'),
         content: const Text(
-          'No internet found. Please check your internet connection and try again.',
+          'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text('حسنا'),
           ),
         ],
       ),
@@ -79,7 +79,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
           children: [
             Icon(Icons.location_on, color: Colors.green),
             SizedBox(width: 12),
-            Text('Add Place'),
+            Text('اضافة مكان جديد'),
           ],
         ),
         content: Form(
@@ -87,14 +87,14 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
           child: TextFormField(
             controller: placeNameController,
             decoration: const InputDecoration(
-              labelText: 'Place Name',
-              hintText: 'Enter place name',
+              labelText: 'اسم الفرع',
+              hintText: 'ادخل اسم الفرع',
               prefixIcon: Icon(Icons.location_on_outlined),
               border: OutlineInputBorder(),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter place name';
+                return 'فضلاً ادخل اسم الفرع';
               }
               return null;
             },
@@ -103,7 +103,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: const Text('الغاء'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -112,7 +112,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
                 await _addPlace(placeNameController.text.trim());
               }
             },
-            child: const Text('Add'),
+            child: const Text('اضافة'),
           ),
         ],
       ),
@@ -140,7 +140,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
         provider.clearError();
       } else {
         ReusableToast.showToast(
-          message: 'Place added successfully',
+          message: 'فضلاً ادخل اسم الفرع',
           bgColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16,
@@ -161,7 +161,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
           children: [
             Icon(Icons.edit_location_alt, color: Colors.orange),
             SizedBox(width: 12),
-            Text('Edit Place'),
+            Text('تعديل اسم المكان'),
           ],
         ),
         content: Form(
@@ -169,14 +169,14 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
           child: TextFormField(
             controller: placeNameController,
             decoration: const InputDecoration(
-              labelText: 'Place Name',
-              hintText: 'Enter place name',
+              labelText: 'اسم الفرع',
+              hintText: 'ادخل اسم الفرع',
               prefixIcon: Icon(Icons.location_on_outlined),
               border: OutlineInputBorder(),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter place name';
+                return 'فضلاً ادخل اسم الفرع';
               }
               return null;
             },
@@ -185,7 +185,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: const Text('الغاء'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -197,7 +197,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
                 );
               }
             },
-            child: const Text('Update'),
+            child: const Text('تعديل'),
           ),
         ],
       ),
@@ -225,7 +225,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
         provider.clearError();
       } else {
         ReusableToast.showToast(
-          message: 'Place updated successfully',
+          message: 'تم تعديل اسم الفرع بنجاح',
           bgColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16,
@@ -249,10 +249,10 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
           children: [
             Icon(Icons.delete_outline, color: Colors.red),
             SizedBox(width: 12),
-            Text('Delete Place'),
+            Text('حذف المكان'),
           ],
         ),
-        content: Text('Are you sure you want to delete "${place.placeName}"?'),
+        content: Text('هل تريد حذف الفرع "${place.placeName}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -288,7 +288,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
           provider.clearError();
         } else {
           ReusableToast.showToast(
-            message: 'Place deleted successfully',
+            message: 'تم حذف الفرع بنجاح',
             bgColor: Colors.green,
             textColor: Colors.white,
             fontSize: 16,
@@ -308,7 +308,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Places'),
+        title: const Text('إدارة الاماكن والفروع'),
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 8),
@@ -340,7 +340,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
                   CircularProgressIndicator(color: colorScheme.primary),
                   const SizedBox(height: 16),
                   Text(
-                    'Loading...',
+                    'تحميل...',
                     style: TextStyle(
                       color: isDark ? Colors.grey[400] : Colors.grey[600],
                     ),
@@ -371,7 +371,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'Places',
+                        'الاماكن والفروع',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -410,7 +410,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'No places added yet',
+                                'لم يتم إضافة أي مكان او فرع حتى الآن',
                                 style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.grey[600],

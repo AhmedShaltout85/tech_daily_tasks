@@ -89,14 +89,14 @@ class _ReportScreenState extends State<ReportScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('No Internet'),
+        title: const Text('لا يوجد اتصال بالانترنت'),
         content: const Text(
-          'No internet found. Please check your internet connection and try again.',
+          'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text('حسنا'),
           ),
         ],
       ),
@@ -199,7 +199,7 @@ class _ReportScreenState extends State<ReportScreen>
       selectedIsRemote = 'All';
     });
     ReusableToast.showToast(
-      message: 'Filters cleared',
+      message: 'تم مسح التختصيصات',
       bgColor: Colors.green,
       textColor: Colors.white,
       fontSize: 16,
@@ -210,7 +210,7 @@ class _ReportScreenState extends State<ReportScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reports & Analytics'),
+        title: const Text('تقرير المهام اليومية'),
         actions: [
           Consumer<DailyTaskProvider>(
             builder: (context, taskProvider, child) {
@@ -240,13 +240,13 @@ class _ReportScreenState extends State<ReportScreen>
                             selectedIsRemote: selectedIsRemote,
                           );
                           ReusableToast.showToast(
-                            message: 'PDF generated successfully!',
+                            message: 'تم تنزيل التقرير بنجاح pdf',
                             bgColor: Colors.green,
                             textColor: Colors.white,
                             fontSize: 16,
                           );
                         },
-                  tooltip: 'Download PDF Report',
+                  tooltip: 'تنزيل التقرير بنجاح pdf',
                 ),
               );
             },
@@ -293,7 +293,7 @@ class _ReportScreenState extends State<ReportScreen>
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Loading reports...',
+                    'تحميل التقرير...',
                     style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
                   ),
                 ],
@@ -359,7 +359,7 @@ class _ReportScreenState extends State<ReportScreen>
                                 ),
                                 const SizedBox(width: 12),
                                 const Text(
-                                  'Search Filters',
+                                  'تخصيص بحث',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -389,7 +389,7 @@ class _ReportScreenState extends State<ReportScreen>
                                   children: [
                                     Expanded(
                                       child: _buildDateField(
-                                        label: 'Start Date',
+                                        label: 'من تاريخ',
                                         date: startDate,
                                         onTap: () => _selectDate(context, true),
                                       ),
@@ -397,7 +397,7 @@ class _ReportScreenState extends State<ReportScreen>
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: _buildDateField(
-                                        label: 'End Date',
+                                        label: 'إلى تاريخ',
                                         date: endDate,
                                         onTap: () =>
                                             _selectDate(context, false),
@@ -410,7 +410,7 @@ class _ReportScreenState extends State<ReportScreen>
                                   children: [
                                     Expanded(
                                       child: _buildDropdown(
-                                        label: 'Assigned To',
+                                        label: 'مخصص للموظف',
                                         value: assigneeList.contains(
                                           selectedAssignee,
                                         )
@@ -428,7 +428,7 @@ class _ReportScreenState extends State<ReportScreen>
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: _buildDropdown(
-                                        label: 'Application',
+                                        label: 'التطبيق/الجهاز',
                                         value: applicationList.contains(
                                           selectedApplication,
                                         )
@@ -450,7 +450,7 @@ class _ReportScreenState extends State<ReportScreen>
                                   children: [
                                     Expanded(
                                       child: _buildDropdown(
-                                        label: 'Visit Place',
+                                        label: 'مكان الصيانة',
                                         value: visitPlaceList.contains(
                                           selectedVisitPlace,
                                         )
@@ -468,7 +468,7 @@ class _ReportScreenState extends State<ReportScreen>
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: _buildStatusDropdown(
-                                        label: 'Status',
+                                        label: 'الحالة',
                                         value:
                                             statusList.contains(selectedStatus)
                                                 ? selectedStatus!
@@ -484,7 +484,7 @@ class _ReportScreenState extends State<ReportScreen>
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: _buildIsRemoteDropdown(
-                                        label: 'Work Type',
+                                        label: 'نوع الصيانة',
                                         value: isRemoteList
                                                 .contains(selectedIsRemote)
                                             ? selectedIsRemote!
@@ -509,7 +509,7 @@ class _ReportScreenState extends State<ReportScreen>
                                           Icons.clear_rounded,
                                           size: 20,
                                         ),
-                                        label: const Text('Clear Filters'),
+                                        label: const Text('ازالة التخصيصات'),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.grey.shade100,
                                           foregroundColor: Colors.grey.shade700,
@@ -546,7 +546,7 @@ class _ReportScreenState extends State<ReportScreen>
                       children: [
                         Expanded(
                           child: _buildStatCard(
-                            'Total Tasks',
+                            'إجمالي المهام',
                             filteredData.length.toString(),
                             Theme.of(context).colorScheme.primary,
                             Icons.list_alt_rounded,
@@ -555,7 +555,7 @@ class _ReportScreenState extends State<ReportScreen>
                         const SizedBox(width: 12),
                         Expanded(
                           child: _buildStatCard(
-                            'Completed',
+                            'مكتملة',
                             filteredData
                                 .where((t) => !t.taskStatus)
                                 .length
@@ -567,7 +567,7 @@ class _ReportScreenState extends State<ReportScreen>
                         const SizedBox(width: 12),
                         Expanded(
                           child: _buildStatCard(
-                            'Pending',
+                            'معلقة',
                             filteredData
                                 .where((t) => t.taskStatus)
                                 .length

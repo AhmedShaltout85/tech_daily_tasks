@@ -71,9 +71,9 @@ class _ManageUserScreenState extends State<ManageUserScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('No Internet'),
+        title: const Text('لا يوجد اتصال بالانترنت'),
         content: const Text(
-          'No internet found. Please check your internet connection and try again.',
+          'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
         ),
         actions: [
           TextButton(
@@ -113,14 +113,14 @@ class _ManageUserScreenState extends State<ManageUserScreen>
                   TextFormField(
                     controller: displayNameController,
                     decoration: const InputDecoration(
-                      labelText: 'Display Name',
-                      hintText: 'Enter display name',
+                      labelText: 'الاسم المفضل',
+                      hintText: 'أدخل الاسم المفضل',
                       prefixIcon: Icon(Icons.person_outline),
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Please enter display name';
+                        return 'فضلا ادخل الاسم المفضل';
                       }
                       return null;
                     },
@@ -129,9 +129,9 @@ class _ManageUserScreenState extends State<ManageUserScreen>
                   TextFormField(
                     controller: usernameController,
                     decoration: const InputDecoration(
-                      labelText: 'Username',
-                      hintText: 'Enter username',
-                      prefixIcon: Icon(Icons.alternate_email),
+                      labelText: 'اسم المستخدم',
+                      hintText: 'ادخل اسم المستخدم',
+                      prefixIcon: Icon(Icons.person_outline),
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
@@ -146,17 +146,17 @@ class _ManageUserScreenState extends State<ManageUserScreen>
                     controller: passwordController,
                     obscureText: true,
                     decoration: const InputDecoration(
-                      labelText: 'Password',
-                      hintText: 'Enter password',
+                      labelText: 'كلمة المرور',
+                      hintText: 'ادخل كلمة المرور',
                       prefixIcon: Icon(Icons.lock_outline),
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Please enter password';
+                        return 'فضلا ادخل كلمة المرور';
                       }
                       if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
+                        return 'كلمة المرور يجب ان تكون على الاقل 6 حروف';
                       }
                       return null;
                     },
@@ -204,7 +204,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
+              child: const Text('الغاء'),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -221,7 +221,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
                   );
                 }
               },
-              child: const Text('Add'),
+              child: const Text('اضافة'),
             ),
           ],
         ),
@@ -281,7 +281,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Users'),
+        title: const Text('ادارة المستخدمين'),
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 8),
@@ -313,7 +313,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
                   CircularProgressIndicator(color: colorScheme.primary),
                   const SizedBox(height: 16),
                   Text(
-                    'Loading...',
+                    'جارى التحميل',
                     style: TextStyle(
                       color: isDark ? Colors.grey[400] : Colors.grey[600],
                     ),
@@ -344,7 +344,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'Users',
+                        'المستخدمين',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -383,7 +383,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'No users added yet',
+                                'لم يتم اضافة اي مستخدم حتى الان',
                                 style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.grey[600],
@@ -524,7 +524,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
                     user.enabled == true ? Icons.block : Icons.check_circle,
                     color: Colors.orange,
                   ),
-                  tooltip: user.enabled == true ? 'Disable' : 'Enable',
+                  tooltip: user.enabled == true ? 'غير مفعل' : 'مفعل',
                   onPressed: () => _showEnableDisableDialog(user),
                 ),
               ),
@@ -536,7 +536,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
-                  tooltip: 'Delete',
+                  tooltip: 'حذف',
                   onPressed: () => _showDeleteConfirmation(user),
                 ),
               ),
@@ -572,11 +572,11 @@ class _ManageUserScreenState extends State<ManageUserScreen>
               ),
             ),
             const SizedBox(width: 12),
-            Text(enable ? 'Enable User' : 'Disable User'),
+            Text(enable ? 'تفعيل المستخدم' : 'الغاء التفعيل'),
           ],
         ),
         content: Text(
-          'Are you sure you want to ${enable ? 'enable' : 'disable'} "${user.displayName}"?',
+          'هل أنت متأكد من ${enable ? 'تفعيل' : 'تعطيل'} "${user.displayName}"?',
         ),
         actions: [
           TextButton(
@@ -589,7 +589,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
             ),
-            child: Text(enable ? 'Enable' : 'Disable'),
+            child: Text(enable ? 'مفعل' : 'غير مفعل'),
           ),
         ],
       ),
@@ -616,8 +616,8 @@ class _ManageUserScreenState extends State<ManageUserScreen>
         } else {
           ReusableToast.showToast(
             message: enable
-                ? 'User enabled successfully'
-                : 'User disabled successfully',
+                ? 'المستخدم تم تفعيله بنجاح'
+                : 'المستخدم تم تعطيله بنجاح',
             bgColor: Colors.green,
             textColor: Colors.white,
             fontSize: 16,
@@ -652,11 +652,11 @@ class _ManageUserScreenState extends State<ManageUserScreen>
           ],
         ),
         content: Text(
-            'Are you sure you want to delete "${user.displayName}"? This action cannot be undone.'),
+            'هل أنت متأكد من حذف "${user.displayName}"? هذا سيحذف كل المعلومات المرتبطة به.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('الغاء'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -664,7 +664,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Delete'),
+            child: const Text('حذف'),
           ),
         ],
       ),
@@ -688,7 +688,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
           provider.clearError();
         } else {
           ReusableToast.showToast(
-            message: 'User deleted successfully',
+            message: 'تم حذف المستخدم بنجاح',
             bgColor: Colors.green,
             textColor: Colors.white,
             fontSize: 16,

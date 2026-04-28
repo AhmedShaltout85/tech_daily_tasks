@@ -8,7 +8,7 @@ abstract class ApiNetworkPreventiveItemRepos {
 
   Future<PreventiveItemModel> getPreventiveItemById(int id);
 
-  Future<PreventiveItemModel> getPreventiveItemByAppName(String appName);
+  Future<List<PreventiveItemModel>> getPreventiveItemByAppName(String appName);
 
   Future<List<String>> getActionsByAppName(String appName);
 

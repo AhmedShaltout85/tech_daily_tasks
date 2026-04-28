@@ -16,6 +16,6 @@ public class PlaceItem implements java.io.Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "place_name", nullable = false)
+    @Column(name = "place_name", nullable = false, columnDefinition = "NVARCHAR(255)")
     private String placeName;
 }

@@ -16,9 +16,9 @@ public class AppsName implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "app_name", nullable = false)
+    @Column(name = "app_name", nullable = false, columnDefinition = "NVARCHAR(255)")
     private String appName;
 
-    @Column(name = "department", nullable = false)
+    @Column(name = "department", nullable = false, columnDefinition = "NVARCHAR(255)")
     private String department;
 }

@@ -66,12 +66,12 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('No Internet'),
-        content: const Text('Please check your connection.'),
+        title: const Text('لا يوجد اتصال بالانترنت'),
+        content: const Text('يرجى التحقق من الاتصال والمحاولة مرة اخرى'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text('حسنا'),
           ),
         ],
       ),
@@ -123,7 +123,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                item == null ? 'Add Action to $appName' : 'Edit Action',
+                item == null ? 'إضافة حدث $appName' : 'تحديث حدث $appName',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -133,8 +133,8 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
               TextField(
                 controller: _actionController,
                 decoration: InputDecoration(
-                  labelText: 'Action',
-                  hintText: 'Enter preventive action',
+                  labelText: 'الحدث',
+                  hintText: 'فضلا ادخل الحدث',
                   prefixIcon: const Icon(Icons.build),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -154,7 +154,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(item == null ? 'Add' : 'Update'),
+                  child: Text(item == null ? 'اضافة' : 'تحديث'),
                 ),
               ),
             ],
@@ -167,7 +167,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
   Future<void> _saveItem(PreventiveItemModel? item, String appName) async {
     if (_actionController.text.isEmpty) {
       ReusableToast.showToast(
-        message: 'Please enter an action',
+        message: 'يرجى ادخال الحدث',
         bgColor: Colors.orange,
         textColor: Colors.white,
         fontSize: 14,
@@ -187,7 +187,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
         await provider.addPreventiveItem(
             appName, _actionController.text, department);
         ReusableToast.showToast(
-          message: 'Action added successfully',
+          message: 'تم اضافة الحدث بنجاح',
           bgColor: Colors.green,
           textColor: Colors.white,
           fontSize: 14,
@@ -196,7 +196,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
         await provider.updatePreventiveItem(
             item.id!, appName, _actionController.text, department);
         ReusableToast.showToast(
-          message: 'Action updated successfully',
+          message: 'تم تحديث الحدث بنجاح',
           bgColor: Colors.green,
           textColor: Colors.white,
           fontSize: 14,
@@ -218,8 +218,8 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Action'),
-        content: Text('Are you sure you want to delete "${item.action}"?'),
+        title: const Text('حذف حدث'),
+        content: Text('هل تريد حذف حدث "${item.action}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -234,7 +234,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
                     .read<PreventiveProvider>()
                     .deletePreventiveItem(item.id!);
                 ReusableToast.showToast(
-                  message: 'Action deleted',
+                  message: 'تم حذف الحدث بنجاح',
                   bgColor: Colors.green,
                   textColor: Colors.white,
                   fontSize: 14,
@@ -250,7 +250,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
                 setState(() => _isLoading = false);
               }
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const Text('حذف', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -261,7 +261,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Preventive Items'),
+        title: const Text('العناصر الوقائية'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -273,7 +273,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
           ? FloatingActionButton.extended(
               onPressed: () => _showAddEditDialog(appName: _selectedAppName!),
               icon: const Icon(Icons.add),
-              label: const Text('Add Action'),
+              label: const Text('اضافة حدث'),
             )
           : null,
       body: Consumer2<AboutAppProvider, PreventiveProvider>(
@@ -296,12 +296,12 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
                       size: 80, color: Colors.grey.shade300),
                   const SizedBox(height: 16),
                   Text(
-                    'No Applications Found',
+                    'عفو لا يوجد تطبيقات',
                     style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Add apps in Manage Apps first',
+                    'فضلا أضف التطبيقات أولا',
                     style: TextStyle(color: Colors.grey.shade500),
                   ),
                 ],
@@ -369,7 +369,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Select an app above',
+                              'أختر التطبيق اولا',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey.shade600,
@@ -377,7 +377,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'to view its preventive actions',
+                              'اضافة حدث وقائى للتطبيق المحدد',
                               style: TextStyle(
                                 color: Colors.grey.shade500,
                               ),

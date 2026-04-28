@@ -28,7 +28,7 @@ class CustomBottomSheet extends StatefulWidget {
     required BuildContext context,
     required String title,
     required List<FieldConfig> fields,
-    String submitButtonText = 'Submit',
+    String submitButtonText = 'تابع',
     required Function(Map<String, dynamic>) onSubmit,
     VoidCallback? onCancel,
   }) {
@@ -352,7 +352,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('Cancel'),
+                      child: const Text('تراجع'),
                     ),
                   ),
                   const SizedBox(width: 12),

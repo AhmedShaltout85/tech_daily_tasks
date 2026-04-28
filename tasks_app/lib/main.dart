@@ -51,33 +51,37 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Tasks App',
-          theme: themeProvider.themeMode == ThemeMode.dark
-              ? AppTheme.darkTheme
-              : AppTheme.lightTheme,
-          initialRoute: AppRoute.splashRouteName,
-          routes: {
-            AppRoute.splashRouteName: (context) => const SplashScreen(),
-            AppRoute.loginRouteName: (context) => const LoginScreen(),
-            AppRoute.signupRouteName: (context) => const SignUpScreen(),
-            AppRoute.taskRouteName: (context) => const TaskScreen(),
-            AppRoute.userTaskRouteName: (context) => const UserTaskScreen(),
-            AppRoute.authWrapperRouteName: (context) => const AuthWrapper(),
-            AppRoute.reportRouteName: (context) => const ReportScreen(),
-            AppRoute.manageUsersRouteName: (context) =>
-                const ManageUsersScreen(),
-            AppRoute.manageUserRouteName: (context) => const ManageUserScreen(),
-            AppRoute.managePlaceRouteName: (context) =>
-                const ManagePlaceScreen(),
-            AppRoute.manageAboutAppRouteName: (context) =>
-                const ManageAboutAppScreen(),
-            AppRoute.preventiveItemRouteName: (context) =>
-                const PreventiveItemScreen(),
-            AppRoute.preventiveMaintenanceRouteName: (context) =>
-                const ManagePreventiveMaintenanceScreen(),
-          },
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'تطبيق المهام اليومية',
+            theme: themeProvider.themeMode == ThemeMode.dark
+                ? AppTheme.darkTheme
+                : AppTheme.lightTheme,
+            initialRoute: AppRoute.splashRouteName,
+            routes: {
+              AppRoute.splashRouteName: (context) => const SplashScreen(),
+              AppRoute.loginRouteName: (context) => const LoginScreen(),
+              AppRoute.signupRouteName: (context) => const SignUpScreen(),
+              AppRoute.taskRouteName: (context) => const TaskScreen(),
+              AppRoute.userTaskRouteName: (context) => const UserTaskScreen(),
+              AppRoute.authWrapperRouteName: (context) => const AuthWrapper(),
+              AppRoute.reportRouteName: (context) => const ReportScreen(),
+              AppRoute.manageUsersRouteName: (context) =>
+                  const ManageUsersScreen(),
+              AppRoute.manageUserRouteName: (context) =>
+                  const ManageUserScreen(),
+              AppRoute.managePlaceRouteName: (context) =>
+                  const ManagePlaceScreen(),
+              AppRoute.manageAboutAppRouteName: (context) =>
+                  const ManageAboutAppScreen(),
+              AppRoute.preventiveItemRouteName: (context) =>
+                  const PreventiveItemScreen(),
+              AppRoute.preventiveMaintenanceRouteName: (context) =>
+                  const ManagePreventiveMaintenanceScreen(),
+            },
+          ),
         );
       },
     );

@@ -79,13 +79,8 @@ class PreventiveProvider with ChangeNotifier {
   Future<void> fetchPreventiveItemByAppName(String appName) async {
     _setLoading(true, isItems: true);
     try {
-      final item = await _api.getPreventiveItemByAppName(appName);
-      final index = _preventiveItems.indexWhere((i) => i.appName == appName);
-      if (index != -1) {
-        _preventiveItems[index] = item;
-      } else {
-        _preventiveItems.add(item);
-      }
+      final items = await _api.getPreventiveItemByAppName(appName);
+      _preventiveItems = items;
       _errorItems = null;
     } catch (e) {
       _errorItems = e.toString();

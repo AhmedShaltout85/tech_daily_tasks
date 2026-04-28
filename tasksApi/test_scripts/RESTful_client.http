@@ -275,8 +275,8 @@ Authorization: Bearer {{adminToken}}
 GET http://localhost:9999/tasks-api/api/preventive-items/1
 Authorization: Bearer {{adminToken}}
 
-### 33. Get Preventive Item by App Name
-GET http://localhost:9999/tasks-api/api/preventive-items/app/Test%20Application
+### 33. Get Preventive Items by App Name (returns List)
+GET http://localhost:9999/tasks-api/api/preventive-items/app/LABS
 Authorization: Bearer {{adminToken}}
 
 ### 34. Get Actions by App Name

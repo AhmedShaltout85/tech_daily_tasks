@@ -111,7 +111,7 @@ mvn package -DskipTests
 | POST | `/api/preventive-items` | Create new preventive item | AUTHENTICATED |
 | GET | `/api/preventive-items` | Get all preventive items | AUTHENTICATED |
 | GET | `/api/preventive-items/{id}` | Get preventive item by ID | AUTHENTICATED |
-| GET | `/api/preventive-items/app/{appName}` | Get preventive item by app name | AUTHENTICATED |
+| GET | `/api/preventive-items/app/{appName}` | Get preventive items by app name (returns List) | AUTHENTICATED |
 | GET | `/api/preventive-items/app/{appName}/actions` | Get actions by app name | AUTHENTICATED |
 | GET | `/api/preventive-items/department/{department}` | Get preventive items by department | AUTHENTICATED |
 | PUT | `/api/preventive-items/{id}` | Update preventive item by ID | AUTHENTICATED |

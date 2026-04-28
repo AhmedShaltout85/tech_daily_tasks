@@ -3,6 +3,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
+import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/utils/app_colors.dart';
 
 import '../custom_widgets/custom_bottom_sheet.dart';
@@ -49,15 +52,15 @@ void showCustomBottomSheet({
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (bottomSheetContext) => StatefulBuilder(
-      builder: (context, setState) {
+      builder: (builderContext, setState) {
         // Update co-operator list based on current assignee
         final filteredCoOperators = employeeNames
             .where((name) =>
-                name.isNotEmpty && name != 'none' && name != currentAssignee)
+                name.isNotEmpty && name != 'لاشئ' && name != currentAssignee)
             .toList();
 
         return _buildBottomSheetContent(
-          context: bottomSheetContext,
+          context: context,
           appNames: appNames,
           employeeNamesWithoutNone: employeeNamesWithoutNone,
           placeNames: placeNames,
@@ -83,94 +86,95 @@ Widget _buildBottomSheetContent({
   required Function(String?) onAssigneeChanged,
   Function(Map<String, dynamic>)? onSubmitTask,
 }) {
+  final ladmin = context.read<UserProvider>().currentUser?.username;
   // Build the fields with the filtered co-operator list
   final fields = [
     TextFieldConfig(
-      key: 'title',
-      label: 'Task Title',
-      hint: 'Enter task title',
+      key: 'اسم المهمة',
+      label: 'اسم المهم',
+      hint: 'ادخل اسم المهمة',
       icon: Icons.title,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter a task title';
+          return 'فضلا ادخل اسم المهمة';
         }
         return null;
       },
     ),
     DropdownFieldConfig(
-      key: 'app-name',
-      label: 'Enter app name',
+      key: 'التطبيق/الجهاز',
+      label: 'أختر التطبيق /الجهاز',
       icon: Icons.apps,
       items: appNames,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter a app name';
+          return 'فضلا اختر التطبيق/الجهاز';
         }
         return null;
       },
     ),
     TextFieldConfig(
-      key: 'assign-by',
-      label: 'Assign By',
-      hint: 'Enter assign by',
+      key: 'مخصص بواسطة',
+      label: 'مخصص بواسطة',
+      hint: 'أدخل مخصص المهمه',
       icon: Icons.manage_accounts,
-      initialValue: 'admin',
+      initialValue: ladmin,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter a assign by';
+          return 'فضلا ادخل مخصص المهمة';
         }
         return null;
       },
     ),
     DropdownFieldConfig(
-      key: 'assign-to',
-      label: 'Assign To',
+      key: 'مخصصة ل',
+      label: 'مخصصة ل',
       items: employeeNamesWithoutNone,
       icon: Icons.person,
       onChanged: onAssigneeChanged,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please select an assignee';
+          return 'فضلا وجهه المهمة ل';
         }
         return null;
       },
     ),
     DropdownFieldConfig(
-      key: 'visit-place',
-      label: 'Visit Place',
+      key: 'المكان الرئيسى',
+      label: 'المكان الرئيسى',
       icon: Icons.location_on,
       items: placeNames ?? [],
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please select a visit place';
+          return 'فضلا اختر المكان الرئيسى';
         }
         return null;
       },
     ),
     TextFieldConfig(
-      key: 'sub-place',
-      label: 'Sub Place',
-      hint: 'Enter sub place (optional)',
+      key: 'مكان فرعى',
+      label: 'مكان فرعى',
+      hint: 'ادخل المكان الفرعى(اختيارى)',
       icon: Icons.location_on_outlined,
     ),
     DropdownFieldConfig(
-      key: 'task-priority',
-      label: 'Enter task priority',
+      key: 'أهمية المهمة',
+      label: 'أهمية المهمة',
       items: ['HIGH', 'MEDIUM', 'LOW'],
       icon: Icons.priority_high,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please select a task priority';
+          return 'فضلا اختر اهمية المهمة';
         }
         return null;
       },
     ),
     MultiSelectDropdownFieldConfig(
-      key: 'co-operator',
-      label: 'Co-operator',
+      key: 'المتعاونون',
+      label: 'المتعاونون',
       items: filteredCoOperators,
       icon: Icons.person,
-      hint: 'Select co-operators',
+      hint: 'ادخل المتعاونون(اختيارى)',
       initialValues: [],
       includeSearch: false,
       includeSelectAll: false,
@@ -181,30 +185,30 @@ Widget _buildBottomSheetContent({
       ),
     ),
     TextFieldConfig(
-      key: 'expected-completion-date',
-      label: 'Expected Completion Date',
-      hint: 'Enter Expected Completion Date like 7, 15, 30 days',
+      key: 'توقع انتهاء المهمة',
+      label: 'توقع انتهاء المهمة',
+      hint: 'ادخل توقع انتهاء المهمة بالارقام 7',
       icon: Icons.date_range,
       initialValue: '1',
       keyboardType: TextInputType.number,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter expected completion date';
+          return 'فضلا ادخل توقع انتهاء المهمة';
         }
         return null;
       },
     ),
     TextFieldConfig(
-      key: 'task-note',
-      label: 'Task Note',
-      hint: 'Enter note',
-      initialValue: 'None',
+      key: 'ملاحظات',
+      label: 'ملاحظات',
+      hint: 'ادخل ملاحظات',
+      initialValue: 'لايوجد ملاحظات',
       icon: Icons.note,
       maxLines: 3,
       keyboardType: TextInputType.multiline,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter a note';
+          return 'فضلا ادخل ملاحظات';
         }
         return null;
       },
@@ -212,9 +216,9 @@ Widget _buildBottomSheetContent({
   ];
 
   return _CustomBottomSheetContent(
-    title: 'Task Information',
+    title: 'بيانات المهمة',
     fields: fields,
-    submitButtonText: 'Save',
+    submitButtonText: 'حفظ المهمة',
     onSubmit: (values) async {
       if (onSubmitTask != null) {
         onSubmitTask!(values);
@@ -323,8 +327,7 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
               ...widget.fields
                   .map((field) => _buildField(field, isDark, colorScheme)),
               const SizedBox(height: 24),
-              Row(
-                children: [
+              Row(children: [
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _handleSubmit,
@@ -348,7 +351,8 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
                   child: TextButton(
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
+                      backgroundColor:
+                          isDark ? Colors.grey[800] : Colors.grey[200],
                     ),
                     onPressed: () {
                       widget.onCancel?.call();
@@ -365,7 +369,6 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
                   ),
                 ),
               ])
-              
             ],
           ),
         ),
@@ -526,7 +529,22 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
         if (value != null) values[key] = value;
       });
       _multiSelectValues.forEach((key, value) => values[key] = value);
-      widget.onSubmit(values);
+
+      // Map Arabic keys to English keys expected by API
+      final mappedValues = <String, dynamic>{
+        'title': values['اسم المهمة'] ?? '',
+        'app-name': values['التطبيق/الجهاز'] ?? '',
+        'assigned-by': values['مخصص بواسطة'] ?? '',
+        'assign-to': values['مخصصة ل'] ?? '',
+        'visit-place': values['المكان الرئيسى'] ?? '',
+        'sub-place': values['مكان فرعى'] ?? '',
+        'task-priority': values['أهمية المهمة'] ?? 'MEDIUM',
+        'task-note': values['ملاحظات'] ?? '',
+        'expected-completion-date': values['توقع انتهاء المهمة'] ?? '',
+        'co-operator': values['المتعاونون'] ?? [],
+      };
+
+      widget.onSubmit(mappedValues);
       Navigator.pop(context);
     }
   }
@@ -552,8 +570,8 @@ void showCustomUpdatePasswordDialog({
             TextField(
               controller: email,
               decoration: const InputDecoration(
-                labelText: 'Email',
-                hintText: 'Enter email',
+                labelText: 'الايميل',
+                hintText: 'ادخل الايميل',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -561,8 +579,8 @@ void showCustomUpdatePasswordDialog({
             TextField(
               controller: password,
               decoration: const InputDecoration(
-                labelText: 'Password',
-                hintText: 'Enter password',
+                labelText: 'كلمة المرور',
+                hintText: 'ادخل كلمة المرور',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -573,7 +591,7 @@ void showCustomUpdatePasswordDialog({
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text('Cancel'),
+            child: const Text('إلغاء'),
           ),
           ElevatedButton(onPressed: onPressed, child: Text(submitButtonText)),
         ],

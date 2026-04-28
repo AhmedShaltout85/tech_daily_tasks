@@ -13,7 +13,7 @@ public interface PreventiveItemService {
 
     PreventiveItemResponse getItemById(Long id);
 
-    PreventiveItemResponse getItemByAppName(String appName);
+    List<PreventiveItemResponse> getItemByAppName(String appName);
 
     List<String> getActionsByAppName(String appName);
 

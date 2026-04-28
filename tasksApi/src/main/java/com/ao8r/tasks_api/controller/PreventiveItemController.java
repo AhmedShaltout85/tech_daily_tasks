@@ -44,9 +44,9 @@ public class PreventiveItemController {
     }
 
     @GetMapping("/app/{appName}")
-    public ResponseEntity<PreventiveItemResponse> getItemByAppName(@PathVariable String appName) {
-        log.debug("Fetching preventive item by app name: {}", appName);
-        PreventiveItemResponse response = preventiveItemService.getItemByAppName(appName);
+    public ResponseEntity<List<PreventiveItemResponse>> getItemByAppName(@PathVariable String appName) {
+        log.debug("Fetching preventive items by app name: {}", appName);
+        List<PreventiveItemResponse> response = preventiveItemService.getItemByAppName(appName);
         return ResponseEntity.ok(response);
     }
 

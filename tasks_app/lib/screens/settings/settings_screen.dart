@@ -23,14 +23,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('No Internet'),
+        title: const Text('لا يوجد إنترنت'),
         content: const Text(
-          'No internet found. Please check your internet connection and try again.',
+          'تحقق من اتصالك بالإنترنت, وحاول مرة اخرى',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text('موافق'),
           ),
         ],
       ),
@@ -81,7 +81,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: Text(
-                          'Change Password',
+                          'تغيير كلمة المرور',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -99,11 +99,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       color: isDark ? Colors.white : Colors.black87,
                     ),
                     decoration: InputDecoration(
-                      labelText: 'Current Password',
+                      labelText: 'كلمة المرور الحالية',
                       labelStyle: TextStyle(
                         color: isDark ? Colors.grey[400] : Colors.grey[700],
                       ),
-                      hintText: 'Enter current password',
+                      hintText: 'ادخل كلمة المرور الحالية',
                       hintStyle: TextStyle(
                         color: isDark ? Colors.grey[600] : Colors.grey[400],
                       ),
@@ -134,7 +134,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your current password';
+                        return 'فضلاً ادخل كلمة المرور الحالية';
                       }
                       return null;
                     },
@@ -147,11 +147,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       color: isDark ? Colors.white : Colors.black87,
                     ),
                     decoration: InputDecoration(
-                      labelText: 'New Password',
+                      labelText: 'كلمة المرور الجديدة',
                       labelStyle: TextStyle(
                         color: isDark ? Colors.grey[400] : Colors.grey[700],
                       ),
-                      hintText: 'Enter new password',
+                      hintText: 'ادخل كلمة المرور الجديدة',
                       hintStyle: TextStyle(
                         color: isDark ? Colors.grey[600] : Colors.grey[400],
                       ),
@@ -179,10 +179,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a new password';
+                        return 'فضلاً ادخل كلمة المرور الجديدة';
                       }
                       if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
+                        return 'كلمة المرور يجب أن تكون على الأقل 6 حروف';
                       }
                       return null;
                     },
@@ -195,11 +195,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       color: isDark ? Colors.white : Colors.black87,
                     ),
                     decoration: InputDecoration(
-                      labelText: 'Confirm New Password',
+                      labelText: 'تأكيد كلمة المرور الجديدة',
                       labelStyle: TextStyle(
                         color: isDark ? Colors.grey[400] : Colors.grey[700],
                       ),
-                      hintText: 'Re-enter new password',
+                      hintText: 'تأكيد كلمة المرور مرة أخرى',
                       hintStyle: TextStyle(
                         color: isDark ? Colors.grey[600] : Colors.grey[400],
                       ),
@@ -230,10 +230,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please confirm your password';
+                        return 'فضلاً اكد كلمة المرور الجديدة';
                       }
                       if (value != newPasswordController.text) {
-                        return 'Passwords do not match';
+                        return 'كلمة المرور غير متطابقة';
                       }
                       return null;
                     },
@@ -253,7 +253,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         ),
                         child: Text(
-                          'Cancel',
+                          'إلغاء',
                           style: TextStyle(
                             fontSize: 16,
                             color: isDark ? Colors.grey[400] : Colors.grey[700],
@@ -304,7 +304,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       Navigator.pop(dialogContext);
                                       ReusableToast.showToast(
                                         message:
-                                            'Password changed successfully',
+                                            'تم تغيير كلمة المرور بنجاح',
                                         bgColor: Colors.green,
                                         textColor: Colors.white,
                                         fontSize: 16,
@@ -314,7 +314,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     if (!dialogContext.mounted) return;
                                     ReusableToast.showToast(
                                       message:
-                                          'Failed to change password. Please try again.',
+                                          'حدث خطأ اثناء تغيير كلمة المرور, يرجى المحاولة مرة أخرى',
                                       bgColor: Colors.red,
                                       textColor: Colors.white,
                                       fontSize: 16,
@@ -347,7 +347,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ),
                               )
                             : const Text(
-                                'Change Password',
+                                'تغيير كلمة المرور',
                                 style: TextStyle(fontSize: 16),
                               ),
                       ),
@@ -370,12 +370,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final user = context.watch<UserProvider>().currentUser;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: const Text('الضبط والاعدادات')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            'Account',
+            'الحساب الشخصي',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -451,7 +451,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 24),
           Text(
-            'Security',
+            'الحماية',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -491,7 +491,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Icon(Icons.lock_reset, color: colorScheme.primary),
               ),
               title: Text(
-                'Change Password',
+                'تغيير كلمة المرور',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -501,7 +501,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               subtitle: Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  'Update your account password',
+                  'تغيير كلمة المرور الخاصة بك',
                   style: TextStyle(
                     fontSize: 14,
                     color: isDark ? Colors.grey[400] : Colors.grey[600],
@@ -518,7 +518,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 24),
           Text(
-            'Appearance',
+            'المظهر',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -561,7 +561,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               title: Text(
-                'Dark Mode',
+                'الوضع الداكن',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -571,7 +571,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               subtitle: Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  isDark ? 'Switch to light theme' : 'Switch to dark theme',
+                  isDark ? 'تفعيل الوضع الداكن' : 'تفعيل الوضع الفاتح',
                   style: TextStyle(
                     fontSize: 14,
                     color: isDark ? Colors.grey[400] : Colors.grey[600],

@@ -107,7 +107,7 @@ class _TaskScreenState extends State<TaskScreen> {
         provider.clearError();
       } else {
         ReusableToast.showToast(
-          message: 'Task added successfully',
+          message: 'تم إضافة المهمة بنجاح',
           bgColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16,
@@ -121,14 +121,14 @@ class _TaskScreenState extends State<TaskScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('No Internet'),
+        title: const Text('لا يوجد اتصال بالانترنت'),
         content: const Text(
-          'No internet found. Please check your internet connection and try again.',
+          'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text('حسنا'),
           ),
         ],
       ),
@@ -194,16 +194,16 @@ class _TaskScreenState extends State<TaskScreen> {
 
     List<String> placeNames = placeNameProvider.placeNameStrings;
 
-    List<String> uniqueEmployeeNames = ['none', ...employeeNames];
+    List<String> uniqueEmployeeNames = ['لاشئ', ...employeeNames];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tasks'),
+        title: const Text('المهام اليومية'),
         actions: [
           Stack(
             children: [
               IconButton(
-                tooltip: 'Filters',
+                tooltip: 'تخصيص',
                 icon: const Icon(Icons.filter_list),
                 onPressed: () {
                   setState(() {
@@ -227,7 +227,7 @@ class _TaskScreenState extends State<TaskScreen> {
             ],
           ),
           IconButton(
-            tooltip: 'Add Task',
+            tooltip: 'إضافة مهمة',
             padding: const EdgeInsets.symmetric(horizontal: 20),
             icon: const Icon(Icons.add),
             onPressed: () {
@@ -238,7 +238,7 @@ class _TaskScreenState extends State<TaskScreen> {
                 appNames: appNames,
                 employeeNames: uniqueEmployeeNames,
                 employeeNamesWithoutNone: uniqueEmployeeNames
-                    .where((name) => name != 'none' && name != currentUsername)
+                    .where((name) => name != 'لاشئ' && name != currentUsername)
                     .toList(),
                 placeNames: placeNames,
                 selectedAssignee: currentUsername,
@@ -312,7 +312,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                   color: isDark ? Colors.white : Colors.black87,
                                 ),
                                 decoration: InputDecoration(
-                                  labelText: 'Assigned To',
+                                  labelText: 'مخصص للموظف',
                                   labelStyle: TextStyle(
                                     color: isDark
                                         ? Colors.grey[400]
@@ -339,7 +339,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                   DropdownMenuItem<String>(
                                     value: null,
                                     child: Text(
-                                      'All Employees',
+                                      'كل الموظفين',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         color: isDark
@@ -381,7 +381,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                   color: isDark ? Colors.white : Colors.black87,
                                 ),
                                 decoration: InputDecoration(
-                                  labelText: 'Application',
+                                  labelText: 'التطبيق/الجهاز',
                                   labelStyle: TextStyle(
                                     color: isDark
                                         ? Colors.grey[400]
@@ -408,7 +408,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                   DropdownMenuItem<String>(
                                     value: null,
                                     child: Text(
-                                      'All Apps',
+                                      'كل التطبيقات',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         color: isDark
@@ -455,7 +455,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                   color: isDark ? Colors.white : Colors.black87,
                                 ),
                                 decoration: InputDecoration(
-                                  labelText: 'Status',
+                                  labelText: 'الحالة',
                                   labelStyle: TextStyle(
                                     color: isDark
                                         ? Colors.grey[400]
@@ -482,7 +482,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                   DropdownMenuItem<bool?>(
                                     value: null,
                                     child: Text(
-                                      'All Status',
+                                      'كل الحالات',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         color: isDark
@@ -494,7 +494,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                   DropdownMenuItem<bool?>(
                                     value: true,
                                     child: Text(
-                                      'Active Only',
+                                      'النشطة فقط',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         color: isDark
@@ -506,7 +506,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                   DropdownMenuItem<bool?>(
                                     value: false,
                                     child: Text(
-                                      'Inactive Only',
+                                      'الغير نشطة فقط',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         color: isDark
@@ -567,7 +567,7 @@ class _TaskScreenState extends State<TaskScreen> {
                           onPressed: () {
                             provider.fetchAllTasks();
                           },
-                          child: const Text('Retry'),
+                          child: const Text('اعادة المحاولة'),
                         ),
                       ],
                     ),
@@ -586,7 +586,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'No tasks found',
+                          'لا توجد مهام',
                           style: TextStyle(
                             fontSize: 18,
                             color: isDark ? Colors.grey[400] : Colors.grey,
@@ -594,7 +594,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Tap + to add a new task',
+                          'قم بإضافة مهام جديدة +',
                           style: TextStyle(
                             fontSize: 14,
                             color: isDark ? Colors.grey[500] : Colors.grey,
@@ -621,7 +621,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'No tasks match your filters',
+                          'لا توجد نتائج للبحث الحالي',
                           style: TextStyle(
                             fontSize: 18,
                             color: isDark ? Colors.grey[400] : Colors.grey,
@@ -659,7 +659,7 @@ class _TaskScreenState extends State<TaskScreen> {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Showing ${filteredTasks.length} of ${provider.tasks.length} tasks',
+                                  'إظهار ${filteredTasks.length} of ${provider.tasks.length} مهام',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: colorScheme.primary,
@@ -789,28 +789,28 @@ class _TaskScreenState extends State<TaskScreen> {
                 const Divider(height: 24, thickness: 1),
                 _buildDetailRow(
                   Icons.business,
-                  'Application',
+                  'اسم التطبيق/الاجهزة',
                   task.appName ?? '',
                   Colors.blue,
                 ),
                 const SizedBox(height: 8),
                 _buildDetailRow(
                   Icons.person_outline,
-                  'Assigned By',
+                  'مخصص المهمة',
                   task.assignedBy ?? '',
                   Colors.deepPurple,
                 ),
                 const SizedBox(height: 8),
                 _buildDetailRow(
                   Icons.person,
-                  'Assigned To',
+                  'مخصص ل',
                   task.assignedTo ?? '',
                   Colors.teal,
                 ),
                 const SizedBox(height: 8),
                 _buildDetailRow(
                   Icons.location_on,
-                  'Visit Place',
+                  'مكان الرئيسى',
                   task.visitPlace ?? '',
                   Colors.red,
                 ),
@@ -818,7 +818,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   const SizedBox(height: 8),
                   _buildDetailRow(
                     Icons.location_on_outlined,
-                    'Sub Place',
+                    'المكان الفرعى',
                     task.subPlace ?? '',
                     Colors.orange,
                   ),
@@ -826,10 +826,10 @@ class _TaskScreenState extends State<TaskScreen> {
                 const SizedBox(height: 8),
                 _buildDetailRow(
                   Icons.group,
-                  'Co-Operator',
+                  'الشركاء',
                   task.coOperator != null && task.coOperator.isNotEmpty
                       ? task.coOperator.join(', ')
-                      : 'None',
+                      : 'لا يوجد شركاء',
                   Colors.brown,
                 ),
                 const SizedBox(height: 16),
@@ -868,7 +868,7 @@ class _TaskScreenState extends State<TaskScreen> {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              task.taskStatus == true ? 'Active' : 'Inactive',
+                              task.taskStatus == true ? 'نشط' : 'غير نشط',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
@@ -1066,8 +1066,8 @@ class _TaskScreenState extends State<TaskScreen> {
                 Expanded(
                   child: Text(
                     task.taskStatus
-                        ? 'Task marked as inactive'
-                        : 'Task marked as active',
+                        ? 'المهمة تم تعطيلها'
+                        : 'المهمة تم تفعيلها',
                     style: const TextStyle(fontWeight: FontWeight.w500),
                   ),
                 ),
@@ -1114,7 +1114,7 @@ class _TaskScreenState extends State<TaskScreen> {
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700),
             const SizedBox(width: 12),
-            const Text('Delete Task'),
+            const Text('حذف المهمة'),
           ],
         ),
         content: Column(
@@ -1122,7 +1122,7 @@ class _TaskScreenState extends State<TaskScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Are you sure you want to delete this task?',
+              'هل أنت متأكد من حذف هذه المهمة؟',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 12),
@@ -1143,7 +1143,7 @@ class _TaskScreenState extends State<TaskScreen> {
             ),
             const SizedBox(height: 12),
             const Text(
-              'This action cannot be undone.',
+              'هذه العملية لا يمكن التراجع عنها',
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.red,
@@ -1213,7 +1213,7 @@ class _TaskScreenState extends State<TaskScreen> {
                           SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Task deleted successfully',
+                              'تم حذف المهمة بنجاح',
                               style: TextStyle(fontWeight: FontWeight.w500),
                             ),
                           ),

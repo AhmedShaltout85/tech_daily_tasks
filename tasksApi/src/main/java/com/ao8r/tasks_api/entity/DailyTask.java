@@ -21,30 +21,30 @@ public class DailyTask implements java.io.Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "task_title", nullable = false)
+    @Column(name = "task_title", nullable = false, columnDefinition = "NVARCHAR(500)")
     private String taskTitle;
 
     @Column(name = "task_status", nullable = false)
     private boolean taskStatus;
 
-    @Column(name = "app_name", nullable = false)
+    @Column(name = "app_name", nullable = false, columnDefinition = "NVARCHAR(255)")
     private String appName;
 
-    @Column(name = "visit_place", nullable = false)
+    @Column(name = "visit_place", nullable = false, columnDefinition = "NVARCHAR(255)")
     private String visitPlace;
 
-    @Column(name = "sub_place")
+    @Column(name = "sub_place", columnDefinition = "NVARCHAR(255)")
     private String subPlace;
 
-    @Column(name = "assigned_to", nullable = false)
+    @Column(name = "assigned_to", nullable = false, columnDefinition = "NVARCHAR(255)")
     private String assignedTo;
 
-    @Column(name = "assigned_by", nullable = false)
+    @Column(name = "assigned_by", nullable = false, columnDefinition = "NVARCHAR(255)")
     private String assignedBy;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "daily_task_co_operator", joinColumns = @JoinColumn(name = "daily_task_id"))
-    @Column(name = "co_operator")
+    @Column(name = "co_operator", columnDefinition = "NVARCHAR(255)")
     private List<String> coOperator;
 
     @CreationTimestamp
@@ -58,10 +58,10 @@ public class DailyTask implements java.io.Serializable {
     @Column(name = "expected_completion_date", nullable = false)
     private LocalDateTime expectedCompletionDate;
 
-    @Column(name = "task_priority", nullable = false)
+    @Column(name = "task_priority", nullable = false, columnDefinition = "NVARCHAR(50)")
     private String taskPriority;
 
-    @Column(name = "task_note")
+    @Column(name = "task_note", columnDefinition = "NVARCHAR(1000)")
     private String taskNote;
 
     @Column(name = "is_remote", nullable = false)

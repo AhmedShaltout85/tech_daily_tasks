@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (username.isEmpty || password.isEmpty) {
       ReusableToast.showToast(
-        message: 'Please enter both username and password',
+        message: 'فضلا ادخل اسم المستخدم وكلمة المرور',
         bgColor: AppColors.redColor,
         textColor: AppColors.whiteColor,
         fontSize: 16,
@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
         userProvider.clearError();
       } else {
         ReusableToast.showToast(
-          message: 'Login successful',
+          message: 'تم تسجيل الدخول بنجاح',
           bgColor: AppColors.greenColor,
           textColor: AppColors.whiteColor,
           fontSize: 16,
@@ -92,13 +92,13 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       log('Login error: $e');
       if (!mounted) return;
-      String errorMessage = 'Invalid username or password';
+      String errorMessage = 'إسم المستخدم او كلمة المرور غير صحيحة';
       if (e.toString().contains('401')) {
-        errorMessage = 'Invalid username or password';
+        errorMessage = 'إسم المستخدم او كلمة المرور غير صحيحة';
       } else if (e.toString().contains('connection')) {
-        errorMessage = 'Cannot connect to server. Check your connection.';
+        errorMessage = 'لا يوجد اتصال بالانترنت, يرجى التحقق من الاتصال';
       } else {
-        errorMessage = 'Login failed. Please try again.';
+        errorMessage = 'حدث خطأ ما, يرجى المحاولة لاحقا';
       }
       ReusableToast.showToast(
         message: errorMessage,
@@ -118,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (username.isEmpty) {
       ReusableToast.showToast(
-        message: 'Please enter your username',
+        message: 'فضلا ادخل اسم المستخدم',
         bgColor: AppColors.redColor,
         textColor: AppColors.whiteColor,
         fontSize: 16,
@@ -128,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!_isValidInput(username)) {
       ReusableToast.showToast(
-        message: 'Please enter a valid username',
+        message: 'اسم المستخدم غير صحيح',
         bgColor: AppColors.redColor,
         textColor: AppColors.whiteColor,
         fontSize: 16,
@@ -151,6 +151,12 @@ class _LoginScreenState extends State<LoginScreen> {
         newPassword: '100100123',
       );
 
+      ReusableToast.showToast(
+        message: 'كلمة المرور الجديدة: 100100123',
+        bgColor: AppColors.greenColor,
+        textColor: AppColors.whiteColor,
+        fontSize: 16,
+      );
       if (!mounted) return;
 
       if (userProvider.error != null) {
@@ -163,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
         userProvider.clearError();
       } else {
         ReusableToast.showToast(
-          message: 'Password reset instructions sent to your email',
+          message: 'تم ارسال التعليمات بنجاح',
           bgColor: AppColors.greenColor,
           textColor: AppColors.whiteColor,
           fontSize: 16,
@@ -173,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
       log('Forgot password error: $e');
       if (!mounted) return;
       ReusableToast.showToast(
-        message: 'Failed to send reset instructions. Please try again.',
+        message: 'حدث خطأ ما, يرجى المحاولة لاحقا',
         bgColor: AppColors.redColor,
         textColor: AppColors.whiteColor,
         fontSize: 16,
@@ -189,14 +195,14 @@ class _LoginScreenState extends State<LoginScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('No Internet'),
+        title: const Text('لا يوجد اتصال بالانترنت'),
         content: const Text(
-          'No internet found. Please check your internet connection and try again.',
+          'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text('حسنا'),
           ),
         ],
       ),
@@ -269,7 +275,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               gap(height: 15),
               Text(
-                'Welcome back!',
+                'مرحبا بك مجددا',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
@@ -279,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               gap(height: 8),
               Text(
-                'Log in to your existing account',
+                'تسجيل الدخول للمتابعة',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
@@ -315,7 +321,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontSize: 16,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'username',
+                      hintText: 'اسم المستخدم',
                       hintStyle: TextStyle(
                         color: isDark ? Colors.grey[600] : Colors.grey[400],
                       ),
@@ -368,7 +374,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontSize: 16,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Password',
+                      hintText: 'كلمة المرور',
                       hintStyle: TextStyle(
                         color: isDark ? Colors.grey[600] : Colors.grey[400],
                       ),
@@ -414,7 +420,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: TextButton(
                     onPressed: _isLoading ? null : _handleForgotPassword,
                     child: Text(
-                      'Forgot Password?',
+                      'نسيت كلمة المرور؟',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -450,7 +456,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           )
                         : const Text(
-                            'LOG IN',
+                            'تسجيل الدخول',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -462,7 +468,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               gap(height: 30),
               Text(
-                'Or sign up using',
+                '- او تسجيل الدخول باستخدام -',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.normal,
@@ -524,7 +530,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Don\'t have an account? ',
+                    'ليس لديك حساب؟',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -536,7 +542,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       navigateTo(context, const SignUpScreen());
                     },
                     child: Text(
-                      'Sign Up',
+                      ' إنشاء حساب جديد',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

@@ -34,9 +34,12 @@ class ApiNetworkPreventiveItemReposImpl
   }
 
   @override
-  Future<PreventiveItemModel> getPreventiveItemByAppName(String appName) async {
+  Future<List<PreventiveItemModel>> getPreventiveItemByAppName(
+      String appName) async {
     final response = await _client.dio.get('/preventive-items/app/$appName');
-    return PreventiveItemModel.fromJson(response.data);
+    return (response.data as List)
+        .map((json) => PreventiveItemModel.fromJson(json))
+        .toList();
   }
 
   @override

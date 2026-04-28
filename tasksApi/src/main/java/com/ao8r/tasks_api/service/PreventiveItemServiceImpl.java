@@ -54,11 +54,11 @@ public class PreventiveItemServiceImpl implements PreventiveItemService {
     }
 
     @Override
-    public PreventiveItemResponse getItemByAppName(String appName) {
-        log.debug("Fetching preventive item by app name: {}", appName);
-        PreventiveItem item = preventiveItemRepository.findByAppName(appName)
-                .orElseThrow(() -> new ResourceNotFoundException("Preventive item not found with app name: " + appName));
-        return mapToResponse(item);
+    public List<PreventiveItemResponse> getItemByAppName(String appName) {
+        log.debug("Fetching preventive items by app name: {}", appName);
+        return preventiveItemRepository.findByAppNameList(appName).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override

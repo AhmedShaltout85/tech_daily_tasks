@@ -410,10 +410,9 @@ class _PreventiveMaintenanceReportScreenState
                   child: Text(
                     item.appName ?? '',
                     style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.customBlueColor,
-                    ),
+                        fontSize: 16,
+                        color: AppColors.blackColor,
+                        fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -445,8 +444,8 @@ class _PreventiveMaintenanceReportScreenState
                 Text(
                   item.username ?? '',
                   style: const TextStyle(
-                      fontSize: 20,
-                      color: AppColors.customBlueColor,
+                      fontSize: 16,
+                      color: AppColors.blackColor,
                       fontWeight: FontWeight.bold),
                 ),
               ],
@@ -460,8 +459,8 @@ class _PreventiveMaintenanceReportScreenState
                   child: Text(
                     item.placeName ?? '',
                     style: const TextStyle(
-                        fontSize: 20,
-                        color: AppColors.customBlueColor,
+                        fontSize: 16,
+                        color: AppColors.blackColor,
                         fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -479,8 +478,8 @@ class _PreventiveMaintenanceReportScreenState
                       ? DateFormat('yyyy-MM-dd HH:mm').format(item.createdAt!)
                       : '',
                   style: const TextStyle(
-                      fontSize: 20,
-                      color: AppColors.customBlueColor,
+                      fontSize: 16,
+                      color: AppColors.blackColor,
                       fontWeight: FontWeight.bold),
                 ),
               ],
@@ -494,9 +493,9 @@ class _PreventiveMaintenanceReportScreenState
                     const SizedBox(width: 10),
                     Text(
                       item.action,
-                      style: const TextStyle(
-                          fontSize: 20,
-                          color: AppColors.customBlueColor,
+                    style: const TextStyle(
+                          fontSize: 16,
+                          color: AppColors.blackColor,
                           fontWeight: FontWeight.bold),
                     ),
                   ],

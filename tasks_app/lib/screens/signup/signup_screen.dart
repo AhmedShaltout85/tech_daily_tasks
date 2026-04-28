@@ -42,22 +42,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   String? _validateInputs() {
     if (_displayNameController.text.trim().isEmpty) {
-      return 'Please enter a display name';
+      return 'فضلا ادخل الاسم المفضل';
     }
     if (_usernameController.text.trim().isEmpty) {
-      return 'Please enter a username';
+      return 'فضلا ادخل اسم المستخدم';
     }
     if (_passwordController.text.isEmpty) {
-      return 'Please enter a password';
+      return 'فضلا ادخل كلمة المرور';
     }
     if (_passwordController.text.length < 6) {
-      return 'Password must be at least 6 characters';
+      return 'كلمة المرور يجب ان تكون على الاقل 6 حروف';
     }
     if (_confirmPasswordController.text.isEmpty) {
-      return 'Please confirm your password';
+      return 'فضلا ادخل تاكيد كلمة المرور';
     }
     if (_passwordController.text != _confirmPasswordController.text) {
-      return 'Passwords do not match';
+      return 'كلمة المرور غير متطابقة';
     }
     // if (_departmentController.text.trim().isEmpty) {
     //   return 'Please enter a department';
@@ -110,7 +110,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           userProvider.clearError();
         } else {
           ReusableToast.showToast(
-            message: 'Account created successfully! Please log in.',
+            message: 'تم إنشاء حسابك بنجاح, يرجى تسجيل الدخول',
             bgColor: AppColors.greenColor,
             textColor: AppColors.whiteColor,
             fontSize: 16,
@@ -122,7 +122,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       log('Signup error: $e');
       if (mounted) {
         ReusableToast.showToast(
-          message: 'An unexpected error occurred. Please try again.',
+          message: 'حدث خطأ ما, يرجى المحاولة لاحقا',
           bgColor: AppColors.redColor,
           textColor: AppColors.whiteColor,
           fontSize: 16,
@@ -141,12 +141,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       builder: (context) => AlertDialog(
         title: const Text('No Internet'),
         content: const Text(
-          'No internet found. Please check your internet connection and try again.',
+          'خطأ في الاتصال بالانترنت, يرجى التحقق من الاتصال والمحاولة مرة اخرى',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text('حسنا'),
           ),
         ],
       ),
@@ -192,7 +192,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   gap(height: 24),
                   Text(
-                    'Let\'s Get Started!',
+                    'هيا بنا نبدأ',
                     style: TextStyle(
                       fontSize: fontSize * 2,
                       fontWeight: FontWeight.bold,
@@ -201,7 +201,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   gap(height: 8),
                   Text(
-                    'Create an account on TASKS to get all features',
+                    'أنشاء حساب جديد, يرجى تعبئة الحقول التالية',
                     style: TextStyle(
                       fontSize: fontSize,
                       fontWeight: FontWeight.normal,
@@ -214,7 +214,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     keyboardType: TextInputType.text,
                     textCapitalization: TextCapitalization.words,
                     controller: _displayNameController,
-                    hintText: 'Display Name',
+                    hintText: 'الاسم المفضل',
                     icon: Icons.badge_outlined,
                     isDark: isDark,
                     colorScheme: colorScheme,
@@ -222,7 +222,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   gap(height: 18),
                   _buildThemedInputField(
                     controller: _usernameController,
-                    hintText: 'Username',
+                    hintText: 'اسم المستخدم',
                     icon: Icons.person_outline,
                     isDark: isDark,
                     colorScheme: colorScheme,
@@ -282,7 +282,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   gap(height: 18),
                   _buildThemedInputField(
                     controller: _passwordController,
-                    hintText: 'Password',
+                    hintText: 'كلمة المرور',
                     icon: Icons.lock_outline,
                     isDark: isDark,
                     colorScheme: colorScheme,
@@ -304,7 +304,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   gap(height: 18),
                   _buildThemedInputField(
                     controller: _confirmPasswordController,
-                    hintText: 'Confirm Password',
+                    hintText: 'تأكيد كلمة المرور',
                     icon: Icons.lock_outline,
                     isDark: isDark,
                     colorScheme: colorScheme,
@@ -347,7 +347,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             )
                           : Text(
-                              'CREATE ACCOUNT',
+                              'إنشاء حساب جديد',
                               style: TextStyle(
                                 fontSize: fontSize + 2,
                                 fontWeight: FontWeight.bold,
@@ -361,7 +361,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Already have an account? ',
+                        'لدى حساب بالفعل؟ ',
                         style: TextStyle(
                           fontSize: fontSize,
                           fontWeight: FontWeight.normal,
@@ -376,7 +376,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           );
                         },
                         child: Text(
-                          'Login here',
+                          'تسجيل دخول من هنا',
                           style: TextStyle(
                             fontSize: fontSize,
                             fontWeight: FontWeight.bold,

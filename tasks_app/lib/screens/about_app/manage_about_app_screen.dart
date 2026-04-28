@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
+import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/screens/about_app/app_recommended_details_screen.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
@@ -66,14 +68,14 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('No Internet'),
+        title: const Text('لا يوجد اتصال بالانترنت'),
         content: const Text(
-          'No internet found. Please check your internet connection and try again.',
+          'يرجى التحقق من الاتصال والمحاولة مرة اخرى.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text('حسنا'),
           ),
         ],
       ),
@@ -92,7 +94,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
           children: [
             Icon(Icons.info_outline, color: Colors.blue),
             SizedBox(width: 12),
-            Text('Add About App'),
+            Text('ادراة التطبيقات والاجهزة'),
           ],
         ),
         content: Form(
@@ -103,14 +105,14 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
               TextFormField(
                 controller: appNameController,
                 decoration: const InputDecoration(
-                  labelText: 'App Name',
-                  hintText: 'Enter app name',
+                  labelText: 'اسم التطبيق/الجهاز',
+                  hintText: 'ادخل اسم التطبيق/الجهاز',
                   prefixIcon: Icon(Icons.apps),
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter app name';
+                    return 'فضلا ادخل اسم التطبيق/الجهاز';
                   }
                   return null;
                 },
@@ -119,8 +121,8 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
               TextFormField(
                 controller: recommendedController,
                 decoration: const InputDecoration(
-                  labelText: 'Recommended (optional)',
-                  hintText: 'Enter recommended value',
+                  labelText: 'تفاصيل التطبيق/الجهاز',
+                  hintText: 'ادخل تفاصيل التطبيق/الجهاز',
                   prefixIcon: Icon(Icons.thumb_up_outlined),
                   border: OutlineInputBorder(),
                 ),
@@ -131,7 +133,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: const Text('الغاء'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -144,7 +146,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
                 );
               }
             },
-            child: const Text('Add'),
+            child: const Text('اضافة'),
           ),
         ],
       ),
@@ -158,9 +160,11 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
       return;
     }
 
+final provider = context.read<UserProvider>();
+    final department =provider.currentUser?.department;
     await context
         .read<AboutAppProvider>()
-        .addAboutApp(appName, 'IT', recommended);
+        .addAboutApp(appName, department!, recommended);
     // Trigger sync - notify AppNameProvider to refresh
 
     if (mounted) {
@@ -175,7 +179,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
         provider.clearError();
       } else {
         ReusableToast.showToast(
-          message: 'About app added successfully',
+          message: 'تم اضافة التطبيق بنجاح',
           bgColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16,
@@ -200,7 +204,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
           children: [
             Icon(Icons.edit_note, color: Colors.orange),
             SizedBox(width: 12),
-            Text('Edit About App'),
+            Text('تعديل التطبيقات والاجهزة'),
           ],
         ),
         content: Form(
@@ -211,14 +215,14 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
               TextFormField(
                 controller: appNameController,
                 decoration: const InputDecoration(
-                  labelText: 'App Name',
-                  hintText: 'Enter app name',
+                  labelText: 'اسم التطبيق/الجهاز',
+                  hintText: 'ادخل اسم التطبيق/الجهاز',
                   prefixIcon: Icon(Icons.apps),
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter app name';
+                    return 'فضلا ادخل اسم التطبيق/الجهاز';
                   }
                   return null;
                 },
@@ -227,7 +231,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
               TextFormField(
                 controller: recommendedController,
                 decoration: const InputDecoration(
-                  labelText: 'Recommended (optional)',
+                  labelText: 'تفاصيل التطبيق/الجهاز(اختيارى)',
                   hintText: 'Enter recommended values (comma separated)',
                   prefixIcon: Icon(Icons.thumb_up_outlined),
                   border: OutlineInputBorder(),
@@ -239,7 +243,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: const Text('الغاء'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -256,7 +260,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
                 );
               }
             },
-            child: const Text('Update'),
+            child: const Text('تحديث'),
           ),
         ],
       ),
@@ -271,9 +275,11 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
       return;
     }
 
+final provider = context.read<UserProvider>();
+    final department =provider.currentUser?.department;
     await context
         .read<AboutAppProvider>()
-        .updateAboutApp(id, appName, 'IT', recommended);
+        .updateAboutApp(id, appName, department!, recommended);
     // Trigger sync - notify AppNameProvider to refresh
 
     if (mounted) {
@@ -288,7 +294,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
         provider.clearError();
       } else {
         ReusableToast.showToast(
-          message: 'About app updated successfully',
+          message: 'تم تحديث التطبيق بنجاح',
           bgColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16,
@@ -315,7 +321,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
             Text('Delete About App'),
           ],
         ),
-        content: Text('Are you sure you want to delete "${aboutApp.appName}"?'),
+        content: Text('هل أنت متاكد من حذف التطبيق/الجهاز "${aboutApp.appName}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -352,7 +358,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
           provider.clearError();
         } else {
           ReusableToast.showToast(
-            message: 'About app deleted successfully',
+            message: 'تم حذف التطبيق/الجهاز بنجاح',
             bgColor: Colors.green,
             textColor: Colors.white,
             fontSize: 16,
@@ -384,7 +390,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage Applications'),
+        title: const Text('ادراة التطبيقات والاجهزة'),
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 8),
@@ -416,7 +422,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
                   CircularProgressIndicator(color: colorScheme.primary),
                   const SizedBox(height: 16),
                   Text(
-                    'Loading...',
+                    'تحميل',
                     style: TextStyle(
                       color: isDark ? Colors.grey[400] : Colors.grey[600],
                     ),
@@ -448,7 +454,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'About Apps',
+                        'التطبيقات والاجهزة',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -487,7 +493,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'No about apps added yet',
+                                'لا يوجد تطبيقات/اجهزة',
                                 style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.grey[600],
