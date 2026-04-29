@@ -1,35 +1,47 @@
-import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
+import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/screens/preventive/preventive_item_screen.dart';
+import 'package:tasks_app/screens/preventive/manage_preventive_maintenance_screen.dart';
+import 'package:tasks_app/screens/report/preventive_maintenance_report_screen.dart';
+import 'package:tasks_app/screens/report/report_screen.dart';
 import 'package:tasks_app/screens/settings/settings_screen.dart';
 
-
 class CustomUserDrawer extends StatefulWidget {
-  const CustomUserDrawer({super.key});
+  final int selectedIndex;
+  final Function(int)? onIndexChanged;
+
+  const CustomUserDrawer({
+    super.key,
+    this.selectedIndex = 1,
+    this.onIndexChanged,
+  });
 
   @override
-  State<CustomUserDrawer> createState() => _CustomUserDrawerState();
+  State<CustomUserDrawer> createState() => _CustomDrawerState();
 }
 
-class _CustomUserDrawerState extends State<CustomUserDrawer>
+class _CustomDrawerState extends State<CustomUserDrawer>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+  late UserProvider _userProvider;
 
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.selectedIndex;
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _controller.forward();
+    // Get provider reference at init time
+    _userProvider = Provider.of<UserProvider>(context, listen: false);
   }
 
   @override
@@ -38,29 +50,14 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
     super.dispose();
   }
 
-  String _getInitials() {
-    final email = FirebaseAuth.instance.currentUser?.email ?? '';
-    if (email.isEmpty) return 'U';
-    final name = email.split('@').first;
-    return name.isNotEmpty ? name[0].toUpperCase() : 'U';
-  }
-
-  String _getDisplayName() {
-    final email = FirebaseAuth.instance.currentUser?.displayName ?? '';
-    if (email.isEmpty) return 'User';
-    // final name = email.split('@').first;
-    // return name.isNotEmpty
-    //     ? name[0].toUpperCase() + name.substring(1).toLowerCase()
-    //     : 'User';
-    return email;
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context);
     final isDark = themeProvider.isDark;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final currentUser = userProvider.currentUser;
 
     return Drawer(
       child: Container(
@@ -75,10 +72,11 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
         ),
         child: Column(
           children: [
-            // Enhanced Header with gradient and shadow
-            _buildDrawerHeader(isDark, colorScheme),
-
-            // Menu items with fade animation
+            _buildDrawerHeader(
+                isDark,
+                colorScheme,
+                currentUser?.displayName ?? 'User',
+                currentUser?.username ?? ''),
             Expanded(
               child: FadeTransition(
                 opacity: _animation,
@@ -88,52 +86,107 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
                     _buildDrawerItem(
                       context,
                       index: 0,
-                      icon: Icons.home_rounded,
-                      title: 'User Home',
+                      icon: Icons.shield_outlined,
+                      title: 'عناصر وقائية',
                       isDark: isDark,
                       colorScheme: colorScheme,
-                      onTap: () {
+                      onTap: () async {
                         setState(() => _selectedIndex = 0);
+                        widget.onIndexChanged?.call(0);
                         Navigator.pop(context);
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PreventiveItemScreen(),
+                          ),
+                        );
                       },
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: Divider(
-                        color: isDark
-                            ? Colors.grey.shade700
-                            : Colors.grey.shade300,
-                        thickness: 1,
-                      ),
                     ),
                     _buildDrawerItem(
                       context,
-                      index: 5,
-                      icon: isDark
-                          ? Icons.light_mode_outlined
-                          : Icons.dark_mode_outlined,
-                      title: isDark ? 'Light Mode' : 'Dark Mode',
+                      index: 1,
+                      icon: Icons.assessment_rounded,
+                      title: 'التقارير اليومية',
+                      isDark: isDark,
+                      colorScheme: colorScheme,
+                      onTap: () {
+                        setState(() => _selectedIndex = 1);
+                        widget.onIndexChanged?.call(1);
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ReportScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      index: 2,
+                      icon: Icons.build_circle_outlined,
+                      title: 'تقارير صيانة وقائية',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
                         setState(() => _selectedIndex = 2);
+                        widget.onIndexChanged?.call(2);
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const PreventiveMaintenanceReportScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      index: 3,
+                      icon: Icons.add_circle_outline,
+                      title: 'إضافة صيانة وقائية',
+                      isDark: isDark,
+                      colorScheme: colorScheme,
+                      onTap: () {
+                        setState(() => _selectedIndex = 3);
+                        widget.onIndexChanged?.call(3);
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const ManagePreventiveMaintenanceScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      index: 4,
+                      icon: isDark
+                          ? Icons.light_mode_outlined
+                          : Icons.dark_mode_outlined,
+                      title: isDark ? 'مظهر فاتح' : 'مظهر غامق',
+                      isDark: isDark,
+                      colorScheme: colorScheme,
+                      onTap: () {
+                        setState(() => _selectedIndex = 4);
+                        widget.onIndexChanged?.call(4);
                         Navigator.pop(context);
                         themeProvider.toggleTheme();
                       },
                     ),
                     _buildDrawerItem(
                       context,
-                      index: 6,
+                      index: 5,
                       icon: Icons.settings_rounded,
-                      title: 'Settings',
+                      title: 'الضبط والاعدادات',
                       isDark: isDark,
                       colorScheme: colorScheme,
                       onTap: () {
-                        setState(() => _selectedIndex = 3);
+                        setState(() => _selectedIndex = 5);
+                        widget.onIndexChanged?.call(5);
                         Navigator.pop(context);
                         Navigator.push(
                           context,
@@ -147,8 +200,6 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
                 ),
               ),
             ),
-
-            // Enhanced logout button
             _buildLogoutSection(isDark, colorScheme),
           ],
         ),
@@ -156,10 +207,11 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
     );
   }
 
-  Widget _buildDrawerHeader(bool isDark, ColorScheme colorScheme) {
+  Widget _buildDrawerHeader(bool isDark, ColorScheme colorScheme,
+      String displayName, String username) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -187,7 +239,6 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Animated Avatar
           Hero(
             tag: 'user_avatar',
             child: Container(
@@ -202,17 +253,17 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
                 ],
               ),
               child: CircleAvatar(
-                radius: 42,
+                radius: 38,
                 backgroundColor: isDark ? colorScheme.surface : Colors.white,
                 child: CircleAvatar(
-                  radius: 38,
+                  radius: 34,
                   backgroundColor: isDark
                       ? colorScheme.primaryContainer
                       : colorScheme.primary.withOpacity(0.1),
                   child: Text(
-                    _getInitials(),
+                    displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U',
                     style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: colorScheme.primary,
                     ),
@@ -221,30 +272,28 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          // User name with better typography
+          const SizedBox(height: 10),
           Text(
-            _getDisplayName(),
+            displayName,
             style: TextStyle(
               color: isDark ? Colors.white : Colors.white,
-              fontSize: 24,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
             ),
           ),
-          const SizedBox(height: 6),
-          // Email with icon
+          const SizedBox(height: 4),
           Row(
             children: [
               Icon(
-                Icons.email_outlined,
+                Icons.person_outline,
                 size: 16,
                 color: Colors.white.withOpacity(0.9),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  FirebaseAuth.instance.currentUser?.email ?? '',
+                  username,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 14,
@@ -252,6 +301,12 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.home_rounded, color: Colors.white),
               ),
             ],
           ),
@@ -301,8 +356,8 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
                     color: isSelected
                         ? colorScheme.primary.withOpacity(0.2)
                         : isDark
-                        ? Colors.grey.shade800
-                        : Colors.grey.shade100,
+                            ? Colors.grey.shade800
+                            : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
@@ -310,25 +365,24 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
                     color: isSelected
                         ? colorScheme.primary
                         : isDark
-                        ? Colors.grey.shade400
-                        : Colors.grey.shade700,
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade700,
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     title,
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w500,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w500,
                       color: isSelected
                           ? colorScheme.primary
                           : isDark
-                          ? Colors.grey.shade300
-                          : Colors.grey.shade800,
+                              ? Colors.grey.shade300
+                              : Colors.grey.shade800,
                     ),
                   ),
                 ),
@@ -352,9 +406,8 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
       decoration: BoxDecoration(
         color: isDark ? colorScheme.surface : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: isDark
-            ? Border.all(color: Colors.grey.shade800, width: 1)
-            : null,
+        border:
+            isDark ? Border.all(color: Colors.grey.shade800, width: 1) : null,
         boxShadow: isDark
             ? null
             : [
@@ -389,9 +442,9 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 10),
                 Text(
-                  'Logout',
+                  'تسجيل الخروج',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -413,7 +466,7 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
   ) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         backgroundColor: isDark ? colorScheme.surface : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
@@ -430,9 +483,9 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
                 size: 24,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 10),
             Text(
-              'Logout',
+              'تسجيل الخروج',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -442,7 +495,7 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
           ],
         ),
         content: Text(
-          'Are you sure you want to logout?',
+          'هل أنت متاكد أنك تريد تسجيل الخروج؟',
           style: TextStyle(
             fontSize: 16,
             color: isDark ? Colors.grey.shade300 : Colors.black87,
@@ -450,7 +503,7 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(ctx),
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
@@ -458,7 +511,7 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
               ),
             ),
             child: Text(
-              'Cancel',
+              'تجاهل',
               style: TextStyle(
                 fontSize: 16,
                 color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
@@ -467,25 +520,16 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
             ),
           ),
           ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              try {
-                // await FirebaseApiSAuthServices.signOut();
-                ReusableToast.showToast(
-                  message: 'Logged out successfully',
-                  bgColor: Colors.green,
-                  textColor: Colors.white,
-                  fontSize: 16,
-                );
-              } catch (e) {
-                log(e.toString());
-                ReusableToast.showToast(
-                  message: 'Logout error: ${e.toString()}',
-                  bgColor: Colors.red,
-                  textColor: Colors.white,
-                  fontSize: 16,
-                );
-              }
+            onPressed: () {
+              Navigator.pop(ctx);
+              // Clear user data and navigate
+              _userProvider.clearUserData();
+              ReusableToast.showToast(
+                message: 'تم تسجيل الخروج بنجاح',
+                bgColor: Colors.green,
+                textColor: Colors.white,
+                fontSize: 16,
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red.shade600,
@@ -497,7 +541,7 @@ class _CustomUserDrawerState extends State<CustomUserDrawer>
               elevation: 2,
             ),
             child: const Text(
-              'Logout',
+              'تسجيل الخروج',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),

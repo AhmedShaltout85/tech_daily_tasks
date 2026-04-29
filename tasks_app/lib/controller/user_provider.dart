@@ -12,31 +12,62 @@ class UserProvider with ChangeNotifier {
   UserModel? _currentUser;
   List<UserModel> _users = [];
   bool _isLoading = false;
+  bool _isInitializing = true;
+  bool _isUsersLoading = false;
   String? _error;
   String? _token;
 
   UserProvider() {
-    _loadTokenFromCache();
+    _init();
   }
 
-  void _loadTokenFromCache() async {
+  bool get isInitializing => _isInitializing;
+
+  Future<void> _init() async {
+    await _loadTokenFromCache();
+    _isInitializing = false;
+    log('UserProvider init complete - user: ${_currentUser?.username}, role: ${_currentUser?.role}');
+    notifyListeners();
+  }
+
+  Future<void> _loadTokenFromCache() async {
     final savedToken = CacheHelper.getData(key: 'auth_token');
+    log('Checking for cached token: ${savedToken != null ? "found" : "not found"}');
     if (savedToken != null) {
       _token = savedToken as String;
       _api.setToken(_token!);
       log('Token loaded from cache, fetching user data...');
 
-      // Fetch current user data when token is loaded
+      // Try to fetch user data with timeout
       try {
-        final users = await _api.getAllUsers();
+        final users = await _api.getAllUsers().timeout(
+          const Duration(seconds: 5),
+          onTimeout: () {
+            log('Timeout fetching users, continuing');
+            return [];
+          },
+        );
+        log('Fetched ${users.length} users from cache');
         if (users.isNotEmpty) {
           _currentUser = users.first;
-          log('User data restored: ${_currentUser?.displayName}');
-          notifyListeners();
+          log('User data restored: ${_currentUser?.displayName}, role: ${_currentUser?.role}');
+          // Don't notify here - will notify in _init
+        } else {
+          // No users found, clear token
+          _token = null;
+          _api.clearToken();
+          await _clearTokenFromCache();
+          log('No users found, cleared token');
         }
       } catch (e) {
         log('Failed to restore user data: $e');
+        // Clear invalid token
+        _token = null;
+        _api.clearToken();
+        await _clearTokenFromCache();
       }
+    } else {
+      log('No cached token found');
     }
   }
 
@@ -50,7 +81,10 @@ class UserProvider with ChangeNotifier {
 
   UserModel? get currentUser => _currentUser;
   List<UserModel> get users => _users;
-  bool get isLoading => _isLoading;
+  bool get isLoading => _isLoading; // For login/signup operations
+  bool get isUsersLoading => _isUsersLoading; // For fetching user lists
+  bool get isAnyLoading =>
+      _isLoading || _isUsersLoading; // Combined for AuthWrapper
   String? get error => _error;
   String? get token => _token;
 
@@ -145,7 +179,7 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> fetchAllUsers() async {
-    _setLoading(true);
+    _setUsersLoading(true);
     try {
       _users = await _api.getAllUsers();
       _error = null;
@@ -154,12 +188,12 @@ class UserProvider with ChangeNotifier {
       _error = e.toString();
       notifyListeners();
     } finally {
-      _setLoading(false);
+      _setUsersLoading(false);
     }
   }
 
   Future<void> fetchUserById(int id) async {
-    _setLoading(true);
+    _setUsersLoading(true);
     try {
       _currentUser = await _api.getUserById(id);
       _error = null;
@@ -168,12 +202,12 @@ class UserProvider with ChangeNotifier {
       _error = e.toString();
       notifyListeners();
     } finally {
-      _setLoading(false);
+      _setUsersLoading(false);
     }
   }
 
   Future<void> fetchUsersByDepartment(String department) async {
-    _setLoading(true);
+    _setUsersLoading(true);
     try {
       _users = await _api.getUsersByDepartment(department);
       _error = null;
@@ -182,12 +216,12 @@ class UserProvider with ChangeNotifier {
       _error = e.toString();
       notifyListeners();
     } finally {
-      _setLoading(false);
+      _setUsersLoading(false);
     }
   }
 
   Future<void> fetchUsersByRole(String role) async {
-    _setLoading(true);
+    _setUsersLoading(true);
     try {
       _users = await _api.getUsersByRole(role);
       _error = null;
@@ -196,13 +230,13 @@ class UserProvider with ChangeNotifier {
       _error = e.toString();
       notifyListeners();
     } finally {
-      _setLoading(false);
+      _setUsersLoading(false);
     }
   }
 
   Future<void> fetchEnabledUsersByRole(String role, bool enabled) async {
     log('fetchEnabledUsersByRole called - role: $role, enabled: $enabled, token: $_token');
-    _setLoading(true);
+    _setUsersLoading(true);
     try {
       _users = await _api.getEnabledUsersByRole(role, enabled);
       log('Users fetched successfully: ${_users.length}');
@@ -213,7 +247,7 @@ class UserProvider with ChangeNotifier {
       _error = e.toString();
       notifyListeners();
     } finally {
-      _setLoading(false);
+      _setUsersLoading(false);
     }
   }
 
@@ -307,6 +341,11 @@ class UserProvider with ChangeNotifier {
 
   void _setLoading(bool value) {
     _isLoading = value;
+    notifyListeners();
+  }
+
+  void _setUsersLoading(bool value) {
+    _isUsersLoading = value;
     notifyListeners();
   }
 

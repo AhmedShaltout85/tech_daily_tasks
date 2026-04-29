@@ -303,8 +303,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     } else {
                                       Navigator.pop(dialogContext);
                                       ReusableToast.showToast(
-                                        message:
-                                            'تم تغيير كلمة المرور بنجاح',
+                                        message: 'تم تغيير كلمة المرور بنجاح',
                                         bgColor: Colors.green,
                                         textColor: Colors.white,
                                         fontSize: 16,
@@ -583,6 +582,160 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onChanged: (value) {
                 themeProvider.toggleTheme();
               },
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'تسجيل الخروج',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.grey[400] : Colors.grey[600],
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? colorScheme.surface : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: isDark
+                  ? Border.all(color: Colors.grey.shade800, width: 1)
+                  : null,
+              boxShadow: isDark
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+            ),
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.logout, color: Colors.red.shade700),
+              ),
+              title: Text(
+                'تسجيل الخروج',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  color: Colors.red.shade700,
+                ),
+              ),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  'الخروج من حسابك',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark ? Colors.grey[400] : Colors.grey[600],
+                  ),
+                ),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: Colors.red.shade400,
+              ),
+              onTap: () => _showLogoutDialog(context, isDark, colorScheme),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLogoutDialog(
+      BuildContext ctx, bool isDark, ColorScheme colorScheme) {
+    showDialog(
+      context: ctx,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: isDark ? colorScheme.surface : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.logout_rounded,
+                color: Colors.red.shade700,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'تسجيل الخروج',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'هل أنت متاكد أنك تريد تسجيل الخروج؟',
+          style: TextStyle(
+            fontSize: 16,
+            color: isDark ? Colors.grey.shade300 : Colors.black87,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(
+              'تجاهل',
+              style: TextStyle(
+                fontSize: 16,
+                color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              ctx.read<UserProvider>().clearUserData();
+              ReusableToast.showToast(
+                message: 'تم تسجيل الخروج بنجاح',
+                bgColor: Colors.green,
+                textColor: Colors.white,
+                fontSize: 16,
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade600,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              elevation: 2,
+            ),
+            child: const Text(
+              'تسجيل الخروج',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
         ],

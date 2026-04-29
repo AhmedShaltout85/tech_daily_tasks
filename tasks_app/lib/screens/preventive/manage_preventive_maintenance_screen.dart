@@ -24,6 +24,9 @@ class _ManagePreventiveMaintenanceScreenState
   String? selectedAction;
   List<PreventiveItemModel> _actions = [];
   bool _isLoading = false;
+  bool _isRemote = false;
+  final TextEditingController _subPlaceController =
+      TextEditingController(text: 'لايوجد');
 
   @override
   void initState() {
@@ -31,6 +34,12 @@ class _ManagePreventiveMaintenanceScreenState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchData();
     });
+  }
+
+  @override
+  void dispose() {
+    _subPlaceController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchData() async {
@@ -143,6 +152,10 @@ class _ManagePreventiveMaintenanceScreenState
     final username = userProvider.currentUser?.username ?? 'admin';
     final department = userProvider.currentUser?.department ?? 'IT';
 
+    final subPlace = _subPlaceController.text.trim().isEmpty
+        ? 'لايوجد'
+        : _subPlaceController.text.trim();
+
     setState(() => _isLoading = true);
     try {
       await context.read<PreventiveProvider>().addPreventiveMaintenance(
@@ -150,8 +163,8 @@ class _ManagePreventiveMaintenanceScreenState
             action: selectedAction!,
             username: username,
             placeName: selectedPlaceName!,
-            subPlace: null,
-            isRemote: false,
+            subPlace: subPlace,
+            isRemote: _isRemote,
             department: department,
           );
 
@@ -286,6 +299,7 @@ class _ManagePreventiveMaintenanceScreenState
                   ],
                 ),
                 const SizedBox(height: 24),
+
                 Text(
                   'اختر العمل:',
                   style: TextStyle(
@@ -295,6 +309,73 @@ class _ManagePreventiveMaintenanceScreenState
                   ),
                 ),
                 const SizedBox(height: 12),
+
+                // Row with isRemote toggle and subPlace textfield
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // isRemote toggle
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: _isRemote
+                              ? Colors.blue.shade50
+                              : Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: _isRemote
+                                ? Colors.blue.shade300
+                                : Colors.grey.shade300,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Icon(
+                              _isRemote ? Icons.home_work : Icons.home,
+                              color: _isRemote
+                                  ? Colors.blue.shade700
+                                  : Colors.grey.shade600,
+                              size: 24,
+                            ),
+                            Switch(
+                              value: _isRemote,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isRemote = value;
+                                });
+                              },
+                              activeColor: Colors.blue.shade600,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // subPlace textfield
+                    Expanded(
+                      flex: 2,
+                      child: TextField(
+                        controller: _subPlaceController,
+                        decoration: InputDecoration(
+                          labelText: 'المكان الفرعى',
+                          hintText: 'لايوجد',
+                          prefixIcon: const Icon(Icons.location_on_outlined),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 14),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
                 if (_isLoading)
                   const Center(child: CircularProgressIndicator())
                 else if (_actions.isEmpty && selectedAppName != null)

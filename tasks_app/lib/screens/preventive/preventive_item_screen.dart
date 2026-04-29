@@ -413,7 +413,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'No actions for $appName',
+                  'لا يوجد حدث وقائى للتطبيق $appName',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey.shade600,
@@ -421,7 +421,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Tap + to add a preventive action',
+                  'اضافة حدث وقائى,إضغط +',
                   style: TextStyle(
                     color: Colors.grey.shade500,
                   ),

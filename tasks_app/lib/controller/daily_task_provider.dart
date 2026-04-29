@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/foundation.dart';
 
 import '../models/daily_task_model.dart';
@@ -17,10 +18,13 @@ class DailyTaskProvider with ChangeNotifier {
   Future<void> fetchAllTasks() async {
     _setLoading(true);
     try {
+      log('DailyTaskProvider: Fetching all tasks...');
       _tasks = await _api.getAllTasks();
+      log('DailyTaskProvider: Fetched ${_tasks.length} tasks');
       _error = null;
       notifyListeners();
     } catch (e) {
+      log('DailyTaskProvider: Error: $e');
       _error = e.toString();
       notifyListeners();
     } finally {
@@ -50,8 +54,10 @@ class DailyTaskProvider with ChangeNotifier {
 
   Future<void> fetchTasksAssignedTo(String username) async {
     _setLoading(true);
+    log('DailyTaskProvider: fetchTasksAssignedTo($username)');
     try {
       _tasks = await _api.getTasksAssignedTo(username);
+      log('DailyTaskProvider: Got ${_tasks.length} tasks. First task isRemote: ${_tasks.isNotEmpty ? _tasks.first.isRemote : "none"}');
       _error = null;
       notifyListeners();
     } catch (e) {

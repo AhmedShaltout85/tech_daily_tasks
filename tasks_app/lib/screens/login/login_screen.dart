@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
           textColor: AppColors.whiteColor,
           fontSize: 16,
         );
-        navigateToReplacementNamed(context, AppRoute.taskRouteName);
+        navigateToReplacementNamed(context, AppRoute.authWrapperRouteName);
       }
     } catch (e) {
       log('Login error: $e');

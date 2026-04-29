@@ -2,33 +2,34 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tasks_app/common_widgets/custom_widgets/custom_drawer.dart';
-import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
-import 'package:tasks_app/common_widgets/resuable_widgets/resuable_widgets.dart';
+import 'package:tasks_app/common_widgets/custom_widgets/custom_reusable_bottom_nav_bar.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
 import 'package:tasks_app/controller/daily_task_provider.dart';
 import 'package:tasks_app/controller/place_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
-import 'package:tasks_app/models/daily_task_model.dart';
+import 'package:tasks_app/screens/report/preventive_maintenance_report_screen.dart';
+import 'package:tasks_app/screens/report/report_screen.dart';
+import 'package:tasks_app/screens/settings/settings_screen.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
-class TaskScreen extends StatefulWidget {
-  const TaskScreen({super.key});
+class ManagerTaskScreen extends StatefulWidget {
+  const ManagerTaskScreen({super.key});
 
   @override
-  State<TaskScreen> createState() => _TaskScreenState();
+  State<ManagerTaskScreen> createState() => _TaskScreenState();
 }
 
-class _TaskScreenState extends State<TaskScreen> {
+class _TaskScreenState extends State<ManagerTaskScreen> {
   String? selectedEmployee;
   String? selectedApp;
   bool? isActiveFilter;
   bool showFilters = false;
   final ConnectivityService _connectivity = ConnectivityService();
-  int _selectedDrawerIndex = 1;
+  int _selectedDrawerIndex = 0;
   bool _hasFetchedData = false;
   bool _initStateScheduled = false;
+  int _selectedNavIndex = 0;
 
   @override
   void initState() {
@@ -53,109 +54,58 @@ class _TaskScreenState extends State<TaskScreen> {
     if (!mounted) return;
 
     try {
-      log('TaskScreen: _fetchData started');
+      log('ManagerTaskScreen: _fetchData started');
       final hasConnection = await _connectivity.hasConnection();
       if (!hasConnection) {
-        log('TaskScreen: No connection');
+        log('ManagerTaskScreen: No connection');
         _showNoInternetDialog();
         return;
       }
-      final userProvider = context.read<UserProvider>();
-      final department = userProvider.currentUser?.department;
-      log('TaskScreen: User department: $department');
 
       // Step 1: Fetch tasks
       log('Step1: Fetching tasks...');
       await context.read<DailyTaskProvider>().fetchAllTasks();
       if (!mounted) return;
       log('Step1: Tasks done');
+      // Step 2: Fetch apps
+      log('Step2: Fetching apps...');
+      final aboutProvider = context.read<AboutAppProvider>();
+      await aboutProvider.fetchAllAboutApps();
+      if (!mounted) return;
+      log('Step2: Apps done');
 
-      // Step 2: Fetch users
-      if (department != null && department.isNotEmpty) {
-        log('Step2: Fetching users for $department...');
-        await userProvider.fetchUsersByDepartment(department);
-        if (!mounted) return;
-        log('Step2: Users done');
+      // final userProvider = context.read<UserProvider>();
+      // final username = userProvider.currentUser?.username;
+      // final department = userProvider.currentUser?.department;
+      // log('ManagerTaskScreen: Username: $username, Department: $department');
 
-        // Step 3: Fetch apps
-        log('Step3: Fetching apps...');
-        final aboutProvider = context.read<AboutAppProvider>();
-        await aboutProvider.fetchAppsByDepartment(department);
-        if (!mounted) return;
-        log('Step3: Apps done');
-      }
+      // Step 1: Fetch tasks assigned to current user
+      // if (username != null) {
+      //   log('Step1: Fetching tasks assigned to $username...');
+      //   await context.read<DailyTaskProvider>().fetchAllTasks();
+      //   if (!mounted) return;
+      //   log('Step1: Tasks done');
+      // }
 
-      // Step 4: Fetch places
-      log('Step4: Fetching places...');
+      // // Step 2: Fetch apps
+      // if (department != null && department.isNotEmpty) {
+      //   log('Step2: Fetching apps for $department...');
+      //   final aboutProvider = context.read<AboutAppProvider>();
+      //   await aboutProvider.fetchAppsByDepartment(department);
+      //   if (!mounted) return;
+      //   log('Step2: Apps done');
+      // }
+
+      // Step 3: Fetch places
+      log('Step3: Fetching places...');
       await context.read<PlaceNameProvider>().fetchPlaceNameStrings();
       if (!mounted) return;
-      log('Step4: Places done');
+      log('Step3: Places done');
 
-      log('TaskScreen: ALL COMPLETE!');
+      log('ManagerTaskScreen: ALL COMPLETE!');
     } catch (e, stack) {
       log('ERROR in _fetchData: $e');
       log('Stack: $stack');
-    }
-  }
-
-  Future<void> _createTask(Map<String, dynamic> values) async {
-    final hasConnection = await _connectivity.hasConnection();
-    if (!hasConnection) {
-      _showNoInternetDialog();
-      return;
-    }
-
-    final userProvider = context.read<UserProvider>();
-    final currentUser = userProvider.currentUser;
-
-    int daysUntilDue =
-        int.tryParse(values['expected-completion-date'] ?? '7') ?? 7;
-
-    // Filter out the selected assignee from co-operators
-    final assignedTo = values['assign-to'] ?? '';
-    List<dynamic> coOperators = values['co-operator'] ?? [];
-    // ignore: unnecessary_type_check
-    if (coOperators is List) {
-      coOperators = coOperators.where((op) => op != assignedTo).toList();
-    }
-
-    final newTask = DailyTaskModel(
-      taskTitle: values['title'] ?? '',
-      taskStatus: true,
-      appName: values['app-name'] ?? '',
-      visitPlace: values['visit-place'] ?? '',
-      subPlace: values['sub-place'] ?? '',
-      assignedTo: assignedTo,
-      assignedBy: currentUser?.username ?? '',
-      coOperator: coOperators,
-      expectedCompletionDate: DateTime.now().add(Duration(days: daysUntilDue)),
-      taskPriority: values['task-priority'] ?? 'MEDIUM',
-      taskNote: values['task-note'] ?? 'none',
-      isRemote: false,
-      createdAt: DateTime.now(),
-    );
-
-    await context.read<DailyTaskProvider>().createTask(newTask);
-
-    if (mounted) {
-      final provider = context.read<DailyTaskProvider>();
-      if (provider.error != null) {
-        ReusableToast.showToast(
-          message: provider.error!,
-          bgColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16,
-        );
-        provider.clearError();
-      } else {
-        ReusableToast.showToast(
-          message: 'تم إضافة المهمة بنجاح',
-          bgColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16,
-        );
-        _fetchData();
-      }
     }
   }
 
@@ -170,7 +120,7 @@ class _TaskScreenState extends State<TaskScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('موافق'),
+            child: const Text('حسنا'),
           ),
         ],
       ),
@@ -205,14 +155,15 @@ class _TaskScreenState extends State<TaskScreen> {
 
   void resetFilters() {
     setState(() {
-      selectedEmployee = null;
+      // selectedEmployee = null;
       selectedApp = null;
       isActiveFilter = null;
     });
   }
 
   bool get hasActiveFilters =>
-      selectedEmployee != null || selectedApp != null || isActiveFilter != null;
+      // selectedEmployee != null ||
+      selectedApp != null || isActiveFilter != null;
 
   @override
   Widget build(BuildContext context) {
@@ -222,22 +173,61 @@ class _TaskScreenState extends State<TaskScreen> {
 
     final userProvider = context.watch<UserProvider>();
     final aboutAppProvider = context.watch<AboutAppProvider>();
-    final placeNameProvider = context.watch<PlaceNameProvider>();
-
-    //Filter out the admin
-    List<String> employeeNames = userProvider.users
-        .map((u) => u.username)
-        .where((username) => username != 'admin')
-        .toList();
 
     // Get unique app names from AboutAppProvider
     List<String> appNames =
         aboutAppProvider.aboutApps.map((a) => a.appName).toSet().toList();
 
-    List<String> placeNames = placeNameProvider.placeNameStrings;
+    return Scaffold(
+      body: IndexedStack(
+        index: _selectedNavIndex,
+        children: [
+          _buildHomeContent(
+              isDark, colorScheme, userProvider, aboutAppProvider, appNames),
+          const PreventiveMaintenanceReportScreen(),
+          const ReportScreen(),
+          const SettingsScreen(),
+        ],
+      ),
+      bottomNavigationBar: CustomReusableBottomNavBar(
+        currentIndex: _selectedNavIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedNavIndex = index;
+          });
+        },
+        items: const [
+          BottomNavItem(
+            icon: Icons.home_outlined,
+            activeIcon: Icons.home,
+            label: 'الرئيسية',
+          ),
+          BottomNavItem(
+            icon: Icons.build_circle_outlined,
+            activeIcon: Icons.build_circle,
+            label: 'تقارير وقائية',
+          ),
+          BottomNavItem(
+            icon: Icons.assessment_outlined,
+            activeIcon: Icons.assessment,
+            label: 'التقارير',
+          ),
+          BottomNavItem(
+            icon: Icons.settings_outlined,
+            activeIcon: Icons.settings,
+            label: 'الضبط',
+          ),
+        ],
+      ),
+    );
+  }
 
-    List<String> uniqueEmployeeNames = ['لاشئ', ...employeeNames];
-
+  Widget _buildHomeContent(
+      bool isDark,
+      ColorScheme colorScheme,
+      UserProvider userProvider,
+      AboutAppProvider aboutAppProvider,
+      List<String> appNames) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('المهام اليومية'),
@@ -268,28 +258,6 @@ class _TaskScreenState extends State<TaskScreen> {
                 ),
             ],
           ),
-          IconButton(
-            tooltip: 'إضافة مهمة',
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              final currentUsername = userProvider.currentUser?.username ?? '';
-
-              showCustomBottomSheet(
-                context: context,
-                appNames: appNames,
-                employeeNames: uniqueEmployeeNames,
-                employeeNamesWithoutNone: uniqueEmployeeNames
-                    .where((name) => name != 'لاشئ' && name != currentUsername)
-                    .toList(),
-                placeNames: placeNames,
-                selectedAssignee: currentUsername,
-                onSubmitTask: (values) async {
-                  await _createTask(values);
-                },
-              );
-            },
-          ),
         ],
       ),
       body: Column(
@@ -319,7 +287,7 @@ class _TaskScreenState extends State<TaskScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'تخصيص',
+                              'تخصيصات',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -335,153 +303,10 @@ class _TaskScreenState extends State<TaskScreen> {
                                   color: colorScheme.primary,
                                 ),
                                 label: Text(
-                                  'حدف المخصصات',
+                                  'حذف التصفية',
                                   style: TextStyle(color: colorScheme.primary),
                                 ),
                               ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: DropdownButtonFormField<String>(
-                                value: selectedEmployee,
-                                isExpanded: true,
-                                dropdownColor:
-                                    isDark ? colorScheme.surface : Colors.white,
-                                style: TextStyle(
-                                  color: isDark ? Colors.white : Colors.black87,
-                                ),
-                                decoration: InputDecoration(
-                                  labelText: 'مخصص للموظف',
-                                  labelStyle: TextStyle(
-                                    color: isDark
-                                        ? Colors.grey[400]
-                                        : Colors.grey[700],
-                                  ),
-                                  prefixIcon: Icon(
-                                    Icons.person,
-                                    color: colorScheme.primary,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  filled: true,
-                                  fillColor: isDark
-                                      ? colorScheme.surface
-                                          .withValues(alpha: 0.5)
-                                      : Colors.white,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 14,
-                                  ),
-                                ),
-                                items: [
-                                  DropdownMenuItem<String>(
-                                    value: null,
-                                    child: Text(
-                                      'كل الموظفين',
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Colors.grey[300]
-                                            : Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                  ...employeeNames.map((name) {
-                                    return DropdownMenuItem<String>(
-                                      value: name,
-                                      child: Text(
-                                        name,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          color: isDark
-                                              ? Colors.grey[300]
-                                              : Colors.black87,
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                                ],
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedEmployee = value;
-                                  });
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            Expanded(
-                              child: DropdownButtonFormField<String>(
-                                value: selectedApp,
-                                isExpanded: true,
-                                dropdownColor:
-                                    isDark ? colorScheme.surface : Colors.white,
-                                style: TextStyle(
-                                  color: isDark ? Colors.white : Colors.black87,
-                                ),
-                                decoration: InputDecoration(
-                                  labelText: 'التطبيق/الجهاز',
-                                  labelStyle: TextStyle(
-                                    color: isDark
-                                        ? Colors.grey[400]
-                                        : Colors.grey[700],
-                                  ),
-                                  prefixIcon: Icon(
-                                    Icons.apps,
-                                    color: colorScheme.primary,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  filled: true,
-                                  fillColor: isDark
-                                      ? colorScheme.surface
-                                          .withValues(alpha: 0.5)
-                                      : Colors.white,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 14,
-                                  ),
-                                ),
-                                items: [
-                                  DropdownMenuItem<String>(
-                                    value: null,
-                                    child: Text(
-                                      'كل التطبيقات',
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Colors.grey[300]
-                                            : Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                  ...appNames.map((name) {
-                                    return DropdownMenuItem<String>(
-                                      value: name,
-                                      child: Text(
-                                        name,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          color: isDark
-                                              ? Colors.grey[300]
-                                              : Colors.black87,
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                                ],
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedApp = value;
-                                  });
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 5),
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -566,7 +391,75 @@ class _TaskScreenState extends State<TaskScreen> {
                               ),
                             ),
                             const SizedBox(width: 5),
-                            const Expanded(child: SizedBox.shrink()),
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                value: selectedApp,
+                                isExpanded: true,
+                                dropdownColor:
+                                    isDark ? colorScheme.surface : Colors.white,
+                                style: TextStyle(
+                                  color: isDark ? Colors.white : Colors.black87,
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'التطبيق/الجهاز',
+                                  labelStyle: TextStyle(
+                                    color: isDark
+                                        ? Colors.grey[400]
+                                        : Colors.grey[700],
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.apps,
+                                    color: colorScheme.primary,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  filled: true,
+                                  fillColor: isDark
+                                      ? colorScheme.surface
+                                          .withValues(alpha: 0.5)
+                                      : Colors.white,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 14,
+                                  ),
+                                ),
+                                items: [
+                                  DropdownMenuItem<String>(
+                                    value: null,
+                                    child: Text(
+                                      'كل التطبيقات',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Colors.grey[300]
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  ...appNames.map((name) {
+                                    return DropdownMenuItem<String>(
+                                      value: name,
+                                      child: Text(
+                                        name,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: isDark
+                                              ? Colors.grey[300]
+                                              : Colors.black87,
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedApp = value;
+                                  });
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 5),
                           ],
                         ),
                       ],
@@ -634,14 +527,6 @@ class _TaskScreenState extends State<TaskScreen> {
                             color: isDark ? Colors.grey[400] : Colors.grey,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'قم بإضافة مهام جديدة +',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: isDark ? Colors.grey[500] : Colors.grey,
-                          ),
-                        ),
                       ],
                     ),
                   );
@@ -675,7 +560,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         TextButton.icon(
                           onPressed: resetFilters,
                           icon: const Icon(Icons.clear_all),
-                          label: const Text('حذف الفلترات'),
+                          label: const Text('Clear Filters'),
                         ),
                       ],
                     ),
@@ -731,12 +616,6 @@ class _TaskScreenState extends State<TaskScreen> {
           ),
         ],
       ),
-      drawer: CustomDrawer(
-        selectedIndex: _selectedDrawerIndex,
-        onIndexChanged: (index) {
-          setState(() => _selectedDrawerIndex = index);
-        },
-      ),
     );
   }
 
@@ -747,7 +626,10 @@ class _TaskScreenState extends State<TaskScreen> {
     ColorScheme colorScheme,
     DailyTaskProvider provider,
   ) {
-    final isOverdue = task.expectedCompletionDate.isBefore(DateTime.now()) &&
+    if (task == null) return const SizedBox.shrink();
+
+    final isOverdue = task.expectedCompletionDate != null &&
+        task.expectedCompletionDate.isBefore(DateTime.now()) &&
         task.taskStatus == true;
 
     return Card(
@@ -814,7 +696,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'متاخرة',
+                                    'متأخر',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
@@ -833,28 +715,28 @@ class _TaskScreenState extends State<TaskScreen> {
                 const Divider(height: 24, thickness: 1),
                 _buildDetailRow(
                   Icons.business,
-                  'اسم التطبيق/الاجهزة',
+                  '',
                   task.appName ?? '',
                   Colors.blue,
                 ),
                 const SizedBox(height: 8),
                 _buildDetailRow(
                   Icons.person_outline,
-                  'مخصص المهمة',
+                  '',
                   task.assignedBy ?? '',
                   Colors.deepPurple,
                 ),
                 const SizedBox(height: 8),
                 _buildDetailRow(
                   Icons.person,
-                  'مخصص ل',
+                  '',
                   task.assignedTo ?? '',
                   Colors.teal,
                 ),
                 const SizedBox(height: 8),
                 _buildDetailRow(
                   Icons.location_on,
-                  'مكان الرئيسى',
+                  '',
                   task.visitPlace ?? '',
                   Colors.red,
                 ),
@@ -862,7 +744,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   const SizedBox(height: 8),
                   _buildDetailRow(
                     Icons.location_on_outlined,
-                    'المكان الفرعى',
+                    '',
                     task.subPlace ?? '',
                     Colors.orange,
                   ),
@@ -870,7 +752,7 @@ class _TaskScreenState extends State<TaskScreen> {
                 const SizedBox(height: 8),
                 _buildDetailRow(
                   Icons.group,
-                  'الشركاء',
+                  '',
                   task.coOperator != null && task.coOperator.isNotEmpty
                       ? task.coOperator.join(', ')
                       : 'لا يوجد شركاء',
@@ -925,48 +807,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 120),
-                    Expanded(
-                      child: Material(
-                        color: task.taskStatus == true
-                            ? Colors.green.shade600
-                            : Colors.grey.shade500,
-                        borderRadius: BorderRadius.circular(12),
-                        child: InkWell(
-                          onTap: () => _toggleTaskStatus(task, provider),
-                          borderRadius: BorderRadius.circular(12),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Icon(
-                              task.taskStatus == true
-                                  ? Icons.toggle_on
-                                  : Icons.toggle_off,
-                              color: Colors.white,
-                              size: 28,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Material(
-                        color: Colors.red.shade600,
-                        borderRadius: BorderRadius.circular(12),
-                        child: InkWell(
-                          onTap: () => _showDeleteConfirmation(task, provider),
-                          borderRadius: BorderRadius.circular(12),
-                          child: const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: Icon(
-                              Icons.delete_outline,
-                              color: Colors.white,
-                              size: 28,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    const SizedBox(width: 10),
                   ],
                 ),
               ],
@@ -1047,7 +888,7 @@ class _TaskScreenState extends State<TaskScreen> {
               style: const TextStyle(fontSize: 14, color: Colors.black87),
               children: [
                 TextSpan(
-                  text: '',
+                  text: '$label',
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Colors.black54,
@@ -1093,9 +934,15 @@ class _TaskScreenState extends State<TaskScreen> {
     DailyTaskProvider provider,
   ) async {
     try {
+      final userProvider = context.read<UserProvider>();
+      final username = userProvider.currentUser?.username;
+      final taskId =
+          task.id is int ? task.id : int.tryParse(task.id.toString()) ?? 0;
       final updatedTask = task.copyWith(taskStatus: !task.taskStatus);
-      await provider.updateTask(task.id, updatedTask);
-      await provider.fetchAllTasks();
+      await provider.updateTask(taskId, updatedTask);
+      if (username != null) {
+        await provider.fetchAllTasks();
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1146,160 +993,158 @@ class _TaskScreenState extends State<TaskScreen> {
     }
   }
 
-  void _showDeleteConfirmation(dynamic task, DailyTaskProvider provider) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700),
-            const SizedBox(width: 12),
-            const Text('حذف المهمة'),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'هل أنت متأكد من حذف هذه المهمة؟',
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '"${task.taskTitle}"',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'هذه العملية لا يمكن التراجع عنها',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.red,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-            child: const Text('الغاء', style: TextStyle(fontSize: 16)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade600,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: () async {
-              final dialogContext = context;
-              Navigator.pop(dialogContext);
+  // Future<void> _toggleRemoteStatus(
+  //   dynamic task,
+  //   DailyTaskProvider provider,
+  // ) async {
+  //   try {
+  //     final userProvider = context.read<UserProvider>();
+  //     final username = userProvider.currentUser?.username;
+  //     final newIsRemote = !(task.isRemote ?? false);
+  //     log('Toggling isRemote from ${task.isRemote} to $newIsRemote');
 
-              // Show loading indicator
-              if (mounted) {
-                ScaffoldMessenger.of(dialogContext).showSnackBar(
-                  const SnackBar(
-                    content: Row(
-                      children: [
-                        SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(width: 12),
-                        Text('جاري الحذف...'),
-                      ],
-                    ),
-                    backgroundColor: Colors.orange,
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              }
+  //     final taskId =
+  //         task.id is int ? task.id : int.tryParse(task.id.toString()) ?? 0;
+  //     final updatedTask = task.copyWith(isRemote: newIsRemote);
 
-              try {
-                final taskId = task.id is int
-                    ? task.id
-                    : int.tryParse(task.id.toString()) ?? 0;
-                await provider.deleteTask(taskId);
+  //     await provider.updateTask(taskId, updatedTask);
 
-                if (mounted) {
-                  ScaffoldMessenger.of(dialogContext).hideCurrentSnackBar();
-                  ScaffoldMessenger.of(dialogContext).showSnackBar(
-                    SnackBar(
-                      content: Row(
-                        children: const [
-                          Icon(Icons.check_circle, color: Colors.white),
-                          SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'تم حذف المهمة بنجاح',
-                              style: TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                        ],
-                      ),
-                      backgroundColor: Colors.green.shade700,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  );
-                }
-              } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(dialogContext).hideCurrentSnackBar();
-                  ScaffoldMessenger.of(dialogContext).showSnackBar(
-                    SnackBar(
-                      content: Row(
-                        children: [
-                          const Icon(Icons.error_outline, color: Colors.white),
-                          const SizedBox(width: 12),
-                          Expanded(
-                              child:
-                                  Text('Error deleting task: ${e.toString()}')),
-                        ],
-                      ),
-                      backgroundColor: Colors.red.shade700,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  );
-                }
-              }
-            },
-            child: const Text(
-              'حذف',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  //     if (username != null) {
+  //       await provider.fetchTasksAssignedTo(username);
+  //     }
+
+  //     log('After fetch - tasks count: ${provider.tasks.length}');
+  //     if (provider.tasks.isNotEmpty) {
+  //       final updatedTaskFromList = provider.tasks.firstWhere(
+  //         (t) => t.id == taskId,
+  //         orElse: () => provider.tasks.first,
+  //       );
+  //       log('Task $taskId isRemote in list: ${updatedTaskFromList.isRemote}');
+  //     }
+
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Row(
+  //             children: [
+  //               Icon(
+  //                 newIsRemote ? Icons.home_work : Icons.home,
+  //                 color: Colors.white,
+  //               ),
+  //               const SizedBox(width: 12),
+  //               Expanded(
+  //                 child: Text(
+  //                   newIsRemote
+  //                       ? 'تم تغيير إلى العمل عن بعد'
+  //                       : 'تم تغيير إلى موقع العمل',
+  //                   style: const TextStyle(fontWeight: FontWeight.w500),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //           backgroundColor: Colors.blue.shade700,
+  //           behavior: SnackBarBehavior.floating,
+  //           shape: RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(12),
+  //           ),
+  //           duration: const Duration(seconds: 2),
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Row(
+  //             children: [
+  //               const Icon(Icons.error_outline, color: Colors.white),
+  //               const SizedBox(width: 12),
+  //               Expanded(child: Text('Error updating task: ${e.toString()}')),
+  //             ],
+  //           ),
+  //           backgroundColor: Colors.red.shade700,
+  //           behavior: SnackBarBehavior.floating,
+  //           shape: RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(12),
+  //           ),
+  //         ),
+  //       );
+  //     }
+  //   }
+  // }
+
+  // void _showTaskNoteDialog(dynamic task) {
+  //   final noteController = TextEditingController(text: task.taskNote ?? '');
+
+  //   showDialog(
+  //     context: context,
+  //     builder: (dialogContext) => AlertDialog(
+  //       title: const Row(
+  //         children: [
+  //           Icon(Icons.note_alt_outlined),
+  //           SizedBox(width: 12),
+  //           Text('ملاحظة المهمة'),
+  //         ],
+  //       ),
+  //       content: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(
+  //             'ملاحظة: ${task.taskTitle}',
+  //             style: const TextStyle(fontWeight: FontWeight.bold),
+  //           ),
+  //           const SizedBox(height: 16),
+  //           TextField(
+  //             controller: noteController,
+  //             maxLines: 4,
+  //             decoration: InputDecoration(
+  //               hintText: 'أضف ملاحظة...',
+  //               border: OutlineInputBorder(
+  //                 borderRadius: BorderRadius.circular(12),
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(dialogContext),
+  //           child: const Text('إلغاء'),
+  //         ),
+  //         ElevatedButton(
+  //           onPressed: () async {
+  //             final newNote = noteController.text.trim();
+  //             final provider = context.read<DailyTaskProvider>();
+  //             final taskId = task.id is int
+  //                 ? task.id
+  //                 : int.tryParse(task.id.toString()) ?? 0;
+
+  //             await provider.updateTask(
+  //               taskId,
+  //               task.copyWith(taskNote: newNote.isEmpty ? 'none' : newNote),
+  //             );
+
+  //             final username =
+  //                 context.read<UserProvider>().currentUser?.username;
+  //             if (username != null) {
+  //               await provider.fetchTasksAssignedTo(username);
+  //             }
+
+  //             if (mounted) {
+  //               Navigator.pop(dialogContext);
+  //               ScaffoldMessenger.of(context).showSnackBar(
+  //                 const SnackBar(
+  //                   content: Text('تم تحديث الملاحظة'),
+  //                   backgroundColor: Colors.green,
+  //                 ),
+  //               );
+  //             }
+  //           },
+  //           child: const Text('حفظ'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

@@ -5,6 +5,7 @@ import 'package:tasks_app/common_widgets/resuable_widgets/resuable_widgets.dart'
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/screens/auth/auth_wrapper.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 import 'package:tasks_app/utils/app_colors.dart';
 import 'package:tasks_app/utils/app_route.dart';
@@ -69,6 +70,71 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return await _connectivity.hasConnection();
   }
 
+  // Future<void> _handleSignup() async {
+  //   final validationError = _validateInputs();
+  //   if (validationError != null) {
+  //     ReusableToast.showToast(
+  //       message: validationError,
+  //       bgColor: AppColors.redColor,
+  //       textColor: AppColors.whiteColor,
+  //       fontSize: 16,
+  //     );
+  //     return;
+  //   }
+
+  //   final hasConnection = await _checkConnectivity();
+  //   if (!hasConnection) {
+  //     _showNoInternetDialog();
+  //     return;
+  //   }
+
+  //   setState(() => _isLoading = true);
+
+  //   try {
+  //     await context.read<UserProvider>().signUp(
+  //           displayName: _displayNameController.text.trim(),
+  //           username: _usernameController.text.trim(),
+  //           password: _passwordController.text.trim(),
+  //           role: '$_selectedRole',
+  //           department: 'ادراة البرامج وصيانتها',
+  //         );
+
+  //     if (mounted) {
+  //       final userProvider = context.read<UserProvider>();
+  //       if (userProvider.error != null) {
+  //         ReusableToast.showToast(
+  //           message: userProvider.error!,
+  //           bgColor: AppColors.redColor,
+  //           textColor: AppColors.whiteColor,
+  //           fontSize: 16,
+  //         );
+  //         userProvider.clearError();
+  //       } else {
+  //         ReusableToast.showToast(
+  //           message: 'تم إنشاء حسابك بنجاح, يرجى تسجيل الدخول',
+  //           bgColor: AppColors.greenColor,
+  //           textColor: AppColors.whiteColor,
+  //           fontSize: 16,
+  //         );
+  //         navigateToReplacementNamed(context, AppRoute.loginRouteName);
+  //       }
+  //     }
+  //   } catch (e) {
+  //     log('Signup error: $e');
+  //     if (mounted) {
+  //       ReusableToast.showToast(
+  //         message: 'حدث خطأ ما, يرجى المحاولة لاحقا',
+  //         bgColor: AppColors.redColor,
+  //         textColor: AppColors.whiteColor,
+  //         fontSize: 16,
+  //       );
+  //     }
+  //   } finally {
+  //     if (mounted) {
+  //       setState(() => _isLoading = false);
+  //     }
+  //   }
+  // }
   Future<void> _handleSignup() async {
     final validationError = _validateInputs();
     if (validationError != null) {
@@ -115,7 +181,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
             textColor: AppColors.whiteColor,
             fontSize: 16,
           );
-          navigateToReplacementNamed(context, AppRoute.loginRouteName);
+
+          // Sign out immediately
+          log('🚪 Signing out user...');
+          await context.read<UserProvider>().signOut();
+          log('✅ User signed out successfully');
+          // Small delay for state propagation (like Firebase version)
+          await Future.delayed(const Duration(milliseconds: 300));
+
+          // Navigate to AuthWrapper instead of login
+          if (mounted) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const AuthWrapper()),
+              (route) => false,
+            );
+          }
         }
       }
     } catch (e) {

@@ -20,8 +20,8 @@ class _SplashScreenState extends State<SplashScreen> {
  
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        navigateToReplacementNamed(context, AppRoute.loginRouteName);
-        // navigateToReplacementNamed(context, AppRoute.authWrapperRouteName);
+        // navigateToReplacementNamed(context, AppRoute.loginRouteName);
+        navigateToReplacementNamed(context, AppRoute.authWrapperRouteName);
       }
     });
   }

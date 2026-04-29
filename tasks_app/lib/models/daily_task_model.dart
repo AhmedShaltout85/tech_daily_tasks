@@ -29,7 +29,7 @@ class DailyTaskModel {
     required this.expectedCompletionDate,
     required this.taskPriority,
     this.taskNote = 'none',
-    this.isRemote,
+    this.isRemote = false,
     required this.createdAt,
   });
 
@@ -50,7 +50,7 @@ class DailyTaskModel {
           : DateTime.now(),
       taskPriority: json['taskPriority'] ?? 'MEDIUM',
       taskNote: json['taskNote'],
-      isRemote: json['isRemote'] ?? false,
+      isRemote: json['isRemote'] == true || json['remote'] == true,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : DateTime.now(),

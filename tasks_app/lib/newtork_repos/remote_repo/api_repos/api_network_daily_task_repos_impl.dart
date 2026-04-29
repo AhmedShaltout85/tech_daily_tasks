@@ -1,3 +1,4 @@
+import 'dart:developer';
 import '../../../models/daily_task_model.dart';
 import 'api_network_daily_task_repos.dart';
 import 'dio_client.dart';
@@ -13,10 +14,14 @@ class ApiNetworkDailyTaskReposImpl implements ApiNetworkDailyTaskRepos {
 
   @override
   Future<List<DailyTaskModel>> getAllTasks() async {
+    log('API: Getting all tasks...');
     final response = await _client.dio.get('/daily-tasks');
-    return (response.data as List)
+    log('API: Got response, data type: ${response.data.runtimeType}');
+    final list = (response.data as List)
         .map((json) => DailyTaskModel.fromJson(json))
         .toList();
+    log('API: Parsed ${list.length} tasks');
+    return list;
   }
 
   @override
@@ -27,8 +32,11 @@ class ApiNetworkDailyTaskReposImpl implements ApiNetworkDailyTaskRepos {
 
   @override
   Future<List<DailyTaskModel>> getTasksAssignedTo(String username) async {
+    log('API getTasksAssignedTo: username=$username');
     final response =
         await _client.dio.get('/daily-tasks/assigned-to/$username');
+    log('API getTasksAssignedTo response length: ${(response.data as List).length}');
+    log('API getTasksAssignedTo response first item isRemote: ${(response.data as List).isNotEmpty ? (response.data as List).first['isRemote'] : 'empty'}');
     return (response.data as List)
         .map((json) => DailyTaskModel.fromJson(json))
         .toList();
@@ -94,8 +102,10 @@ class ApiNetworkDailyTaskReposImpl implements ApiNetworkDailyTaskRepos {
 
   @override
   Future<DailyTaskModel> updateTask(int id, DailyTaskModel task) async {
+    log('API updateTask: id=$id, isRemote in model: ${task.isRemote}');
     final response =
         await _client.dio.put('/daily-tasks/$id', data: task.toJson());
+    log('API updateTask response: ${response.data}');
     return DailyTaskModel.fromJson(response.data);
   }
 
