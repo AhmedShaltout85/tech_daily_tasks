@@ -74,27 +74,7 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
       if (!mounted) return;
       log('Step2: Apps done');
 
-      // final userProvider = context.read<UserProvider>();
-      // final username = userProvider.currentUser?.username;
-      // final department = userProvider.currentUser?.department;
-      // log('ManagerTaskScreen: Username: $username, Department: $department');
-
-      // Step 1: Fetch tasks assigned to current user
-      // if (username != null) {
-      //   log('Step1: Fetching tasks assigned to $username...');
-      //   await context.read<DailyTaskProvider>().fetchAllTasks();
-      //   if (!mounted) return;
-      //   log('Step1: Tasks done');
-      // }
-
-      // // Step 2: Fetch apps
-      // if (department != null && department.isNotEmpty) {
-      //   log('Step2: Fetching apps for $department...');
-      //   final aboutProvider = context.read<AboutAppProvider>();
-      //   await aboutProvider.fetchAppsByDepartment(department);
-      //   if (!mounted) return;
-      //   log('Step2: Apps done');
-      // }
+  
 
       // Step 3: Fetch places
       log('Step3: Fetching places...');
@@ -102,6 +82,7 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
       if (!mounted) return;
       log('Step3: Places done');
 
+      
       log('ManagerTaskScreen: ALL COMPLETE!');
     } catch (e, stack) {
       log('ERROR in _fetchData: $e');
@@ -696,7 +677,7 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'متأخر',
+                                    'متأخرة',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
@@ -993,158 +974,5 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
     }
   }
 
-  // Future<void> _toggleRemoteStatus(
-  //   dynamic task,
-  //   DailyTaskProvider provider,
-  // ) async {
-  //   try {
-  //     final userProvider = context.read<UserProvider>();
-  //     final username = userProvider.currentUser?.username;
-  //     final newIsRemote = !(task.isRemote ?? false);
-  //     log('Toggling isRemote from ${task.isRemote} to $newIsRemote');
-
-  //     final taskId =
-  //         task.id is int ? task.id : int.tryParse(task.id.toString()) ?? 0;
-  //     final updatedTask = task.copyWith(isRemote: newIsRemote);
-
-  //     await provider.updateTask(taskId, updatedTask);
-
-  //     if (username != null) {
-  //       await provider.fetchTasksAssignedTo(username);
-  //     }
-
-  //     log('After fetch - tasks count: ${provider.tasks.length}');
-  //     if (provider.tasks.isNotEmpty) {
-  //       final updatedTaskFromList = provider.tasks.firstWhere(
-  //         (t) => t.id == taskId,
-  //         orElse: () => provider.tasks.first,
-  //       );
-  //       log('Task $taskId isRemote in list: ${updatedTaskFromList.isRemote}');
-  //     }
-
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Row(
-  //             children: [
-  //               Icon(
-  //                 newIsRemote ? Icons.home_work : Icons.home,
-  //                 color: Colors.white,
-  //               ),
-  //               const SizedBox(width: 12),
-  //               Expanded(
-  //                 child: Text(
-  //                   newIsRemote
-  //                       ? 'تم تغيير إلى العمل عن بعد'
-  //                       : 'تم تغيير إلى موقع العمل',
-  //                   style: const TextStyle(fontWeight: FontWeight.w500),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //           backgroundColor: Colors.blue.shade700,
-  //           behavior: SnackBarBehavior.floating,
-  //           shape: RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.circular(12),
-  //           ),
-  //           duration: const Duration(seconds: 2),
-  //         ),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Row(
-  //             children: [
-  //               const Icon(Icons.error_outline, color: Colors.white),
-  //               const SizedBox(width: 12),
-  //               Expanded(child: Text('Error updating task: ${e.toString()}')),
-  //             ],
-  //           ),
-  //           backgroundColor: Colors.red.shade700,
-  //           behavior: SnackBarBehavior.floating,
-  //           shape: RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.circular(12),
-  //           ),
-  //         ),
-  //       );
-  //     }
-  //   }
-  // }
-
-  // void _showTaskNoteDialog(dynamic task) {
-  //   final noteController = TextEditingController(text: task.taskNote ?? '');
-
-  //   showDialog(
-  //     context: context,
-  //     builder: (dialogContext) => AlertDialog(
-  //       title: const Row(
-  //         children: [
-  //           Icon(Icons.note_alt_outlined),
-  //           SizedBox(width: 12),
-  //           Text('ملاحظة المهمة'),
-  //         ],
-  //       ),
-  //       content: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           Text(
-  //             'ملاحظة: ${task.taskTitle}',
-  //             style: const TextStyle(fontWeight: FontWeight.bold),
-  //           ),
-  //           const SizedBox(height: 16),
-  //           TextField(
-  //             controller: noteController,
-  //             maxLines: 4,
-  //             decoration: InputDecoration(
-  //               hintText: 'أضف ملاحظة...',
-  //               border: OutlineInputBorder(
-  //                 borderRadius: BorderRadius.circular(12),
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(dialogContext),
-  //           child: const Text('إلغاء'),
-  //         ),
-  //         ElevatedButton(
-  //           onPressed: () async {
-  //             final newNote = noteController.text.trim();
-  //             final provider = context.read<DailyTaskProvider>();
-  //             final taskId = task.id is int
-  //                 ? task.id
-  //                 : int.tryParse(task.id.toString()) ?? 0;
-
-  //             await provider.updateTask(
-  //               taskId,
-  //               task.copyWith(taskNote: newNote.isEmpty ? 'none' : newNote),
-  //             );
-
-  //             final username =
-  //                 context.read<UserProvider>().currentUser?.username;
-  //             if (username != null) {
-  //               await provider.fetchTasksAssignedTo(username);
-  //             }
-
-  //             if (mounted) {
-  //               Navigator.pop(dialogContext);
-  //               ScaffoldMessenger.of(context).showSnackBar(
-  //                 const SnackBar(
-  //                   content: Text('تم تحديث الملاحظة'),
-  //                   backgroundColor: Colors.green,
-  //                 ),
-  //               );
-  //             }
-  //           },
-  //           child: const Text('حفظ'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+ 
 }
