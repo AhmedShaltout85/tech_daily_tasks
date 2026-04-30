@@ -57,12 +57,12 @@ mvn package -DskipTests
 ### User Controller (`/api/users`)
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/api/users` | Get all users (full objects) | ADMIN/MANAGER |
+| GET | `/api/users` | Get all users | ADMIN/MANAGER |
 | GET | `/api/users/{id}` | Get user by ID | ADMIN/MANAGER |
-| GET | `/api/users/department/{department}` | Get users by department (full objects) | ADMIN/MANAGER |
-| GET | `/api/users/role/{role}` | Get users by role (full objects) | ADMIN/MANAGER |
-| GET | `/api/users/role/{role}/enabled/{enabled}` | Get users by role and enabled status (full objects) | ADMIN/MANAGER |
-| PUT | `/api/users/{id}/enable?enabled=true` | Enable/disable user (returns full User object) | ADMIN |
+| GET | `/api/users/department/{department}` | Get usernames by department | ADMIN/MANAGER |
+| GET | `/api/users/role/{role}` | Get usernames by role | ADMIN/MANAGER |
+| GET | `/api/users/role/{role}/enabled/{enabled}` | Get usernames by role and enabled status | ADMIN/MANAGER |
+| PUT | `/api/users/{id}/enable?enabled=true` | Enable/disable user | ADMIN |
 | PUT | `/api/users/change-password` | Change password (requires old password) | AUTHENTICATED |
 | DELETE | `/api/users/{id}` | Delete user by ID | ADMIN |
 | GET | `/api/users/roles` | Get all roles as list of strings | ADMIN/MANAGER |
@@ -73,7 +73,6 @@ mvn package -DskipTests
 | POST | `/api/apps` | Create new app | AUTHENTICATED |
 | GET | `/api/apps` | Get all apps | AUTHENTICATED |
 | GET | `/api/apps/{id}` | Get app by ID | AUTHENTICATED |
-| GET | `/api/apps/department/{department}` | Get apps by department | AUTHENTICATED |
 | PUT | `/api/apps/{id}` | Update app by ID | AUTHENTICATED |
 | DELETE | `/api/apps/{id}` | Delete app by ID | AUTHENTICATED |
 
@@ -90,15 +89,12 @@ mvn package -DskipTests
 | GET | `/api/daily-tasks/app/{appName}` | Get tasks by app name | AUTHENTICATED |
 | GET | `/api/daily-tasks/status/{taskStatus}` | Get tasks by status | AUTHENTICATED |
 | GET | `/api/daily-tasks/priority/{taskPriority}` | Get tasks by priority | AUTHENTICATED |
-| GET | `/api/daily-tasks/assigned-to/{username}/remote/{isRemote}` | Get tasks assigned to user filtered by remote | AUTHENTICATED |
-| GET | `/api/daily-tasks/remote/{isRemote}` | Get tasks filtered by remote | AUTHENTICATED |
 
 ### AboutApp Controller (`/api/about-apps`)
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
 | POST | `/api/about-apps` | Create new about app | AUTHENTICATED |
 | GET | `/api/about-apps` | Get all about apps | AUTHENTICATED |
-| GET | `/api/about-apps/department/{department}` | Get about apps by department | AUTHENTICATED |
 | GET | `/api/about-apps/{id}` | Get about app by ID | AUTHENTICATED |
 | GET | `/api/about-apps/name/{appName}` | Get about app by app name | AUTHENTICATED |
 | GET | `/api/about-apps/name/{appName}/recommended` | Get recommended values by app name | AUTHENTICATED |
@@ -111,9 +107,8 @@ mvn package -DskipTests
 | POST | `/api/preventive-items` | Create new preventive item | AUTHENTICATED |
 | GET | `/api/preventive-items` | Get all preventive items | AUTHENTICATED |
 | GET | `/api/preventive-items/{id}` | Get preventive item by ID | AUTHENTICATED |
-| GET | `/api/preventive-items/app/{appName}` | Get preventive items by app name (returns List) | AUTHENTICATED |
+| GET | `/api/preventive-items/app/{appName}` | Get preventive item by app name | AUTHENTICATED |
 | GET | `/api/preventive-items/app/{appName}/actions` | Get actions by app name | AUTHENTICATED |
-| GET | `/api/preventive-items/department/{department}` | Get preventive items by department | AUTHENTICATED |
 | PUT | `/api/preventive-items/{id}` | Update preventive item by ID | AUTHENTICATED |
 | DELETE | `/api/preventive-items/{id}` | Delete preventive item by ID | AUTHENTICATED |
 
@@ -140,7 +135,6 @@ mvn package -DskipTests
 | GET | `/api/preventive-maintenance/place/{placeName}` | Filter by place name | AUTHENTICATED |
 | GET | `/api/preventive-maintenance/sub-place/{subPlace}` | Filter by sub place | AUTHENTICATED |
 | GET | `/api/preventive-maintenance/remote/{isRemote}` | Filter by isRemote | AUTHENTICATED |
-| GET | `/api/preventive-maintenance/department/{department}` | Filter by department | AUTHENTICATED |
 | GET | `/api/preventive-maintenance/app/{appName}/user/{username}` | Filter by app and user | AUTHENTICATED |
 | GET | `/api/preventive-maintenance/app/{appName}/place/{placeName}` | Filter by app and place | AUTHENTICATED |
 | GET | `/api/preventive-maintenance/user/{username}/place/{placeName}` | Filter by user and place | AUTHENTICATED |
@@ -293,15 +287,13 @@ mvn package -DskipTests
 |-------|------|-------------|
 | id | Long | Primary key |
 | appName | String | Application name |
-| department | String | Department (NOT NULL) |
 
 ### AboutApp Entity Fields
 | Field | Type | Description |
 |-------|------|-------------|
 | id | Long | Primary key |
 | appName | String | Application name |
-| department | String | Department (NOT NULL) |
-| recommended | List<String> | Recommended values (nullable, stored in separate table) |
+| recommended | String | Recommended value |
 
 ### PreventiveItem Entity Fields
 | Field | Type | Description |
@@ -309,7 +301,6 @@ mvn package -DskipTests
 | id | Long | Primary key |
 | appName | String | Application name |
 | action | String | Action |
-| department | String | Department (NOT NULL) |
 
 ### PlaceItem Entity Fields
 | Field | Type | Description |
@@ -327,7 +318,6 @@ mvn package -DskipTests
 | placeName | String | Place name |
 | subPlace | String | Sub place |
 | isRemote | Boolean | Is remote flag |
-| department | String | Department (NOT NULL) |
 | createdAt | LocalDateTime | Creation timestamp |
 
 ### DailyTask Entity Fields
@@ -354,16 +344,16 @@ mvn package -DskipTests
 - `SigninRequest`: username, password
 - `JwtResponse`: token, type, id, username, displayName, role, department
 - `MessageResponse`: message
-- `AppsNameRequest`: appName, department
-- `AppsNameResponse`: id, appName, department
-- `AboutAppRequest`: appName, department, recommended (List)
-- `AboutAppResponse`: id, appName, department, recommended (List)
-- `PreventiveItemRequest`: appName, action, department
-- `PreventiveItemResponse`: id, appName, action, department
+- `AppsNameRequest`: appName
+- `AppsNameResponse`: id, appName
+- `AboutAppRequest`: appName, recommended
+- `AboutAppResponse`: id, appName, recommended
+- `PreventiveItemRequest`: appName, action
+- `PreventiveItemResponse`: id, appName, action
 - `PlaceItemRequest`: placeName
 - `PlaceItemResponse`: id, placeName
-- `PreventiveMaintenanceRequest`: appName, action, username, placeName, subPlace, isRemote, department
-- `PreventiveMaintenanceResponse`: id, appName, action, username, placeName, subPlace, isRemote, department, createdAt
+- `PreventiveMaintenanceRequest`: appName, action, username, placeName, subPlace, isRemote
+- `PreventiveMaintenanceResponse`: id, appName, action, username, placeName, subPlace, isRemote, createdAt
 - `DailyTaskRequest`: taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator (List), expectedCompletionDate, taskPriority, taskNote, isRemote
 - `DailyTaskResponse`: id, taskTitle, taskStatus, appName, visitPlace, subPlace, assignedTo, assignedBy, coOperator (List), createdAt, updatedAt, expectedCompletionDate, taskPriority, taskNote, isRemote
 
@@ -385,28 +375,19 @@ CREATE TABLE task_users (
 
 CREATE TABLE apps_name (
     id BIGINT IDENTITY(1,1) PRIMARY KEY NOT NULL,
-    app_name NVARCHAR(255) NOT NULL,
-    department NVARCHAR(255) NOT NULL
+    app_name NVARCHAR(255) NOT NULL
 );
 
 CREATE TABLE about_app (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
     app_name NVARCHAR(255) NOT NULL,
-    department NVARCHAR(255) NOT NULL
-);
-
-CREATE TABLE about_app_recommended (
-    id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    about_app_id BIGINT NOT NULL,
-    recommended_value NVARCHAR(255) NOT NULL,
-    CONSTRAINT fk_about_app FOREIGN KEY (about_app_id) REFERENCES about_app(id)
+    recommended NVARCHAR(255) NOT NULL
 );
 
 CREATE TABLE preventive_item (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
     app_name NVARCHAR(255) NOT NULL,
-    action NVARCHAR(255) NOT NULL,
-    department NVARCHAR(255) NOT NULL
+    action NVARCHAR(255) NOT NULL
 );
 
 CREATE TABLE place_item (
@@ -422,7 +403,6 @@ CREATE TABLE preventive_maintenance (
     place_name VARCHAR(255) NOT NULL,
     sub_place VARCHAR(255) NOT NULL DEFAULT 'none',
     is_remote BIT NOT NULL DEFAULT 0,
-    department VARCHAR(255) NOT NULL,
     created_at DATETIME2 NOT NULL DEFAULT GETDATE()
 );
 

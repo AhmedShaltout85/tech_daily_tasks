@@ -19,8 +19,6 @@ public interface PreventiveMaintenanceRepository extends JpaRepository<Preventiv
 
     List<PreventiveMaintenance> findByIsRemote(Boolean isRemote);
 
-    List<PreventiveMaintenance> findByDepartment(String department);
-
     List<PreventiveMaintenance> findByAppNameAndUsername(String appName, String username);
 
     List<PreventiveMaintenance> findByAppNameAndPlaceName(String appName, String placeName);

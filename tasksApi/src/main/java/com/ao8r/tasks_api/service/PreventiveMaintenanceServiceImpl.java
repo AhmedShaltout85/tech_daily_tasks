@@ -32,7 +32,6 @@ public class PreventiveMaintenanceServiceImpl implements PreventiveMaintenanceSe
                 .placeName(request.getPlaceName())
                 .subPlace(request.getSubPlace() != null ? request.getSubPlace() : "none")
                 .isRemote(request.getIsRemote() != null ? request.getIsRemote() : false)
-                .department(request.getDepartment())
                 .build();
 
         PreventiveMaintenance savedItem = preventiveMaintenanceRepository.save(item);
@@ -71,7 +70,6 @@ public class PreventiveMaintenanceServiceImpl implements PreventiveMaintenanceSe
         item.setPlaceName(request.getPlaceName());
         item.setSubPlace(request.getSubPlace() != null ? request.getSubPlace() : "none");
         item.setIsRemote(request.getIsRemote() != null ? request.getIsRemote() : false);
-        item.setDepartment(request.getDepartment());
 
         PreventiveMaintenance updatedItem = preventiveMaintenanceRepository.save(item);
         log.info("Preventive maintenance updated successfully with id: {}", updatedItem.getId());
@@ -129,13 +127,6 @@ public class PreventiveMaintenanceServiceImpl implements PreventiveMaintenanceSe
     }
 
     @Override
-    public List<PreventiveMaintenanceResponse> getByDepartment(String department) {
-        return preventiveMaintenanceRepository.findByDepartment(department).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<PreventiveMaintenanceResponse> getByAppNameAndUsername(String appName, String username) {
         return preventiveMaintenanceRepository.findByAppNameAndUsername(appName, username).stream()
                 .map(this::mapToResponse)
@@ -186,7 +177,6 @@ public class PreventiveMaintenanceServiceImpl implements PreventiveMaintenanceSe
                 .placeName(item.getPlaceName())
                 .subPlace(item.getSubPlace())
                 .isRemote(item.getIsRemote())
-                .department(item.getDepartment())
                 .createdAt(item.getCreatedAt())
                 .build();
     }

@@ -8,6 +8,7 @@ import 'package:tasks_app/controller/daily_task_provider.dart';
 import 'package:tasks_app/controller/place_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/models/user_model.dart';
 import 'package:tasks_app/screens/report/preventive_maintenance_report_screen.dart';
 import 'package:tasks_app/screens/report/report_screen.dart';
 import 'package:tasks_app/screens/settings/settings_screen.dart';
@@ -24,12 +25,19 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
   String? selectedEmployee;
   String? selectedApp;
   bool? isActiveFilter;
+  String? selectedDepartment;
+  String? selectedFilterDepartment;
+  String? selectedUser;
+  String? _selectedUserName;
+  bool? selectedIsRemote;
   bool showFilters = false;
   final ConnectivityService _connectivity = ConnectivityService();
   int _selectedDrawerIndex = 0;
   bool _hasFetchedData = false;
   bool _initStateScheduled = false;
   int _selectedNavIndex = 0;
+  List<UserModel> filteredUsersByDept = [];
+  List<String> departmentsList = [];
 
   @override
   void initState() {
@@ -46,7 +54,6 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
 
   Future<void> _fetchData() async {
     if (!mounted) return;
-    // Already checked in initState callback
     await _fetchDataImpl();
   }
 
@@ -67,6 +74,7 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
       await context.read<DailyTaskProvider>().fetchAllTasks();
       if (!mounted) return;
       log('Step1: Tasks done');
+
       // Step 2: Fetch apps
       log('Step2: Fetching apps...');
       final aboutProvider = context.read<AboutAppProvider>();
@@ -74,15 +82,29 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
       if (!mounted) return;
       log('Step2: Apps done');
 
-  
-
       // Step 3: Fetch places
       log('Step3: Fetching places...');
       await context.read<PlaceNameProvider>().fetchPlaceNameStrings();
       if (!mounted) return;
       log('Step3: Places done');
 
-      
+      // Step 4: Fetch users
+      log('Step4: Fetching users...');
+      await context.read<UserProvider>().fetchAllUsers();
+      if (!mounted) return;
+      log('Step4: Users done');
+
+      // Populate departmentsList from all users and set filteredUsersByDept
+      final allUsers = context.read<UserProvider>().users;
+      setState(() {
+        departmentsList = allUsers
+            .map((u) => u.department ?? '')
+            .where((dept) => dept.isNotEmpty)
+            .toSet()
+            .toList();
+        filteredUsersByDept = allUsers;
+      });
+
       log('ManagerTaskScreen: ALL COMPLETE!');
     } catch (e, stack) {
       log('ERROR in _fetchData: $e');
@@ -121,6 +143,27 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
           if (taskApp != selectedApp) return false;
         }
 
+        if (selectedDepartment != null && selectedDepartment!.isNotEmpty) {
+          final userProvider = context.read<UserProvider>();
+          final assignedToUsername = task.assignedTo?.toString() ?? '';
+          final user = userProvider.users.cast<dynamic>().firstWhere(
+                (u) => u.username == assignedToUsername,
+                orElse: () => null,
+              );
+          final taskDepartment = user?.department?.toString() ?? '';
+          if (taskDepartment != selectedDepartment) return false;
+        }
+
+        if (selectedUser != null && selectedUser!.isNotEmpty) {
+          final taskUser = task.assignedTo?.toString() ?? '';
+          if (taskUser != selectedUser) return false;
+        }
+
+        if (selectedIsRemote != null) {
+          final taskIsRemote = task.isRemote ?? false;
+          if (taskIsRemote != selectedIsRemote) return false;
+        }
+
         if (isActiveFilter != null) {
           final taskActive = task.taskStatus ?? true;
           if (taskActive != isActiveFilter) return false;
@@ -136,15 +179,23 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
 
   void resetFilters() {
     setState(() {
-      // selectedEmployee = null;
       selectedApp = null;
       isActiveFilter = null;
+      selectedDepartment = null;
+      selectedFilterDepartment = null;
+      selectedUser = null;
+      _selectedUserName = null;
+      selectedIsRemote = null;
+      filteredUsersByDept = [];
     });
   }
 
   bool get hasActiveFilters =>
-      // selectedEmployee != null ||
-      selectedApp != null || isActiveFilter != null;
+      selectedApp != null ||
+      isActiveFilter != null ||
+      selectedDepartment != null ||
+      selectedUser != null ||
+      selectedIsRemote != null;
 
   @override
   Widget build(BuildContext context) {
@@ -155,16 +206,30 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
     final userProvider = context.watch<UserProvider>();
     final aboutAppProvider = context.watch<AboutAppProvider>();
 
-    // Get unique app names from AboutAppProvider
-    List<String> appNames =
-        aboutAppProvider.aboutApps.map((a) => a.appName).toSet().toList();
+    // Get unique app names from AboutAppProvider with safe check
+    List<String> appNames = aboutAppProvider.aboutApps.isNotEmpty
+        ? aboutAppProvider.aboutApps.map((a) => a.appName).toSet().toList()
+        : [];
+
+    // Get unique user names from filteredUsersByDept
+    List<String> usersNamesList = filteredUsersByDept.isNotEmpty
+        ? filteredUsersByDept
+            .where((u) => u.role == 'USER' && u.department == selectedDepartment)
+            .map((u) => u.username)
+            .toSet()
+            .toList()
+        : [];
+
+    // Get unique department names from state
+    List<String> departmentsList =
+        this.departmentsList.isNotEmpty ? this.departmentsList : [];
 
     return Scaffold(
       body: IndexedStack(
         index: _selectedNavIndex,
         children: [
-          _buildHomeContent(
-              isDark, colorScheme, userProvider, aboutAppProvider, appNames),
+          _buildHomeContent(isDark, colorScheme, userProvider, aboutAppProvider,
+              appNames, usersNamesList, departmentsList),
           const PreventiveMaintenanceReportScreen(),
           const ReportScreen(),
           const SettingsScreen(),
@@ -208,7 +273,9 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
       ColorScheme colorScheme,
       UserProvider userProvider,
       AboutAppProvider aboutAppProvider,
-      List<String> appNames) {
+      List<String> appNames,
+      List<String> usersNamesList,
+      List<String> departmentsList) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('المهام اليومية'),
@@ -406,30 +473,14 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                                   ),
                                 ),
                                 items: [
-                                  DropdownMenuItem<String>(
+                                  const DropdownMenuItem<String>(
                                     value: null,
-                                    child: Text(
-                                      'كل التطبيقات',
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Colors.grey[300]
-                                            : Colors.black87,
-                                      ),
-                                    ),
+                                    child: Text('كل التطبيقات'),
                                   ),
                                   ...appNames.map((name) {
                                     return DropdownMenuItem<String>(
                                       value: name,
-                                      child: Text(
-                                        name,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          color: isDark
-                                              ? Colors.grey[300]
-                                              : Colors.black87,
-                                        ),
-                                      ),
+                                      child: Text(name),
                                     );
                                   }),
                                 ],
@@ -440,7 +491,193 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                                 },
                               ),
                             ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                value: selectedDepartment,
+                                isExpanded: true,
+                                dropdownColor:
+                                    isDark ? colorScheme.surface : Colors.white,
+                                style: TextStyle(
+                                  color: isDark ? Colors.white : Colors.black87,
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'القسم',
+                                  labelStyle: TextStyle(
+                                    color: isDark
+                                        ? Colors.grey[400]
+                                        : Colors.grey[700],
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.business,
+                                    color: colorScheme.primary,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  filled: true,
+                                  fillColor: isDark
+                                      ? colorScheme.surface
+                                          .withValues(alpha: 0.5)
+                                      : Colors.white,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 14,
+                                  ),
+                                ),
+                                items: [
+                                  const DropdownMenuItem<String>(
+                                    value: null,
+                                    child: Text('كل الاقسام'),
+                                  ),
+                                  ...departmentsList.map((dept) {
+                                    return DropdownMenuItem<String>(
+                                      value: dept,
+                                      child: Text(dept),
+                                    );
+                                  }),
+                                ],
+                                onChanged: (value) async {
+                                  String? oldUser = _selectedUserName;
+                                  setState(() {
+                                    selectedDepartment = value;
+                                    selectedFilterDepartment = value;
+                                    selectedUser = null;
+                                    _selectedUserName = null;
+                                  });
+                                  if (value != null) {
+                                    await userProvider
+                                        .fetchUsersByDepartment(value);
+                                    setState(() {
+                                      filteredUsersByDept = userProvider.users;
+                                      selectedUser = null;
+                                      _selectedUserName = null;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      filteredUsersByDept = [];
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
                             const SizedBox(width: 5),
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                value: _selectedUserName,
+                                isExpanded: true,
+                                dropdownColor:
+                                    isDark ? colorScheme.surface : Colors.white,
+                                style: TextStyle(
+                                  color: isDark ? Colors.white : Colors.black87,
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'الموظف',
+                                  labelStyle: TextStyle(
+                                    color: isDark
+                                        ? Colors.grey[400]
+                                        : Colors.grey[700],
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.person,
+                                    color: colorScheme.primary,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  filled: true,
+                                  fillColor: isDark
+                                      ? colorScheme.surface
+                                          .withValues(alpha: 0.5)
+                                      : Colors.white,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 14,
+                                  ),
+                                ),
+                                items: [
+                                  ...usersNamesList.map((name) {
+                                    return DropdownMenuItem<String>(
+                                      value: name,
+                                      child: Text(name),
+                                    );
+                                  }),
+                                  const DropdownMenuItem<String>(
+                                    value: null,
+                                    child: Text('كل الموظفين'),
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedUser = value;
+                                    _selectedUserName = value;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<bool?>(
+                                value: selectedIsRemote,
+                                isExpanded: true,
+                                dropdownColor:
+                                    isDark ? colorScheme.surface : Colors.white,
+                                style: TextStyle(
+                                  color: isDark ? Colors.white : Colors.black87,
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'العمل عن بعد',
+                                  labelStyle: TextStyle(
+                                    color: isDark
+                                        ? Colors.grey[400]
+                                        : Colors.grey[700],
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.work,
+                                    color: colorScheme.primary,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  filled: true,
+                                  fillColor: isDark
+                                      ? colorScheme.surface
+                                          .withValues(alpha: 0.5)
+                                      : Colors.white,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 14,
+                                  ),
+                                ),
+                                items: [
+                                  const DropdownMenuItem<bool?>(
+                                    value: null,
+                                    child: Text('الكل'),
+                                  ),
+                                  const DropdownMenuItem<bool?>(
+                                    value: true,
+                                    child: Text('نعم'),
+                                  ),
+                                  const DropdownMenuItem<bool?>(
+                                    value: false,
+                                    child: Text('لا'),
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedIsRemote = value;
+                                  });
+                                },
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -569,7 +806,7 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'إظهار ${filteredTasks.length} of ${provider.tasks.length} مهام',
+                                  'إظهار ${filteredTasks.length} من ${provider.tasks.length} مهام',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: colorScheme.primary,
@@ -973,6 +1210,4 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
       }
     }
   }
-
- 
 }

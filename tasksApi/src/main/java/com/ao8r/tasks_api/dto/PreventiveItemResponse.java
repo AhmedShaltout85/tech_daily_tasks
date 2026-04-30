@@ -11,5 +11,4 @@ public class PreventiveItemResponse {
     private Long id;
     private String appName;
     private String action;
-    private String department;
 }

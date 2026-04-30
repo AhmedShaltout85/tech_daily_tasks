@@ -18,8 +18,4 @@ public interface DailyTaskRepository extends JpaRepository<DailyTask, Long> {
     List<DailyTask> findByTaskStatus(boolean taskStatus);
 
     List<DailyTask> findByTaskPriority(String taskPriority);
-
-    List<DailyTask> findByAssignedToAndIsRemote(String assignedTo, boolean isRemote);
-
-    List<DailyTask> findByIsRemote(boolean isRemote);
 }

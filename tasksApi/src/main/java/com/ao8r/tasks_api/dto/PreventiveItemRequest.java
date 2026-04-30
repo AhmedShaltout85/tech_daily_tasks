@@ -17,8 +17,4 @@ public class PreventiveItemRequest {
     @NotBlank(message = "Action is required")
     @Size(max = 255, message = "Action must not exceed 255 characters")
     private String action;
-
-    @NotBlank(message = "Department is required")
-    @Size(max = 255, message = "Department must not exceed 255 characters")
-    private String department;
 }

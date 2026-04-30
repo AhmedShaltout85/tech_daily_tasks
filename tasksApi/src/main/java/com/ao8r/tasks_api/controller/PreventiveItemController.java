@@ -44,9 +44,9 @@ public class PreventiveItemController {
     }
 
     @GetMapping("/app/{appName}")
-    public ResponseEntity<List<PreventiveItemResponse>> getItemByAppName(@PathVariable String appName) {
-        log.debug("Fetching preventive items by app name: {}", appName);
-        List<PreventiveItemResponse> response = preventiveItemService.getItemByAppName(appName);
+    public ResponseEntity<PreventiveItemResponse> getItemByAppName(@PathVariable String appName) {
+        log.debug("Fetching preventive item by app name: {}", appName);
+        PreventiveItemResponse response = preventiveItemService.getItemByAppName(appName);
         return ResponseEntity.ok(response);
     }
 
@@ -55,13 +55,6 @@ public class PreventiveItemController {
         log.debug("Fetching actions by app name: {}", appName);
         List<String> actions = preventiveItemService.getActionsByAppName(appName);
         return ResponseEntity.ok(actions);
-    }
-
-    @GetMapping("/department/{department}")
-    public ResponseEntity<List<PreventiveItemResponse>> getByDepartment(@PathVariable String department) {
-        log.debug("Fetching preventive items by department: {}", department);
-        List<PreventiveItemResponse> items = preventiveItemService.getByDepartment(department);
-        return ResponseEntity.ok(items);
     }
 
     @PutMapping("/{id}")

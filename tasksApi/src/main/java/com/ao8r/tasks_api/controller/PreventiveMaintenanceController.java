@@ -89,12 +89,6 @@ public class PreventiveMaintenanceController {
         return ResponseEntity.ok(preventiveMaintenanceService.getByIsRemote(isRemote));
     }
 
-    @GetMapping("/department/{department}")
-    public ResponseEntity<List<PreventiveMaintenanceResponse>> getByDepartment(@PathVariable String department) {
-        log.debug("Fetching by department: {}", department);
-        return ResponseEntity.ok(preventiveMaintenanceService.getByDepartment(department));
-    }
-
     @GetMapping("/app/{appName}/user/{username}")
     public ResponseEntity<List<PreventiveMaintenanceResponse>> getByAppNameAndUsername(
             @PathVariable String appName, @PathVariable String username) {

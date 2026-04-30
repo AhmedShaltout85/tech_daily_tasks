@@ -23,11 +23,10 @@ public class AppsNameServiceImpl implements AppsNameService {
     @Override
     @Transactional
     public AppsNameResponse createApp(AppsNameRequest request) {
-        log.debug("Creating new app with name: {} and department: {}", request.getAppName(), request.getDepartment());
+        log.debug("Creating new app with name: {}", request.getAppName());
 
         AppsName app = AppsName.builder()
                 .appName(request.getAppName())
-                .department(request.getDepartment())
                 .build();
 
         AppsName savedApp = appsNameRepository.save(app);
@@ -36,7 +35,6 @@ public class AppsNameServiceImpl implements AppsNameService {
         return AppsNameResponse.builder()
                 .id(savedApp.getId())
                 .appName(savedApp.getAppName())
-                .department(savedApp.getDepartment())
                 .build();
     }
 
@@ -46,7 +44,6 @@ public class AppsNameServiceImpl implements AppsNameService {
                 .map(app -> AppsNameResponse.builder()
                         .id(app.getId())
                         .appName(app.getAppName())
-                        .department(app.getDepartment())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -57,7 +54,6 @@ public class AppsNameServiceImpl implements AppsNameService {
                 .map(app -> AppsNameResponse.builder()
                         .id(app.getId())
                         .appName(app.getAppName())
-                        .department(app.getDepartment())
                         .build());
     }
 
@@ -68,14 +64,12 @@ public class AppsNameServiceImpl implements AppsNameService {
                 .orElseThrow(() -> new RuntimeException("App not found with id: " + id));
 
         app.setAppName(request.getAppName());
-        app.setDepartment(request.getDepartment());
         AppsName updatedApp = appsNameRepository.save(app);
         log.info("App updated successfully with ID: {}", updatedApp.getId());
 
         return AppsNameResponse.builder()
                 .id(updatedApp.getId())
                 .appName(updatedApp.getAppName())
-                .department(updatedApp.getDepartment())
                 .build();
     }
 
@@ -86,16 +80,5 @@ public class AppsNameServiceImpl implements AppsNameService {
                 .orElseThrow(() -> new RuntimeException("App not found with id: " + id));
         appsNameRepository.delete(app);
         log.info("App deleted successfully with ID: {}", id);
-    }
-
-    @Override
-    public List<AppsNameResponse> getAppsByDepartment(String department) {
-        return appsNameRepository.findByDepartment(department).stream()
-                .map(app -> AppsNameResponse.builder()
-                        .id(app.getId())
-                        .appName(app.getAppName())
-                        .department(app.getDepartment())
-                        .build())
-                .collect(Collectors.toList());
     }
 }

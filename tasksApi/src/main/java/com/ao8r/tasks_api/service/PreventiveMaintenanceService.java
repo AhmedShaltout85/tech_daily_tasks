@@ -28,8 +28,6 @@ public interface PreventiveMaintenanceService {
 
     List<PreventiveMaintenanceResponse> getByIsRemote(Boolean isRemote);
 
-    List<PreventiveMaintenanceResponse> getByDepartment(String department);
-
     List<PreventiveMaintenanceResponse> getByAppNameAndUsername(String appName, String username);
 
     List<PreventiveMaintenanceResponse> getByAppNameAndPlaceName(String appName, String placeName);

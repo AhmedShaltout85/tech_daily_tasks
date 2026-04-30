@@ -13,11 +13,9 @@ public interface PreventiveItemService {
 
     PreventiveItemResponse getItemById(Long id);
 
-    List<PreventiveItemResponse> getItemByAppName(String appName);
+    PreventiveItemResponse getItemByAppName(String appName);
 
     List<String> getActionsByAppName(String appName);
-
-    List<PreventiveItemResponse> getByDepartment(String department);
 
     PreventiveItemResponse updateItem(Long id, PreventiveItemRequest request);
 

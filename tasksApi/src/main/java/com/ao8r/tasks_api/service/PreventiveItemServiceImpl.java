@@ -28,7 +28,6 @@ public class PreventiveItemServiceImpl implements PreventiveItemService {
         PreventiveItem item = PreventiveItem.builder()
                 .appName(request.getAppName())
                 .action(request.getAction())
-                .department(request.getDepartment())
                 .build();
 
         PreventiveItem savedItem = preventiveItemRepository.save(item);
@@ -54,25 +53,17 @@ public class PreventiveItemServiceImpl implements PreventiveItemService {
     }
 
     @Override
-    public List<PreventiveItemResponse> getItemByAppName(String appName) {
-        log.debug("Fetching preventive items by app name: {}", appName);
-        return preventiveItemRepository.findByAppNameList(appName).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    public PreventiveItemResponse getItemByAppName(String appName) {
+        log.debug("Fetching preventive item by app name: {}", appName);
+        PreventiveItem item = preventiveItemRepository.findByAppName(appName)
+                .orElseThrow(() -> new ResourceNotFoundException("Preventive item not found with app name: " + appName));
+        return mapToResponse(item);
     }
 
     @Override
     public List<String> getActionsByAppName(String appName) {
         log.debug("Fetching actions by app name: {}", appName);
         return preventiveItemRepository.findActionByAppName(appName);
-    }
-
-    @Override
-    public List<PreventiveItemResponse> getByDepartment(String department) {
-        log.debug("Fetching preventive items by department: {}", department);
-        return preventiveItemRepository.findByDepartment(department).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -85,7 +76,6 @@ public class PreventiveItemServiceImpl implements PreventiveItemService {
 
         item.setAppName(request.getAppName());
         item.setAction(request.getAction());
-        item.setDepartment(request.getDepartment());
 
         PreventiveItem updatedItem = preventiveItemRepository.save(item);
         log.info("Preventive item updated successfully with id: {}", updatedItem.getId());
@@ -111,7 +101,6 @@ public class PreventiveItemServiceImpl implements PreventiveItemService {
                 .id(item.getId())
                 .appName(item.getAppName())
                 .action(item.getAction())
-                .department(item.getDepartment())
                 .build();
     }
 }

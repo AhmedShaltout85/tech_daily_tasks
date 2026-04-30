@@ -99,35 +99,35 @@ Authorization: Bearer {{adminToken}}
 GET http://localhost:9999/tasks-api/api/users/1
 Authorization: Bearer {{adminToken}}
 
-### 12. Get Users by Department (Returns full User objects)
+### 12. Get Users by Department
 GET http://localhost:9999/tasks-api/api/users/department/IT
 Authorization: Bearer {{adminToken}}
 
-### 13. Get All Users by Role - USER (Returns full User objects)
+### 13. Get All Users by Role - USER
 GET http://localhost:9999/tasks-api/api/users/role/USER
 Authorization: Bearer {{adminToken}}
 
-### 14. Get All Users by Role - MANAGER (Returns full User objects)
+### 14. Get All Users by Role - MANAGER
 GET http://localhost:9999/tasks-api/api/users/role/MANAGER
 Authorization: Bearer {{adminToken}}
 
-### 15. Get All Users by Role - ADMIN (Returns full User objects)
+### 15. Get All Users by Role - ADMIN
 GET http://localhost:9999/tasks-api/api/users/role/ADMIN
 Authorization: Bearer {{adminToken}}
 
-### 16. Get Enabled Users by Role - USER (Returns full User objects)
+### 16. Get Enabled Users by Role - USER
 GET http://localhost:9999/tasks-api/api/users/role/USER/enabled/true
 Authorization: Bearer {{adminToken}}
 
-### 17. Get Disabled Users by Role - USER (Returns full User objects)
+### 17. Get Disabled Users by Role - USER
 GET http://localhost:9999/tasks-api/api/users/role/USER/enabled/false
 Authorization: Bearer {{adminToken}}
 
-### 18. Disable User (Set enabled=false) - Returns updated User object
+### 18. Disable User (Set enabled=false)
 PUT http://localhost:9999/tasks-api/api/users/3/enable?enabled=false
 Authorization: Bearer {{adminToken}}
 
-### 19. Enable User (Set enabled=true) - Returns updated User object
+### 19. Enable User (Set enabled=true)
 PUT http://localhost:9999/tasks-api/api/users/3/enable?enabled=true
 Authorization: Bearer {{adminToken}}
 
@@ -164,8 +164,7 @@ Content-Type: application/json
 Authorization: Bearer {{adminToken}}
 
 {
-  "appName": "Test Application",
-  "department": "IT"
+  "appName": "Test Application"
 }
 
 ### 19. Get All Apps
@@ -176,21 +175,16 @@ Authorization: Bearer {{adminToken}}
 GET http://localhost:9999/tasks-api/api/apps/1
 Authorization: Bearer {{adminToken}}
 
-### 21. Get Apps by Department
-GET http://localhost:9999/tasks-api/api/apps/department/IT
-Authorization: Bearer {{adminToken}}
-
-### 22. Update App by ID
+### 21. Update App by ID
 PUT http://localhost:9999/tasks-api/api/apps/1
 Content-Type: application/json
 Authorization: Bearer {{adminToken}}
 
 {
-  "appName": "Updated Application Name",
-  "department": "HR"
+  "appName": "Updated Application Name"
 }
 
-### 23. Delete App by ID
+### 22. Delete App by ID
 DELETE http://localhost:9999/tasks-api/api/apps/1
 Authorization: Bearer {{adminToken}}
 
@@ -213,42 +207,36 @@ Authorization: Bearer {{adminToken}}
 
 {
   "appName": "Test Application",
-  "department": "IT",
-  "recommended": ["Option 1", "Option 2", "Option 3"]
+  "recommended": "Recommended value for the app"
 }
 
 ### 25. Get All About Apps
 GET http://localhost:9999/tasks-api/api/about-apps
 Authorization: Bearer {{adminToken}}
 
-### 26. Get About Apps by Department
-GET http://localhost:9999/tasks-api/api/about-apps/department/IT
-Authorization: Bearer {{adminToken}}
-
-### 27. Get About App by ID
+### 26. Get About App by ID
 GET http://localhost:9999/tasks-api/api/about-apps/1
 Authorization: Bearer {{adminToken}}
 
-### 28. Get About App by App Name
+### 27. Get About App by App Name
 GET http://localhost:9999/tasks-api/api/about-apps/name/Test%20Application
 Authorization: Bearer {{adminToken}}
 
-### 29. Get Recommended Values by App Name
+### 28. Get Recommended Values by App Name
 GET http://localhost:9999/tasks-api/api/about-apps/name/Test%20Application/recommended
 Authorization: Bearer {{adminToken}}
 
-### 30. Update About App by ID
+### 29. Update About App by ID
 PUT http://localhost:9999/tasks-api/api/about-apps/1
 Content-Type: application/json
 Authorization: Bearer {{adminToken}}
 
 {
   "appName": "Updated Application",
-  "department": "IT",
-  "recommended": ["New Option 1", "New Option 2"]
+  "recommended": "Updated recommended value"
 }
 
-### 31. Delete About App by ID
+### 29. Delete About App by ID
 DELETE http://localhost:9999/tasks-api/api/about-apps/1
 Authorization: Bearer {{adminToken}}
 
@@ -263,8 +251,7 @@ Authorization: Bearer {{adminToken}}
 
 {
   "appName": "Test Application",
-  "action": "Check system logs",
-  "department": "IT"
+  "action": "Check system logs"
 }
 
 ### 31. Get All Preventive Items
@@ -275,16 +262,12 @@ Authorization: Bearer {{adminToken}}
 GET http://localhost:9999/tasks-api/api/preventive-items/1
 Authorization: Bearer {{adminToken}}
 
-### 33. Get Preventive Items by App Name (returns List)
-GET http://localhost:9999/tasks-api/api/preventive-items/app/LABS
+### 33. Get Preventive Item by App Name
+GET http://localhost:9999/tasks-api/api/preventive-items/app/Test%20Application
 Authorization: Bearer {{adminToken}}
 
 ### 34. Get Actions by App Name
 GET http://localhost:9999/tasks-api/api/preventive-items/app/Test%20Application/actions
-Authorization: Bearer {{adminToken}}
-
-### 35. Get Preventive Items by Department
-GET http://localhost:9999/tasks-api/api/preventive-items/department/IT
 Authorization: Bearer {{adminToken}}
 
 ### 35. Update Preventive Item by ID
@@ -354,8 +337,7 @@ Authorization: Bearer {{adminToken}}
   "username": "admin",
   "placeName": "Office Building",
   "subPlace": "Server Room",
-  "isRemote": false,
-  "department": "IT"
+  "isRemote": false
 }
 
 ### 64. Get All Preventive Maintenance
@@ -377,8 +359,7 @@ Authorization: Bearer {{adminToken}}
   "username": "admin",
   "placeName": "Updated Office",
   "subPlace": "Updated Room",
-  "isRemote": true,
-  "department": "IT"
+  "isRemote": true
 }
 
 ### 67. Delete Preventive Maintenance by ID
@@ -403,10 +384,6 @@ Authorization: Bearer {{adminToken}}
 
 ### 72. Get By IsRemote
 GET http://localhost:9999/tasks-api/api/preventive-maintenance/remote/false
-Authorization: Bearer {{adminToken}}
-
-### 72b. Get By Department
-GET http://localhost:9999/tasks-api/api/preventive-maintenance/department/IT
 Authorization: Bearer {{adminToken}}
 
 ### 73. Get By App Name and Username
@@ -507,14 +484,6 @@ Authorization: Bearer {{adminToken}}
 GET http://localhost:9999/tasks-api/api/daily-tasks/priority/HIGH
 Authorization: Bearer {{adminToken}}
 
-### 89. Get Tasks Assigned To User By Remote Status
-GET http://localhost:9999/tasks-api/api/daily-tasks/assigned-to/user/remote/false
-Authorization: Bearer {{adminToken}}
-
-### 90. Get Tasks By Remote Status
-GET http://localhost:9999/tasks-api/api/daily-tasks/remote/false
-Authorization: Bearer {{adminToken}}
-
 ### ======================================================
 ### ENVIRONMENT VARIABLES
 ### ======================================================
@@ -527,8 +496,7 @@ Authorization: Bearer {{adminToken}}
 ### ======================================================
 ### ERROR RESPONSES
 ### ======================================================
-# Success - Enable/Disable User (200): Returns full User object with updated enabled status
-# Success - Other operations (200): {"message": "..."}
+# Success (200): {"message": "..."}
 # Not Found (404): {"error": "User not found with id: X"}
 # Bad Request (400): {"error": "Error: Username is already taken!"}
 # Unauthorized (401): {"error": "Invalid username or password"}

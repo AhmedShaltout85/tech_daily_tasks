@@ -19,20 +19,20 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "display_name", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Column(name = "display_name", nullable = false)
     private String displayName;
 
-    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Column(nullable = false)
     private String department;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "NVARCHAR(50)")
+    @Column(nullable = false)
     private Role role;
 
-    @Column(unique = true, nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Column(nullable = false)
     private String password;
 
     @Column(name = "is_enable", nullable = false)

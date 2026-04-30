@@ -20,6 +20,4 @@ public interface AboutAppService {
     AboutAppResponse updateApp(Long id, AboutAppRequest request);
 
     void deleteApp(Long id);
-
-    List<AboutAppResponse> getAppsByDepartment(String department);
 }

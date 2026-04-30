@@ -16,6 +16,5 @@ public class PreventiveMaintenanceResponse {
     private String placeName;
     private String subPlace;
     private Boolean isRemote;
-    private String department;
     private LocalDateTime createdAt;
 }
