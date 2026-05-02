@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 class PreventiveMaintenanceModel {
   final int? id;
   final String appName;
@@ -33,13 +31,13 @@ class PreventiveMaintenanceModel {
     }
     return PreventiveMaintenanceModel(
       id: json['id'] as int?,
-      appName: json['appName'],
-      placeName: json['placeName'],
-      subPlace: json['subPlace'],
+      appName: json['appName'] as String? ?? '',
+      placeName: json['placeName'] as String? ?? '',
+      subPlace: json['subPlace'] as String? ?? '',
       isRemote: json['isRemote'] as bool? ?? false,
-      username: json['username'],
-      action: json['action'],
-      department: json['department'],
+      username: json['username'] as String? ?? '',
+      action: json['action'] as String? ?? '',
+      department: json['department'] as String? ?? '',
       createdAt: parsedDate,
     );
   }

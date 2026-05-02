@@ -393,7 +393,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
                               ElevatedButton.icon(
                                 onPressed: _showAddDialog,
                                 icon: const Icon(Icons.add),
-                                label: const Text('Add User'),
+                                label: const Text('اضافة مستخدم'),
                               ),
                             ],
                           ),

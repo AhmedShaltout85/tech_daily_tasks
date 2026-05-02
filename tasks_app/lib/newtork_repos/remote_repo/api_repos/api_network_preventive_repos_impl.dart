@@ -20,8 +20,7 @@ class ApiNetworkPreventiveItemReposImpl
   @override
   Future<List<PreventiveItemModel>> getAllPreventiveItemsByDepartment(
       String department) async {
-    final response =
-        await _client.dio.get('/preventive-items/department/$department');
+    final response = await _client.dio.get('/preventive-items');
     return (response.data as List)
         .map((json) => PreventiveItemModel.fromJson(json))
         .toList();
@@ -83,11 +82,18 @@ class ApiNetworkPreventiveItemReposImpl
   @override
   Future<List<PreventiveMaintenanceModel>>
       getAllPreventiveMaintenanceByDepartment(String department) async {
-    final response =
-        await _client.dio.get('/preventive-maintenance/department/$department');
-    return (response.data as List)
-        .map((json) => PreventiveMaintenanceModel.fromJson(json))
-        .toList();
+    try {
+      final response = await _client.dio.get('/preventive-maintenance');
+      return (response.data as List)
+          .map((json) => PreventiveMaintenanceModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      // Fallback - try without department
+      final response = await _client.dio.get('/preventive-maintenance');
+      return (response.data as List)
+          .map((json) => PreventiveMaintenanceModel.fromJson(json))
+          .toList();
+    }
   }
 
   @override

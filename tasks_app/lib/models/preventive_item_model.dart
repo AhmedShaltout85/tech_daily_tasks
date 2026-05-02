@@ -16,7 +16,7 @@ class PreventiveItemModel {
       id: json['id'] as int?,
       appName: json['appName'],
       action: json['action'],
-      department: json['department'],
+      department: json['department'] as String? ?? '',
     );
   }
 

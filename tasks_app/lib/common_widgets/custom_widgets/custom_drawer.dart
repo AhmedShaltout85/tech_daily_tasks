@@ -201,29 +201,29 @@ class _CustomDrawerState extends State<CustomDrawer>
                         );
                       },
                     ),
+                    // _buildDrawerItem(
+                    //   context,
+                    //   index: 7,
+                    //   icon: Icons.add_circle_outline,
+                    //   title: 'إضافة صيانة وقائية',
+                    //   isDark: isDark,
+                    //   colorScheme: colorScheme,
+                    //   onTap: () {
+                    //     setState(() => _selectedIndex = 7);
+                    //     widget.onIndexChanged?.call(7);
+                    //     Navigator.pop(context);
+                    //     Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //         builder: (context) =>
+                    //             const ManagePreventiveMaintenanceScreen(),
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
                     _buildDrawerItem(
                       context,
                       index: 7,
-                      icon: Icons.add_circle_outline,
-                      title: 'إضافة صيانة وقائية',
-                      isDark: isDark,
-                      colorScheme: colorScheme,
-                      onTap: () {
-                        setState(() => _selectedIndex = 7);
-                        widget.onIndexChanged?.call(7);
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const ManagePreventiveMaintenanceScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    _buildDrawerItem(
-                      context,
-                      index: 8,
                       icon: isDark
                           ? Icons.light_mode_outlined
                           : Icons.dark_mode_outlined,
@@ -239,7 +239,7 @@ class _CustomDrawerState extends State<CustomDrawer>
                     ),
                     _buildDrawerItem(
                       context,
-                      index: 9,
+                      index: 8,
                       icon: Icons.settings_rounded,
                       title: 'الضبط والاعدادات',
                       isDark: isDark,

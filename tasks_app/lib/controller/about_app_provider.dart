@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 
 import '../models/about_app_model.dart';
+import '../models/recommended_item_model.dart';
 import '../newtork_repos/remote_repo/api_repos/api_network_about_app_repos_impl.dart';
 
 class AboutAppProvider with ChangeNotifier {
@@ -15,9 +18,11 @@ class AboutAppProvider with ChangeNotifier {
   String? get error => _error;
 
   Future<void> fetchAllAboutApps() async {
+    log('>>> Provider: fetchAllAboutApps called');
     _setLoading(true);
     try {
       _aboutApps = await _api.getAllAboutApps();
+      log('>>> Provider: Got ${_aboutApps.length} about apps');
       _error = null;
       notifyListeners();
     } catch (e) {
@@ -32,6 +37,69 @@ class AboutAppProvider with ChangeNotifier {
     _setLoading(true);
     try {
       _aboutApps = await _api.getAppsByDepartment(department);
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<List<String>> fetchRecommendedByAppName(String appName) async {
+    log('>>> Provider: fetchRecommendedByAppName called for: $appName');
+    _setLoading(true);
+    try {
+      final recommended = await _api.getRecommendedValuesByAppName(appName);
+      _error = null;
+      notifyListeners();
+      return recommended;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return [];
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<List<RecommendedItem>> fetchAllRecommendedByAppName(
+      String appName) async {
+    log('>>> Provider: fetchAllRecommendedByAppName called for: $appName');
+    _setLoading(true);
+    try {
+      final recommended = await _api.getAllRecommendedByAppName(appName);
+      _error = null;
+      notifyListeners();
+      return recommended;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return [];
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> addRecommended(String appName, String recommendedValue) async {
+    _setLoading(true);
+    try {
+      await _api.addRecommended(appName, recommendedValue);
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> deleteRecommended(int id) async {
+    _setLoading(true);
+    try {
+      await _api.deleteRecommended(id);
       _error = null;
       notifyListeners();
     } catch (e) {

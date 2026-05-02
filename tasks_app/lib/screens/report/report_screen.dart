@@ -28,6 +28,7 @@ class _ReportScreenState extends State<ReportScreen>
   String? selectedStatus;
   String? selectedIsRemote;
   bool _isFilterExpanded = true;
+  List<DailyTaskModel>? _cachedFilteredTasks;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
@@ -43,6 +44,7 @@ class _ReportScreenState extends State<ReportScreen>
     selectedVisitPlace = 'All';
     selectedStatus = 'All';
     selectedIsRemote = 'All';
+    _cachedFilteredTasks = null;
 
     _animationController = AnimationController(
       vsync: this,
@@ -54,9 +56,7 @@ class _ReportScreenState extends State<ReportScreen>
     );
     _animationController.forward();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchData();
-    });
+    // Data is already loaded from ManagerTaskScreen - no fetch needed
   }
 
   @override
@@ -66,23 +66,8 @@ class _ReportScreenState extends State<ReportScreen>
   }
 
   Future<void> _fetchData() async {
-    try {
-      // Fire and forget - don't await to prevent hanging
-      context.read<DailyTaskProvider>().fetchAllTasks();
-      context.read<PlaceNameProvider>().fetchPlaceNameStrings();
-
-      final userProvider = context.read<UserProvider>();
-      final department = userProvider.currentUser?.department;
-
-      if (department != null && department.isNotEmpty) {
-        userProvider.fetchUsersByDepartment(department);
-        context.read<AboutAppProvider>().fetchAppsByDepartment(department);
-      } else {
-        context.read<AboutAppProvider>().fetchAllAboutApps();
-      }
-    } catch (e) {
-      debugPrint('Error in _fetchData: $e');
-    }
+    // Data is already loaded from ManagerTaskScreen
+    // Just access existing provider data, no fetch needed
   }
 
   void _showNoInternetDialog() {
@@ -214,7 +199,8 @@ class _ReportScreenState extends State<ReportScreen>
         actions: [
           Consumer<DailyTaskProvider>(
             builder: (context, taskProvider, child) {
-              final filteredData = getFilteredData(taskProvider.tasks);
+              final filteredData =
+                  _cachedFilteredTasks ??= getFilteredData(taskProvider.tasks);
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 decoration: BoxDecoration(

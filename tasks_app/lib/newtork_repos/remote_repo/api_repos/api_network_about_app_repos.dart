@@ -1,4 +1,5 @@
 import '../../../models/about_app_model.dart';
+import '../../../models/recommended_item_model.dart';
 
 abstract class ApiNetworkAboutAppRepos {
   Future<List<AboutApp>> getAllAboutApps();
@@ -10,6 +11,12 @@ abstract class ApiNetworkAboutAppRepos {
   Future<AboutApp> getAboutAppByAppName(String appName);
 
   Future<List<String>> getRecommendedValuesByAppName(String appName);
+
+  Future<List<RecommendedItem>> getAllRecommendedByAppName(String appName);
+
+  Future<void> addRecommended(String appName, String recommendedValue);
+
+  Future<void> deleteRecommended(int id);
 
   Future<AboutApp> addAboutApp(
       String appName, String department, List<String> recommended);

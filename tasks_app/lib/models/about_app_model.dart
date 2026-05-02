@@ -25,9 +25,7 @@ class AboutApp {
       id: map['id'],
       appName: map['appName'] ?? '',
       department: map['department'] ?? '',
-      recommended: map['recommended'] != null
-          ? List<String>.from(map['recommended'])
-          : [],
+      recommended: _parseRecommended(map['recommended']),
     );
   }
 
@@ -43,5 +41,12 @@ class AboutApp {
       department: department ?? this.department,
       recommended: recommended ?? this.recommended,
     );
+  }
+
+  static List<String> _parseRecommended(dynamic value) {
+    if (value == null || value == '') return [];
+    if (value is List) return List<String>.from(value);
+    if (value is String) return [value];
+    return [];
   }
 }

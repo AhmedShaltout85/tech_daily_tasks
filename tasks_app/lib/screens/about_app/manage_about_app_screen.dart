@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
@@ -503,7 +502,7 @@ final provider = context.read<UserProvider>();
                               ElevatedButton.icon(
                                 onPressed: _showAddDialog,
                                 icon: const Icon(Icons.add),
-                                label: const Text('Add About App'),
+                                label: const Text('اضافة تطبيق/اجهزة'),
                               ),
                             ],
                           ),

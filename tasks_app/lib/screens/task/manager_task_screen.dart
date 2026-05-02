@@ -214,7 +214,8 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
     // Get unique user names from filteredUsersByDept
     List<String> usersNamesList = filteredUsersByDept.isNotEmpty
         ? filteredUsersByDept
-            .where((u) => u.role == 'USER' && u.department == selectedDepartment)
+            .where(
+                (u) => u.role == 'USER' && u.department == selectedDepartment)
             .map((u) => u.username)
             .toSet()
             .toList()
@@ -225,15 +226,14 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
         this.departmentsList.isNotEmpty ? this.departmentsList : [];
 
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedNavIndex,
-        children: [
-          _buildHomeContent(isDark, colorScheme, userProvider, aboutAppProvider,
-              appNames, usersNamesList, departmentsList),
-          const PreventiveMaintenanceReportScreen(),
-          const ReportScreen(),
-          const SettingsScreen(),
-        ],
+      body: _buildBody(
+        isDark,
+        colorScheme,
+        userProvider,
+        aboutAppProvider,
+        appNames,
+        usersNamesList,
+        departmentsList,
       ),
       bottomNavigationBar: CustomReusableBottomNavBar(
         currentIndex: _selectedNavIndex,
@@ -266,6 +266,31 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildBody(
+    bool isDark,
+    ColorScheme colorScheme,
+    UserProvider userProvider,
+    AboutAppProvider aboutAppProvider,
+    List<String> appNames,
+    List<String> usersNamesList,
+    List<String> departmentsList,
+  ) {
+    switch (_selectedNavIndex) {
+      case 0:
+        return _buildHomeContent(isDark, colorScheme, userProvider,
+            aboutAppProvider, appNames, usersNamesList, departmentsList);
+      case 1:
+        return const PreventiveMaintenanceReportScreen();
+      case 2:
+        return const ReportScreen();
+      case 3:
+        return const SettingsScreen();
+      default:
+        return _buildHomeContent(isDark, colorScheme, userProvider,
+            aboutAppProvider, appNames, usersNamesList, departmentsList);
+    }
   }
 
   Widget _buildHomeContent(
@@ -506,7 +531,7 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                                   color: isDark ? Colors.white : Colors.black87,
                                 ),
                                 decoration: InputDecoration(
-                                  labelText: 'القسم',
+                                  labelText: 'الادارة',
                                   labelStyle: TextStyle(
                                     color: isDark
                                         ? Colors.grey[400]
@@ -532,7 +557,7 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                                 items: [
                                   const DropdownMenuItem<String>(
                                     value: null,
-                                    child: Text('كل الاقسام'),
+                                    child: Text('كل الادارات'),
                                   ),
                                   ...departmentsList.map((dept) {
                                     return DropdownMenuItem<String>(
@@ -576,7 +601,7 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                                   color: isDark ? Colors.white : Colors.black87,
                                 ),
                                 decoration: InputDecoration(
-                                  labelText: 'الموظف',
+                                  labelText: 'مخصص للموظف',
                                   labelStyle: TextStyle(
                                     color: isDark
                                         ? Colors.grey[400]

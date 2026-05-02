@@ -45,7 +45,7 @@ class ApiNetworkUserReposImpl implements ApiNetworkUserRepos {
     });
     if (response.data['token'] != null) {
       log(response.data['token']);
-      
+
       _client.setToken(response.data['token']);
     }
     return response.data;
@@ -73,7 +73,7 @@ class ApiNetworkUserReposImpl implements ApiNetworkUserRepos {
 
   @override
   Future<List<UserModel>> getUsersByDepartment(String department) async {
-    final response = await _client.dio.get('/users/department/$department');
+    final response = await _client.dio.get('/users/department/$department/all');
     return (response.data as List)
         .map((json) => UserModel.fromJson(json))
         .toList();

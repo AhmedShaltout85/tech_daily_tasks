@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
+import 'package:tasks_app/models/recommended_item_model.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
 class AppRecommendedDetailsScreen extends StatefulWidget {
@@ -26,7 +27,7 @@ class _AppRecommendedDetailsScreenState
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   final ConnectivityService _connectivity = ConnectivityService();
-  List<String> _recommendedItems = [];
+  List<RecommendedItem> _recommendedItems = [];
 
   @override
   void initState() {
@@ -56,14 +57,11 @@ class _AppRecommendedDetailsScreenState
       _showNoInternetDialog();
       return;
     }
-    await context.read<AboutAppProvider>().fetchAllAboutApps();
-    final provider = context.read<AboutAppProvider>();
-    final aboutApp = provider.aboutApps.firstWhere(
-      (a) => a.appName == widget.appName,
-      orElse: () => throw Exception('App not found'),
-    );
+    final recommended = await context
+        .read<AboutAppProvider>()
+        .fetchAllRecommendedByAppName(widget.appName);
     setState(() {
-      _recommendedItems = aboutApp.recommended ?? [];
+      _recommendedItems = recommended;
     });
     _animationController.forward();
   }
@@ -137,30 +135,16 @@ class _AppRecommendedDetailsScreenState
     );
   }
 
-  Future<void> _addRecommended(String recommended) async {
+  Future<void> _addRecommended(String recommendedValue) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
       _showNoInternetDialog();
       return;
     }
 
-    // Get existing recommended list and add the new one
-    final provider = context.read<AboutAppProvider>();
-    final aboutApp = provider.aboutApps.firstWhere(
-      (a) => a.appName == widget.appName,
-      orElse: () => throw Exception('App not found'),
-    );
-
-    final currentRecommended = List<String>.from(aboutApp.recommended ?? []);
-    currentRecommended.add(recommended);
-
-    await provider.updateAboutApp(
-      aboutApp.id!,
-      widget.appName,
-      aboutApp.department ?? 'IT',
-      currentRecommended,
-    );
-    // Trigger sync - notify AppNameProvider to refresh
+    await context
+        .read<AboutAppProvider>()
+        .addRecommended(widget.appName, recommendedValue);
 
     if (mounted) {
       final provider = context.read<AboutAppProvider>();
@@ -184,9 +168,9 @@ class _AppRecommendedDetailsScreenState
     }
   }
 
-  void _showEditDialog(int index, String currentRecommended) {
+  void _showEditDialog(int index, RecommendedItem item) {
     final recommendedController =
-        TextEditingController(text: currentRecommended);
+        TextEditingController(text: item.recommendedValue);
     final formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -227,9 +211,7 @@ class _AppRecommendedDetailsScreenState
               if (formKey.currentState!.validate()) {
                 Navigator.pop(dialogContext);
                 await _updateRecommended(
-                  index,
-                  recommendedController.text.trim(),
-                );
+                    index, item, recommendedController.text.trim());
               }
             },
             child: const Text('Update'),
@@ -239,43 +221,31 @@ class _AppRecommendedDetailsScreenState
     );
   }
 
-  Future<void> _updateRecommended(int index, String recommended) async {
+  Future<void> _updateRecommended(
+      int index, RecommendedItem item, String newValue) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
       _showNoInternetDialog();
       return;
     }
 
-    final provider = context.read<AboutAppProvider>();
-    final aboutApp = provider.aboutApps.firstWhere(
-      (a) => a.appName == widget.appName,
-      orElse: () => throw Exception('App not found'),
-    );
+    await context.read<AboutAppProvider>().deleteRecommended(item.id);
+    if (!mounted) return;
 
-    // Update the specific recommended value at index
-    final currentRecommended = List<String>.from(aboutApp.recommended ?? []);
-    if (index < currentRecommended.length) {
-      currentRecommended[index] = recommended;
-    }
-
-    await provider.updateAboutApp(
-      aboutApp.id!,
-      widget.appName,
-      aboutApp.department ?? 'IT',
-      currentRecommended,
-    );
-    // Trigger sync - notify AppNameProvider to refresh
+    await context
+        .read<AboutAppProvider>()
+        .addRecommended(widget.appName, newValue);
 
     if (mounted) {
-      final newProvider = context.read<AboutAppProvider>();
-      if (newProvider.error != null) {
+      final provider = context.read<AboutAppProvider>();
+      if (provider.error != null) {
         ReusableToast.showToast(
-          message: newProvider.error!,
+          message: provider.error!,
           bgColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16,
         );
-        newProvider.clearError();
+        provider.clearError();
       } else {
         ReusableToast.showToast(
           message: 'Recommended updated successfully',
@@ -288,7 +258,7 @@ class _AppRecommendedDetailsScreenState
     }
   }
 
-  Future<void> _showDeleteConfirmation(int index, String recommended) async {
+  Future<void> _showDeleteConfirmation(int index, RecommendedItem item) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
       _showNoInternetDialog();
@@ -305,7 +275,8 @@ class _AppRecommendedDetailsScreenState
             Text('Delete Recommended'),
           ],
         ),
-        content: Text('Are you sure you want to delete "$recommended"?'),
+        content:
+            Text('Are you sure you want to delete "${item.recommendedValue}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -324,25 +295,18 @@ class _AppRecommendedDetailsScreenState
     );
 
     if (confirmed == true) {
-      final provider = context.read<AboutAppProvider>();
-      final aboutApp = provider.aboutApps.firstWhere(
-        (a) => a.appName == widget.appName,
-        orElse: () => throw Exception('App not found'),
-      );
-
-      await provider.deleteAboutApp(aboutApp.id!);
-      // Trigger sync - notify AppNameProvider to refresh
+      await context.read<AboutAppProvider>().deleteRecommended(item.id);
 
       if (mounted) {
-        final newProvider = context.read<AboutAppProvider>();
-        if (newProvider.error != null) {
+        final provider = context.read<AboutAppProvider>();
+        if (provider.error != null) {
           ReusableToast.showToast(
-            message: newProvider.error!,
+            message: provider.error!,
             bgColor: Colors.red,
             textColor: Colors.white,
             fontSize: 16,
           );
-          newProvider.clearError();
+          provider.clearError();
         } else {
           ReusableToast.showToast(
             message: 'Recommended deleted successfully',
@@ -488,11 +452,11 @@ class _AppRecommendedDetailsScreenState
                           onRefresh: _fetchData,
                           child: ListView.builder(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: aboutApps.length,
+                            itemCount: _recommendedItems.length,
                             itemBuilder: (context, index) {
-                              final aboutApp = aboutApps[index];
+                              final item = _recommendedItems[index];
                               return _buildRecommendedCard(
-                                aboutApp,
+                                item,
                                 index,
                                 isDark,
                                 colorScheme,
@@ -511,16 +475,12 @@ class _AppRecommendedDetailsScreenState
   }
 
   Widget _buildRecommendedCard(
-    dynamic aboutApp,
+    RecommendedItem item,
     int index,
     bool isDark,
     ColorScheme colorScheme,
     Color appColor,
   ) {
-    // Use the state's _recommendedItems list for displaying
-    final recommendedValue =
-        index < _recommendedItems.length ? _recommendedItems[index] : '';
-
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 300 + (index * 50)),
@@ -557,7 +517,7 @@ class _AppRecommendedDetailsScreenState
             ),
           ),
           title: Text(
-            recommendedValue,
+            item.recommendedValue,
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: isDark ? Colors.white : Colors.black87,
@@ -589,7 +549,7 @@ class _AppRecommendedDetailsScreenState
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => _showEditDialog(index, recommendedValue),
+                  onPressed: () => _showEditDialog(index, item),
                 ),
               ),
               const SizedBox(width: 8),
@@ -600,8 +560,7 @@ class _AppRecommendedDetailsScreenState
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: () =>
-                      _showDeleteConfirmation(index, recommendedValue),
+                  onPressed: () => _showDeleteConfirmation(index, item),
                 ),
               ),
             ],
