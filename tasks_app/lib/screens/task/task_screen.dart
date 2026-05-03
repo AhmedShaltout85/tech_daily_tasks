@@ -226,8 +226,10 @@ class _TaskScreenState extends State<TaskScreen> {
 
     //Filter out the admin
     List<String> employeeNames = userProvider.users
-        .map((u) => u.username)
-        .where((username) => username != 'admin')
+        .map((u) => u.role == 'USER' || u.role == 'MANAGER' || u.role == 'ADMIN' ? u.username : 'admin')
+        .where((username) => username != 'admin' || username != 'manager')
+        .toSet()
+        // .where((username) => username != 'admin' || username != 'manager')
         .toList();
 
     // Get unique app names from AboutAppProvider
@@ -236,7 +238,13 @@ class _TaskScreenState extends State<TaskScreen> {
 
     List<String> placeNames = placeNameProvider.placeNameStrings;
 
-    List<String> uniqueEmployeeNames = ['لاشئ', ...employeeNames];
+    if(employeeNames.contains('admin') || employeeNames.contains('manager')) {
+      employeeNames.remove('admin');
+      employeeNames.remove('manager');
+    }else{
+      employeeNames = ['لاشئ', ...employeeNames];
+    }
+    List<String> uniqueEmployeeNames = ['لاشئ', ...employeeNames.toSet()];
 
     return Scaffold(
       appBar: AppBar(

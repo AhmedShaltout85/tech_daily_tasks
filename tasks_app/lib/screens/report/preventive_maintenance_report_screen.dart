@@ -26,6 +26,7 @@ class _PreventiveMaintenanceReportScreenState
   String? selectedUsername;
   String? selectedAppName;
   String? selectedPlaceName;
+  String? selectedDepartment;
   bool? selectedIsRemote;
   DateTime? startDate;
   DateTime? endDate;
@@ -39,6 +40,7 @@ class _PreventiveMaintenanceReportScreenState
     selectedUsername = 'الكل';
     selectedAppName = 'الكل';
     selectedPlaceName = 'الكل';
+    selectedDepartment = 'الكل';
     selectedIsRemote = null;
     startDate = null;
     endDate = null;
@@ -127,6 +129,17 @@ class _PreventiveMaintenanceReportScreenState
       bool matchesPlace = true;
       bool matchesRemote = true;
       bool matchesDate = true;
+      bool matchesDepartment = true;
+
+      // Username filtering
+      if (selectedUsername != null && selectedUsername != 'الكل') {
+        matchesUser = item.username == selectedUsername;
+      }
+
+      // Department filtering - if a department is selected and not 'الكل'
+      if (selectedDepartment != null && selectedDepartment != 'الكل') {
+        matchesDepartment = item.department == selectedDepartment;
+      }
 
       // Date filtering using createdAt
       if (startDate != null && item.createdAt != null) {
@@ -169,7 +182,8 @@ class _PreventiveMaintenanceReportScreenState
           matchesApp &&
           matchesPlace &&
           matchesRemote &&
-          matchesDate;
+          matchesDate &&
+          matchesDepartment;
     }).toList();
   }
 
@@ -178,6 +192,7 @@ class _PreventiveMaintenanceReportScreenState
       selectedUsername = 'الكل';
       selectedAppName = 'الكل';
       selectedPlaceName = 'الكل';
+      selectedDepartment = 'الكل';
       selectedIsRemote = null;
       startDate = null;
       endDate = null;
@@ -493,7 +508,7 @@ class _PreventiveMaintenanceReportScreenState
                     const SizedBox(width: 10),
                     Text(
                       item.action,
-                    style: const TextStyle(
+                      style: const TextStyle(
                           fontSize: 16,
                           color: AppColors.blackColor,
                           fontWeight: FontWeight.bold),
@@ -550,7 +565,7 @@ class _PreventiveMaintenanceReportScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('صيانة وقائية'),
+        title: const Text('تقرير صيانة وقائية'),
         actions: [
           Consumer<PreventiveProvider>(
             builder: (context, provider, child) {
@@ -611,11 +626,53 @@ class _PreventiveMaintenanceReportScreenState
           debugPrint('DEBUG: Items count = $debugCount');
           final appNames =
               aboutAppProvider.aboutApps.map((a) => a.appName).toSet().toList();
-          final usernames = userProvider.users
-              .map((u) => u.username)
-              .where((u) => u != 'admin')
-              .toSet()
-              .toList();
+
+          // Get current user info for role-based department filtering
+          final currentUser = userProvider.currentUser;
+          final userRole = currentUser?.role ?? '';
+          final userDepartment = currentUser?.department ?? '';
+
+          // Build department list based on role
+          List<String> departmentList = [];
+          List<String> usernames = [];
+
+          if (userRole == 'USER') {
+            departmentList = [userDepartment.isEmpty ? 'IT' : userDepartment];
+            selectedDepartment = userDepartment.isEmpty ? 'IT' : userDepartment;
+            usernames = [currentUser?.username ?? ''];
+          } else if (userRole == 'ADMIN' || userRole == 'MANAGER') {
+            departmentList = [userDepartment.isEmpty ? 'IT' : userDepartment];
+            if (selectedDepartment == 'الكل') {
+              selectedDepartment =
+                  userDepartment.isEmpty ? 'IT' : userDepartment;
+            }
+            usernames = userProvider.users
+                .where((u) => u.department == userDepartment)
+                .map((u) => u.username)
+                .toSet()
+                .toList();
+          } else if (userRole == 'GENERAL_MANAGER' ||
+              userRole == 'SECTOR_MANAGER') {
+            final allDepartments = userProvider.users
+                .map((u) => u.department ?? '')
+                .where((d) => d.isNotEmpty)
+                .toSet()
+                .toList();
+            departmentList = ['الكل', ...allDepartments];
+            usernames = userProvider.users
+                .map((u) => u.username)
+                .where((u) => u != 'admin')
+                .toSet()
+                .toList();
+          } else {
+            departmentList = ['الكل'];
+            usernames = userProvider.users
+                .map((u) => u.username)
+                .where((u) => u != 'admin')
+                .toSet()
+                .toList();
+          }
+
           final placeNames = placeProvider.placeNameStrings;
 
           final filteredData = getFilteredData(items);
@@ -686,7 +743,7 @@ class _PreventiveMaintenanceReportScreenState
                               ),
                               const SizedBox(width: 12),
                               const Text(
-                                'فلاتر البحث',
+                                'تصفية البحث',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -711,6 +768,22 @@ class _PreventiveMaintenanceReportScreenState
                             children: [
                               Row(
                                 children: [
+                                  Expanded(
+                                    child: _buildDropdown(
+                                      label: 'الادراة',
+                                      value: departmentList.contains(
+                                              selectedDepartment ?? 'الكل')
+                                          ? selectedDepartment!
+                                          : 'الكل',
+                                      items: departmentList,
+                                      icon: Icons.business,
+                                      onChanged: (value) {
+                                        setState(
+                                            () => selectedDepartment = value);
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: _buildDropdown(
                                       label: 'المستخدم',

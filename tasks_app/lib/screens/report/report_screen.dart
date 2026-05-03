@@ -27,23 +27,25 @@ class _ReportScreenState extends State<ReportScreen>
   String? selectedVisitPlace;
   String? selectedStatus;
   String? selectedIsRemote;
+  String? selectedDepartment;
   bool _isFilterExpanded = true;
   List<DailyTaskModel>? _cachedFilteredTasks;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
-  final List<String> statusList = ['All', 'Pending', 'Completed'];
-  final List<String> isRemoteList = ['All', 'Remote', 'Onsite'];
+  final List<String> statusList = ['الكل', 'معلق', 'مكتمل'];
+  final List<String> isRemoteList = ['الكل', 'عن بعد', 'فى الموقع'];
   final ConnectivityService _connectivity = ConnectivityService();
 
   @override
   void initState() {
     super.initState();
-    selectedAssignee = 'All';
-    selectedApplication = 'All';
-    selectedVisitPlace = 'All';
-    selectedStatus = 'All';
-    selectedIsRemote = 'All';
+    selectedAssignee = 'الكل';
+    selectedApplication = 'الكل';
+    selectedVisitPlace = 'الكل';
+    selectedStatus = 'الكل';
+    selectedIsRemote = 'الكل';
+    selectedDepartment = 'الكل';
     _cachedFilteredTasks = null;
 
     _animationController = AnimationController(
@@ -141,26 +143,26 @@ class _ReportScreenState extends State<ReportScreen>
         }
       }
 
-      if (selectedAssignee != null && selectedAssignee != 'All') {
+      if (selectedAssignee != null && selectedAssignee != 'الكل') {
         matchesAssignee = task.assignedTo == selectedAssignee;
       }
 
-      if (selectedApplication != null && selectedApplication != 'All') {
+      if (selectedApplication != null && selectedApplication != 'الكل') {
         matchesApplication = task.appName == selectedApplication;
       }
 
-      if (selectedVisitPlace != null && selectedVisitPlace != 'All') {
+      if (selectedVisitPlace != null && selectedVisitPlace != 'الكل') {
         matchesVisitPlace = task.visitPlace == selectedVisitPlace;
       }
 
-      if (selectedStatus != null && selectedStatus != 'All') {
-        String taskStatusString = task.taskStatus ? 'Pending' : 'Completed';
+      if (selectedStatus != null && selectedStatus != 'الكل') {
+        String taskStatusString = task.taskStatus ? 'معلق' : 'مكتمل';
         matchesStatus = taskStatusString == selectedStatus;
       }
 
-      if (selectedIsRemote != null && selectedIsRemote != 'All') {
+      if (selectedIsRemote != null && selectedIsRemote != 'الكل') {
         bool taskIsRemote = task.isRemote ?? false;
-        String isRemoteString = taskIsRemote ? 'Remote' : 'Onsite';
+        String isRemoteString = taskIsRemote ? 'عن بعد' : 'فى الموقع';
         matchesIsRemote = isRemoteString == selectedIsRemote;
       }
 
@@ -177,11 +179,11 @@ class _ReportScreenState extends State<ReportScreen>
     setState(() {
       startDate = null;
       endDate = null;
-      selectedAssignee = 'All';
-      selectedApplication = 'All';
-      selectedVisitPlace = 'All';
-      selectedStatus = 'All';
-      selectedIsRemote = 'All';
+      selectedAssignee = 'الكل';
+      selectedApplication = 'الكل';
+      selectedVisitPlace = 'الكل';
+      selectedStatus = 'الكل';
+      selectedIsRemote = 'الكل';
     });
     ReusableToast.showToast(
       message: 'تم مسح التختصيصات',
@@ -253,17 +255,54 @@ class _ReportScreenState extends State<ReportScreen>
           final placeProvider = context.read<PlaceNameProvider>();
           final visitPlaceNames = placeProvider.placeNameStrings;
 
-          // Get employee names from UserProvider
-          final employeeNames = userProvider.users
-              .map((u) => u.username)
-              .toSet()
-              .toList()
-            ..removeWhere((element) => element.contains('admin'));
+          // Get current user info for role-based department filtering
+          final currentUser = userProvider.currentUser;
+          final userRole = currentUser?.role ?? '';
+          final userDepartment = currentUser?.department ?? '';
+
+          // Build department list based on role
+          List<String> departmentList = [];
+          if (userRole == 'USER') {
+            departmentList = [userDepartment.isEmpty ? 'IT' : userDepartment];
+            selectedDepartment = userDepartment.isEmpty ? 'IT' : userDepartment;
+          } else if (userRole == 'ADMIN' || userRole == 'MANAGER') {
+            departmentList = [userDepartment.isEmpty ? 'IT' : userDepartment];
+            if (selectedDepartment == 'الكل') {
+              selectedDepartment =
+                  userDepartment.isEmpty ? 'IT' : userDepartment;
+            }
+          } else if (userRole == 'GENERAL_MANAGER' ||
+              userRole == 'SECTOR_MANAGER') {
+            final allDepartments = userProvider.users
+                .map((u) => u.department ?? '')
+                .where((d) => d.isNotEmpty)
+                .toSet()
+                .toList();
+            departmentList = ['الكل', ...allDepartments];
+          } else {
+            departmentList = ['الكل'];
+          }
+
+          // Get users filtered by selected department
+          List<String> allUsernames =
+              userProvider.users.map((u) => u.username).toSet().toList();
+
+          List<String> employeeNames = [];
+          if (selectedDepartment == 'الكل' || selectedDepartment == null) {
+            employeeNames =
+                allUsernames.where((u) => !u.contains('admin')).toList();
+          } else {
+            employeeNames = userProvider.users
+                .where((u) => u.department == selectedDepartment)
+                .map((u) => u.username)
+                .toSet()
+                .toList();
+          }
 
           final filteredData = getFilteredData(tasks);
-          final assigneeList = ['All', ...employeeNames];
-          final applicationList = ['All', ...appNames];
-          final visitPlaceList = ['All', ...visitPlaceNames];
+          final assigneeList = ['الكل', ...employeeNames];
+          final applicationList = ['الكل', ...appNames];
+          final visitPlaceList = ['الكل', ...visitPlaceNames];
           final isLoading = taskProvider.isLoading ||
               userProvider.isLoading ||
               aboutAppProvider.isLoading ||
@@ -396,12 +435,29 @@ class _ReportScreenState extends State<ReportScreen>
                                   children: [
                                     Expanded(
                                       child: _buildDropdown(
+                                        label: 'الادارة',
+                                        value: departmentList
+                                                .contains(selectedDepartment)
+                                            ? selectedDepartment!
+                                            : 'الكل',
+                                        items: departmentList,
+                                        icon: Icons.business_rounded,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            selectedDepartment = value;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: _buildDropdown(
                                         label: 'مخصص للموظف',
                                         value: assigneeList.contains(
                                           selectedAssignee,
                                         )
                                             ? selectedAssignee!
-                                            : 'All',
+                                            : 'الكل',
                                         items: assigneeList,
                                         icon: Icons.person_outline_rounded,
                                         onChanged: (value) {
@@ -419,7 +475,7 @@ class _ReportScreenState extends State<ReportScreen>
                                           selectedApplication,
                                         )
                                             ? selectedApplication!
-                                            : 'All',
+                                            : 'الكل',
                                         items: applicationList,
                                         icon: Icons.apps_rounded,
                                         onChanged: (value) {
@@ -441,7 +497,7 @@ class _ReportScreenState extends State<ReportScreen>
                                           selectedVisitPlace,
                                         )
                                             ? selectedVisitPlace!
-                                            : 'All',
+                                            : 'الكل',
                                         items: visitPlaceList,
                                         icon: Icons.location_on_rounded,
                                         onChanged: (value) {
@@ -458,7 +514,7 @@ class _ReportScreenState extends State<ReportScreen>
                                         value:
                                             statusList.contains(selectedStatus)
                                                 ? selectedStatus!
-                                                : 'All',
+                                                : 'الكل',
                                         items: statusList,
                                         onChanged: (value) {
                                           setState(
@@ -474,7 +530,7 @@ class _ReportScreenState extends State<ReportScreen>
                                         value: isRemoteList
                                                 .contains(selectedIsRemote)
                                             ? selectedIsRemote!
-                                            : 'All',
+                                            : 'الكل',
                                         items: isRemoteList,
                                         onChanged: (value) {
                                           setState(
@@ -821,9 +877,9 @@ class _ReportScreenState extends State<ReportScreen>
   }
 
   Widget _buildTaskCard(DailyTaskModel task, int index) {
-    final status = task.taskStatus ? 'Pending' : 'Completed';
+    final status = task.taskStatus ? 'معلق' : 'مكتمل';
     final date = DateFormat('MMM dd, yyyy').format(task.createdAt);
-    final isRemote = task.isRemote ?? false ? 'Remote' : 'Onsite';
+    final isRemote = task.isRemote ?? false ? 'عن بعد' : 'فى الموقع';
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
