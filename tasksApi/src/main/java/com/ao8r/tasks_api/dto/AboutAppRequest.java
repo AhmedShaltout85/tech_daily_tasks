@@ -14,7 +14,9 @@ public class AboutAppRequest {
     @Size(max = 255, message = "App name must not exceed 255 characters")
     private String appName;
 
-    @NotBlank(message = "Recommended is required")
-    @Size(max = 255, message = "Recommended must not exceed 255 characters")
-    private String recommended;
+    private Object recommended;
+
+    @NotBlank(message = "Department is required")
+    @Size(max = 255)
+    private String department;
 }

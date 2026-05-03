@@ -10,11 +10,13 @@
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/entity/AboutApp.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/repository/PlaceItemRepository.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/service/AboutAppServiceImpl.java
+/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/entity/AboutAppRecommended.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/controller/PreventiveMaintenanceController.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/PlaceItemResponse.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/entity/PreventiveMaintenance.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/exception/ResourceNotFoundException.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/MessageResponse.java
+/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/RecommendedResponse.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/PreventiveItemRequest.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/repository/UserRepository.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/SignupRequest.java
@@ -28,6 +30,7 @@
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/ChangePasswordRequest.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/exception/UserNotFoundException.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/service/AppsNameServiceImpl.java
+/home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/repository/AboutAppRecommendedRepository.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/controller/PreventiveItemController.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/dto/AppsNameRequest.java
 /home/ahmedshaltout/Desktop/androidApp/tech_daily_tasks/tasksApi/src/main/java/com/ao8r/tasks_api/TasksApiApplication.java

@@ -29,6 +29,7 @@ public class PreventiveMaintenanceServiceImpl implements PreventiveMaintenanceSe
                 .appName(request.getAppName())
                 .action(request.getAction())
                 .username(request.getUsername())
+                .department(request.getDepartment())
                 .placeName(request.getPlaceName())
                 .subPlace(request.getSubPlace() != null ? request.getSubPlace() : "none")
                 .isRemote(request.getIsRemote() != null ? request.getIsRemote() : false)
@@ -67,6 +68,7 @@ public class PreventiveMaintenanceServiceImpl implements PreventiveMaintenanceSe
         item.setAppName(request.getAppName());
         item.setAction(request.getAction());
         item.setUsername(request.getUsername());
+        item.setDepartment(request.getDepartment());
         item.setPlaceName(request.getPlaceName());
         item.setSubPlace(request.getSubPlace() != null ? request.getSubPlace() : "none");
         item.setIsRemote(request.getIsRemote() != null ? request.getIsRemote() : false);
@@ -174,6 +176,7 @@ public class PreventiveMaintenanceServiceImpl implements PreventiveMaintenanceSe
                 .appName(item.getAppName())
                 .action(item.getAction())
                 .username(item.getUsername())
+                .department(item.getDepartment())
                 .placeName(item.getPlaceName())
                 .subPlace(item.getSubPlace())
                 .isRemote(item.getIsRemote())

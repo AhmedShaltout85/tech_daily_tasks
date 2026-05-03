@@ -21,4 +21,7 @@ public class AboutApp implements java.io.Serializable {
 
     @Column(name = "recommended", nullable = false)
     private String recommended;
+
+    @Column(name = "department", nullable = false)
+    private String department;
 }

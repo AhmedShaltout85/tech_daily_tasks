@@ -28,6 +28,9 @@ public class PreventiveMaintenance implements java.io.Serializable {
     @Column(name = "username", nullable = false)
     private String username;
 
+    @Column(name = "department")
+    private String department;
+
     @Column(name = "place_name", nullable = false)
     private String placeName;
 

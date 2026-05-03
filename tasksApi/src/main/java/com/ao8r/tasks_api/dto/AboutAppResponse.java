@@ -11,4 +11,5 @@ public class AboutAppResponse {
     private Long id;
     private String appName;
     private String recommended;
+    private String department;
 }

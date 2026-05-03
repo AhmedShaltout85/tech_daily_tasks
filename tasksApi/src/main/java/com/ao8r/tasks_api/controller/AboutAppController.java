@@ -3,6 +3,7 @@ package com.ao8r.tasks_api.controller;
 import com.ao8r.tasks_api.dto.AboutAppRequest;
 import com.ao8r.tasks_api.dto.AboutAppResponse;
 import com.ao8r.tasks_api.dto.MessageResponse;
+import com.ao8r.tasks_api.dto.RecommendedResponse;
 import com.ao8r.tasks_api.service.AboutAppService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,29 @@ public class AboutAppController {
         log.debug("Fetching recommended values by app name: {}", appName);
         List<String> recommended = aboutAppService.getRecommendedByAppName(appName);
         return ResponseEntity.ok(recommended);
+    }
+
+    @GetMapping("/name/{appName}/recommended/all")
+    public ResponseEntity<List<RecommendedResponse>> getAllRecommendedByAppName(@PathVariable String appName) {
+        log.debug("Fetching all recommended records by app name: {}", appName);
+        List<RecommendedResponse> recommended = aboutAppService.getAllRecommendedByAppName(appName);
+        return ResponseEntity.ok(recommended);
+    }
+
+    @PostMapping("/name/{appName}/recommended")
+    public ResponseEntity<MessageResponse> addRecommended(
+            @PathVariable String appName,
+            @RequestBody String recommendedValue) {
+        log.debug("Adding recommended value for app: {}", appName);
+        aboutAppService.addRecommended(appName, recommendedValue);
+        return ResponseEntity.ok(new MessageResponse("Recommended added successfully!"));
+    }
+
+    @DeleteMapping("/recommended/{id}")
+    public ResponseEntity<MessageResponse> deleteRecommended(@PathVariable Long id) {
+        log.debug("Deleting recommended with id: {}", id);
+        aboutAppService.deleteRecommended(id);
+        return ResponseEntity.ok(new MessageResponse("Recommended deleted successfully!"));
     }
 
     @PutMapping("/{id}")

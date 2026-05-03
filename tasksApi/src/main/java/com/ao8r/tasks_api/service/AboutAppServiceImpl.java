@@ -2,9 +2,12 @@ package com.ao8r.tasks_api.service;
 
 import com.ao8r.tasks_api.dto.AboutAppRequest;
 import com.ao8r.tasks_api.dto.AboutAppResponse;
+import com.ao8r.tasks_api.dto.RecommendedResponse;
 import com.ao8r.tasks_api.entity.AboutApp;
+import com.ao8r.tasks_api.entity.AboutAppRecommended;
 import com.ao8r.tasks_api.exception.ResourceNotFoundException;
 import com.ao8r.tasks_api.repository.AboutAppRepository;
+import com.ao8r.tasks_api.repository.AboutAppRecommendedRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
 public class AboutAppServiceImpl implements AboutAppService {
 
     private final AboutAppRepository aboutAppRepository;
+    private final AboutAppRecommendedRepository recommendedRepository;
 
     @Override
     @Transactional
@@ -27,7 +31,8 @@ public class AboutAppServiceImpl implements AboutAppService {
 
         AboutApp aboutApp = AboutApp.builder()
                 .appName(request.getAppName())
-                .recommended(request.getRecommended())
+                .recommended(convertRecommended(request.getRecommended()))
+                .department(request.getDepartment())
                 .build();
 
         AboutApp savedApp = aboutAppRepository.save(aboutApp);
@@ -63,7 +68,36 @@ public class AboutAppServiceImpl implements AboutAppService {
     @Override
     public List<String> getRecommendedByAppName(String appName) {
         log.debug("Fetching recommended values by app name: {}", appName);
-        return aboutAppRepository.findRecommendedByAppName(appName);
+        return recommendedRepository.findRecommendedValuesByAppName(appName);
+    }
+
+    @Override
+    public List<RecommendedResponse> getAllRecommendedByAppName(String appName) {
+        log.debug("Fetching all recommended records by app name: {}", appName);
+        return recommendedRepository.findAllByAppName(appName).stream()
+                .map(this::mapRecommendedToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void addRecommended(String appName, String recommendedValue) {
+        log.debug("Adding recommended value for app: {}", appName);
+        AboutAppRecommended recommended = AboutAppRecommended.builder()
+                .appName(appName)
+                .recommendedValue(recommendedValue)
+                .build();
+        recommendedRepository.save(recommended);
+    }
+
+    @Override
+    @Transactional
+    public void deleteRecommended(Long id) {
+        log.debug("Deleting recommended with id: {}", id);
+        if (!recommendedRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Recommended not found with id: " + id);
+        }
+        recommendedRepository.deleteById(id);
     }
 
     @Override
@@ -75,7 +109,8 @@ public class AboutAppServiceImpl implements AboutAppService {
                 .orElseThrow(() -> new ResourceNotFoundException("About app not found with id: " + id));
 
         aboutApp.setAppName(request.getAppName());
-        aboutApp.setRecommended(request.getRecommended());
+        aboutApp.setRecommended(convertRecommended(request.getRecommended()));
+        aboutApp.setDepartment(request.getDepartment());
 
         AboutApp updatedApp = aboutAppRepository.save(aboutApp);
         log.info("About app updated successfully with id: {}", updatedApp.getId());
@@ -101,6 +136,24 @@ public class AboutAppServiceImpl implements AboutAppService {
                 .id(aboutApp.getId())
                 .appName(aboutApp.getAppName())
                 .recommended(aboutApp.getRecommended())
+                .department(aboutApp.getDepartment())
+                .build();
+    }
+
+    private String convertRecommended(Object recommended) {
+        if (recommended == null) return "";
+        if (recommended instanceof String) return (String) recommended;
+        if (recommended instanceof List) {
+            return String.join(", ", (List<String>) recommended);
+        }
+        return recommended.toString();
+    }
+
+    private RecommendedResponse mapRecommendedToResponse(AboutAppRecommended recommended) {
+        return RecommendedResponse.builder()
+                .id(recommended.getId())
+                .appName(recommended.getAppName())
+                .recommendedValue(recommended.getRecommendedValue())
                 .build();
     }
 }

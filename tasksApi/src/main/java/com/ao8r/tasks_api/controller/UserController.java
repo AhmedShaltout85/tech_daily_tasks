@@ -60,6 +60,14 @@ public class UserController {
         return ResponseEntity.ok(userNames);
     }
 
+    @GetMapping("/department/{department}/all")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public ResponseEntity<List<User>> getAllUsersByDepartment(@PathVariable String department) {
+        log.debug("Fetching all users with department: {}", department);
+        List<User> users = userService.findByDepartment(department);
+        return ResponseEntity.ok(users);
+    }
+
     @GetMapping("/role/{role}/enabled/{enabled}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public ResponseEntity<List<String>> getUsersByRoleAndEnabled(

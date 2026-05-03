@@ -22,6 +22,9 @@ public class PreventiveMaintenanceRequest {
     @Size(max = 255, message = "Username must not exceed 255 characters")
     private String username;
 
+    @Size(max = 255, message = "Department must not exceed 255 characters")
+    private String department;
+
     @NotBlank(message = "Place name is required")
     @Size(max = 255, message = "Place name must not exceed 255 characters")
     private String placeName;

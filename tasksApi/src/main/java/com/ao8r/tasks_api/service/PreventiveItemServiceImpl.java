@@ -7,6 +7,7 @@ import com.ao8r.tasks_api.exception.ResourceNotFoundException;
 import com.ao8r.tasks_api.repository.PreventiveItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class PreventiveItemServiceImpl implements PreventiveItemService {
 
     private final PreventiveItemRepository preventiveItemRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     @Transactional
@@ -28,6 +30,7 @@ public class PreventiveItemServiceImpl implements PreventiveItemService {
         PreventiveItem item = PreventiveItem.builder()
                 .appName(request.getAppName())
                 .action(request.getAction())
+                .department(request.getDepartment())
                 .build();
 
         PreventiveItem savedItem = preventiveItemRepository.save(item);
@@ -53,11 +56,28 @@ public class PreventiveItemServiceImpl implements PreventiveItemService {
     }
 
     @Override
-    public PreventiveItemResponse getItemByAppName(String appName) {
-        log.debug("Fetching preventive item by app name: {}", appName);
-        PreventiveItem item = preventiveItemRepository.findByAppName(appName)
-                .orElseThrow(() -> new ResourceNotFoundException("Preventive item not found with app name: " + appName));
-        return mapToResponse(item);
+    public List<PreventiveItemResponse> getItemByAppName(String appName) {
+        log.debug("Fetching preventive items by app name: {}", appName);
+
+        // Debug - show all app names in DB
+        jdbcTemplate.queryForList("SELECT DISTINCT app_name FROM preventive_item")
+            .forEach(row -> log.debug(">>> DB app_name: [{}]", row.get("app_name")));
+
+        // Debug - show matching count with exact SQL
+        Integer exactCount = jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM preventive_item WHERE TRIM(LOWER(app_name)) = TRIM(LOWER(?))", 
+            Integer.class, appName);
+        log.debug(">>> Exact match count: {}", exactCount);
+
+        int count = preventiveItemRepository.countByAppNameNative(appName);
+        log.info("Native query count for app '{}': {}", appName, count);
+        List<PreventiveItem> items = preventiveItemRepository.findAllByAppName(appName);
+        if (items.isEmpty()) {
+            throw new ResourceNotFoundException("Preventive item not found with app name: " + appName);
+        }
+        return items.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -13,6 +13,7 @@ public class PreventiveMaintenanceResponse {
     private String appName;
     private String action;
     private String username;
+    private String department;
     private String placeName;
     private String subPlace;
     private Boolean isRemote;
