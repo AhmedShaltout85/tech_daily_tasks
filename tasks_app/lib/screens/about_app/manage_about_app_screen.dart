@@ -1,9 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/models/about_app_model.dart';
 import 'package:tasks_app/screens/about_app/app_recommended_details_screen.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
@@ -19,6 +21,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   final ConnectivityService _connectivity = ConnectivityService();
+  bool _isInitialized = false;
 
   @override
   void initState() {
@@ -36,21 +39,22 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Refresh data when screen becomes visible
-    _fetchData();
+    if (!_isInitialized) {
+      _isInitialized = true;
+      // Schedule after the current build phase to avoid notifyListeners during build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _checkUserStatus();
+          _fetchData();
+        }
+      });
+    }
   }
 
   @override
   void dispose() {
     _animationController.dispose();
-
     super.dispose();
-  }
-
-  void _onAppNameChanged() {
-    if (mounted) {
-      _fetchData();
-    }
   }
 
   Future<void> _fetchData() async {
@@ -60,7 +64,19 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
       return;
     }
     await context.read<AboutAppProvider>().fetchAllAboutApps();
-    _animationController.forward();
+    if (mounted) {
+      _animationController.forward();
+    }
+  }
+
+  // Check user status - ADMINS/MANAGERS can edit, USERS can only view
+  void _checkUserStatus() {
+    final userProvider = context.read<UserProvider>();
+    final role = userProvider.currentUser?.role;
+    context.read<AboutAppProvider>().setUserRole(
+          role,
+          shouldNotify: false,
+        );
   }
 
   void _showNoInternetDialog() {
@@ -93,7 +109,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
           children: [
             Icon(Icons.info_outline, color: Colors.blue),
             SizedBox(width: 12),
-            Text('ادراة التطبيقات والاجهزة'),
+            Text('ادارة التطبيقات والاجهزة'),
           ],
         ),
         content: Form(
@@ -134,18 +150,24 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
             onPressed: () => Navigator.pop(dialogContext),
             child: const Text('الغاء'),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              if (formKey.currentState!.validate()) {
-                Navigator.pop(dialogContext);
-                final recommended = recommendedController.text.trim();
-                await _addAboutApp(
-                  appNameController.text.trim(),
-                  recommended.isNotEmpty ? [recommended] : [],
-                );
-              }
+          Consumer<AboutAppProvider>(
+            builder: (context, provider, child) {
+              return provider.isAdmin
+                  ? ElevatedButton(
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          Navigator.pop(dialogContext);
+                          final recommended = recommendedController.text.trim();
+                          await _addAboutApp(
+                            appNameController.text.trim(),
+                            recommended.isNotEmpty ? [recommended] : [],
+                          );
+                        }
+                      },
+                      child: const Text('اضافة'),
+                    )
+                  : const SizedBox.shrink();
             },
-            child: const Text('اضافة'),
           ),
         ],
       ),
@@ -159,23 +181,33 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
       return;
     }
 
-final provider = context.read<UserProvider>();
-    final department =provider.currentUser?.department;
+    final provider = context.read<UserProvider>();
+    final department = provider.currentUser?.department;
+
+    if (department == null) {
+      ReusableToast.showToast(
+        message: 'لم يتم العثور على القسم',
+        bgColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16,
+      );
+      return;
+    }
+
     await context
         .read<AboutAppProvider>()
-        .addAboutApp(appName, department!, recommended);
-    // Trigger sync - notify AppNameProvider to refresh
+        .addAboutApp(appName, department, recommended);
 
     if (mounted) {
-      final provider = context.read<AboutAppProvider>();
-      if (provider.error != null) {
+      final aboutProvider = context.read<AboutAppProvider>();
+      if (aboutProvider.error != null) {
         ReusableToast.showToast(
-          message: provider.error!,
+          message: aboutProvider.error!,
           bgColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16,
         );
-        provider.clearError();
+        aboutProvider.clearError();
       } else {
         ReusableToast.showToast(
           message: 'تم اضافة التطبيق بنجاح',
@@ -183,12 +215,12 @@ final provider = context.read<UserProvider>();
           textColor: Colors.white,
           fontSize: 16,
         );
-        _fetchData();
+        await _fetchData();
       }
     }
   }
 
-  void _showEditDialog(dynamic aboutApp) {
+  void _showEditDialog(AboutApp aboutApp) {
     final appNameController = TextEditingController(text: aboutApp.appName);
     final recommendedText = aboutApp.recommended is List
         ? (aboutApp.recommended as List).join(', ')
@@ -230,8 +262,8 @@ final provider = context.read<UserProvider>();
               TextFormField(
                 controller: recommendedController,
                 decoration: const InputDecoration(
-                  labelText: 'تفاصيل التطبيق/الجهاز(اختيارى)',
-                  hintText: 'Enter recommended values (comma separated)',
+                  labelText: 'تفاصيل التطبيق/الجهاز (اختيارى)',
+                  hintText: 'ادخل القيم الموصى بها (مفصولة بفواصل)',
                   prefixIcon: Icon(Icons.thumb_up_outlined),
                   border: OutlineInputBorder(),
                 ),
@@ -244,22 +276,31 @@ final provider = context.read<UserProvider>();
             onPressed: () => Navigator.pop(dialogContext),
             child: const Text('الغاء'),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              if (formKey.currentState!.validate()) {
-                Navigator.pop(dialogContext);
-                final recommended = recommendedController.text.trim();
-                final recommendedList = recommended.isNotEmpty
-                    ? recommended.split(',').map((e) => e.trim()).toList()
-                    : <String>[];
-                await _updateAboutApp(
-                  int.tryParse(aboutApp.id.toString()) ?? 0,
-                  appNameController.text.trim(),
-                  recommendedList,
-                );
-              }
+          Consumer<AboutAppProvider>(
+            builder: (context, provider, child) {
+              return provider.isAdmin
+                  ? ElevatedButton(
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          Navigator.pop(dialogContext);
+                          final recommended = recommendedController.text.trim();
+                          final recommendedList = recommended.isNotEmpty
+                              ? recommended
+                                  .split(',')
+                                  .map((e) => e.trim())
+                                  .toList()
+                              : <String>[];
+                          await _updateAboutApp(
+                            aboutApp.id!,
+                            appNameController.text.trim(),
+                            recommendedList,
+                          );
+                        }
+                      },
+                      child: const Text('تحديث'),
+                    )
+                  : const SizedBox.shrink();
             },
-            child: const Text('تحديث'),
           ),
         ],
       ),
@@ -274,23 +315,33 @@ final provider = context.read<UserProvider>();
       return;
     }
 
-final provider = context.read<UserProvider>();
-    final department =provider.currentUser?.department;
+    final provider = context.read<UserProvider>();
+    final department = provider.currentUser?.department;
+
+    if (department == null) {
+      ReusableToast.showToast(
+        message: 'لم يتم العثور على القسم',
+        bgColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16,
+      );
+      return;
+    }
+
     await context
         .read<AboutAppProvider>()
-        .updateAboutApp(id, appName, department!, recommended);
-    // Trigger sync - notify AppNameProvider to refresh
+        .updateAboutApp(id, appName, department, recommended);
 
     if (mounted) {
-      final provider = context.read<AboutAppProvider>();
-      if (provider.error != null) {
+      final aboutProvider = context.read<AboutAppProvider>();
+      if (aboutProvider.error != null) {
         ReusableToast.showToast(
-          message: provider.error!,
+          message: aboutProvider.error!,
           bgColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16,
         );
-        provider.clearError();
+        aboutProvider.clearError();
       } else {
         ReusableToast.showToast(
           message: 'تم تحديث التطبيق بنجاح',
@@ -298,12 +349,12 @@ final provider = context.read<UserProvider>();
           textColor: Colors.white,
           fontSize: 16,
         );
-        _fetchData();
+        await _fetchData();
       }
     }
   }
 
-  Future<void> _showDeleteConfirmation(dynamic aboutApp) async {
+  Future<void> _showDeleteConfirmation(AboutApp aboutApp) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
       _showNoInternetDialog();
@@ -317,14 +368,15 @@ final provider = context.read<UserProvider>();
           children: [
             Icon(Icons.delete_outline, color: Colors.red),
             SizedBox(width: 12),
-            Text('Delete About App'),
+            Text('حذف التطبيق/الجهاز'),
           ],
         ),
-        content: Text('هل أنت متاكد من حذف التطبيق/الجهاز "${aboutApp.appName}"?'),
+        content:
+            Text('هل أنت متاكد من حذف التطبيق/الجهاز "${aboutApp.appName}"؟'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('الغاء'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -332,18 +384,14 @@ final provider = context.read<UserProvider>();
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Delete'),
+            child: const Text('حذف'),
           ),
         ],
       ),
     );
 
     if (confirmed == true) {
-      final id = int.tryParse(aboutApp.id.toString());
-      if (id != null) {
-        await context.read<AboutAppProvider>().deleteAboutApp(id);
-        // Trigger sync - notify AppNameProvider to refresh
-      }
+      await context.read<AboutAppProvider>().deleteAboutApp(aboutApp.id!);
 
       if (mounted) {
         final provider = context.read<AboutAppProvider>();
@@ -362,14 +410,14 @@ final provider = context.read<UserProvider>();
             textColor: Colors.white,
             fontSize: 16,
           );
-          _fetchData();
+          await _fetchData();
         }
       }
     }
   }
 
-  Map<String, List<dynamic>> _groupByAppName(List<dynamic> aboutApps) {
-    final Map<String, List<dynamic>> grouped = {};
+  Map<String, List<AboutApp>> _groupByAppName(List<AboutApp> aboutApps) {
+    final Map<String, List<AboutApp>> grouped = {};
     for (var app in aboutApps) {
       if (grouped.containsKey(app.appName)) {
         grouped[app.appName]!.add(app);
@@ -389,25 +437,31 @@ final provider = context.read<UserProvider>();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ادراة التطبيقات والاجهزة'),
+        title: const Text('ادارة التطبيقات والاجهزة'),
         actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 8),
-            child: Material(
-              color: colorScheme.primary,
-              borderRadius: BorderRadius.circular(12),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: _showAddDialog,
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Icon(
-                    Icons.add,
-                    color: isDark ? Colors.black87 : Colors.white,
-                  ),
-                ),
-              ),
-            ),
+          Consumer<AboutAppProvider>(
+            builder: (context, provider, child) {
+              return provider.isAdmin
+                  ? Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      child: Material(
+                        color: colorScheme.primary,
+                        borderRadius: BorderRadius.circular(12),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: _showAddDialog,
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            child: Icon(
+                              Icons.add,
+                              color: isDark ? Colors.black87 : Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink();
+            },
           ),
         ],
       ),
@@ -499,10 +553,17 @@ final provider = context.read<UserProvider>();
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              ElevatedButton.icon(
-                                onPressed: _showAddDialog,
-                                icon: const Icon(Icons.add),
-                                label: const Text('اضافة تطبيق/اجهزة'),
+                              Consumer<AboutAppProvider>(
+                                builder: (context, provider, child) {
+                                  return provider.isAdmin
+                                      ? ElevatedButton.icon(
+                                          onPressed: _showAddDialog,
+                                          icon: const Icon(Icons.add),
+                                          label:
+                                              const Text('اضافة تطبيق/اجهزة'),
+                                        )
+                                      : const SizedBox.shrink();
+                                },
                               ),
                             ],
                           ),
@@ -517,7 +578,7 @@ final provider = context.read<UserProvider>();
                               final apps = groupedApps[appName]!;
                               return _buildAppCard(
                                 appName,
-                                apps.length,
+                                apps,
                                 index,
                                 isDark,
                                 colorScheme,
@@ -537,7 +598,7 @@ final provider = context.read<UserProvider>();
 
   Widget _buildAppCard(
     String appName,
-    int recommendedCount,
+    List<AboutApp> apps,
     int index,
     bool isDark,
     ColorScheme colorScheme,
@@ -594,70 +655,71 @@ final provider = context.read<UserProvider>();
               ),
               const SizedBox(width: 4),
               Text(
-                '$recommendedCount recommended value${recommendedCount != 1 ? 's' : ''}',
+                '${apps.length} تفصيل',
                 style: TextStyle(
                   color: isDark ? Colors.grey[400] : Colors.grey[600],
                 ),
               ),
             ],
           ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () {
-                    final provider = context.read<AboutAppProvider>();
-                    final apps = provider.aboutApps
-                        .where((a) => a.appName == appName)
-                        .toList();
-                    if (apps.isNotEmpty) {
-                      _showEditDialog(apps.first);
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: () {
-                    final provider = context.read<AboutAppProvider>();
-                    final apps = provider.aboutApps
-                        .where((a) => a.appName == appName)
-                        .toList();
-                    if (apps.isNotEmpty) {
-                      _showDeleteConfirmation(apps.first);
-                    }
-                  },
-                ),
-              ),
-            ],
+          trailing: Consumer<AboutAppProvider>(
+            builder: (context, provider, child) {
+              // Only show edit/delete buttons for admins
+              if (!provider.isAdmin) return const SizedBox.shrink();
+
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      onPressed: () {
+                        if (apps.isNotEmpty) {
+                          _showEditDialog(apps.first);
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.red.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      onPressed: () {
+                        if (apps.isNotEmpty) {
+                          _showDeleteConfirmation(apps.first);
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
           onTap: () async {
-            final provider = context.read<AboutAppProvider>();
-            final apps =
-                provider.aboutApps.where((a) => a.appName == appName).toList();
             if (apps.isNotEmpty) {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AppRecommendedDetailsScreen(
-                    appName: appName,
-                    appId: apps.first.id!,
+                  builder: (context) => Consumer<AboutAppProvider>(
+                    builder: (context, provider, child) {
+                      return AppRecommendedDetailsScreen(
+                        appName: appName,
+                        appId: apps.first.id!,
+                        isAdmin: provider.isAdmin, // Pass admin status
+                      );
+                    },
                   ),
                 ),
               );
-              _fetchData();
+              await _fetchData();
             }
           },
         ),

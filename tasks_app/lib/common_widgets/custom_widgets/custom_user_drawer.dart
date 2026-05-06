@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/screens/about_app/manage_about_app_screen.dart';
 import 'package:tasks_app/screens/preventive/preventive_item_screen.dart';
 import 'package:tasks_app/screens/preventive/manage_preventive_maintenance_screen.dart';
 import 'package:tasks_app/screens/report/preventive_maintenance_report_screen.dart';
@@ -192,6 +193,25 @@ class _CustomDrawerState extends State<CustomUserDrawer>
                           context,
                           MaterialPageRoute(
                             builder: (context) => const SettingsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      index: 6,
+                      icon: Icons.info_outline_rounded,
+                      title: 'حول التطبيقات',
+                      isDark: isDark,
+                      colorScheme: colorScheme,
+                      onTap: () {
+                        setState(() => _selectedIndex = 6);
+                        widget.onIndexChanged?.call(6);
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ManageAboutAppScreen(),
                           ),
                         );
                       },

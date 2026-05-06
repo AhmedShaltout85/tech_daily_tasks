@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
@@ -9,11 +10,13 @@ import 'package:tasks_app/services/connectivity_service.dart';
 class AppRecommendedDetailsScreen extends StatefulWidget {
   final String appName;
   final int appId;
+  final bool isAdmin;
 
   const AppRecommendedDetailsScreen({
     super.key,
     required this.appName,
     required this.appId,
+    required this.isAdmin,
   });
 
   @override
@@ -70,14 +73,14 @@ class _AppRecommendedDetailsScreenState
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('No Internet'),
+        title: const Text('لا يوجد اتصال بالانترنت'),
         content: const Text(
-          'No internet found. Please check your internet connection and try again.',
+          'يرجى التحقق من الاتصال والمحاولة مرة اخرى.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text('حسنا'),
           ),
         ],
       ),
@@ -95,7 +98,7 @@ class _AppRecommendedDetailsScreenState
           children: [
             Icon(Icons.add_circle_outline, color: Colors.blue),
             SizedBox(width: 12),
-            Text('Add Recommended'),
+            Text('اضافة تفصيل'),
           ],
         ),
         content: Form(
@@ -103,14 +106,14 @@ class _AppRecommendedDetailsScreenState
           child: TextFormField(
             controller: recommendedController,
             decoration: const InputDecoration(
-              labelText: 'Recommended Value',
-              hintText: 'Enter recommended value',
+              labelText: 'التفاصيل',
+              hintText: 'ادخل التفاصيل',
               prefixIcon: Icon(Icons.thumb_up_outlined),
               border: OutlineInputBorder(),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter recommended value';
+                return 'فضلا ادخل التفاصيل';
               }
               return null;
             },
@@ -119,7 +122,7 @@ class _AppRecommendedDetailsScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: const Text('الغاء'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -128,7 +131,7 @@ class _AppRecommendedDetailsScreenState
                 await _addRecommended(recommendedController.text.trim());
               }
             },
-            child: const Text('Add'),
+            child: const Text('اضافة'),
           ),
         ],
       ),
@@ -158,7 +161,7 @@ class _AppRecommendedDetailsScreenState
         provider.clearError();
       } else {
         ReusableToast.showToast(
-          message: 'Recommended added successfully',
+          message: 'تم اضافة التفاصيل بنجاح',
           bgColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16,
@@ -180,7 +183,7 @@ class _AppRecommendedDetailsScreenState
           children: [
             Icon(Icons.edit_note, color: Colors.orange),
             SizedBox(width: 12),
-            Text('Edit Recommended'),
+            Text('تعديل التفاصيل'),
           ],
         ),
         content: Form(
@@ -188,14 +191,14 @@ class _AppRecommendedDetailsScreenState
           child: TextFormField(
             controller: recommendedController,
             decoration: const InputDecoration(
-              labelText: 'Recommended Value',
-              hintText: 'Enter recommended value',
+              labelText: 'التفاصيل',
+              hintText: 'ادخل التفاصيل',
               prefixIcon: Icon(Icons.thumb_up_outlined),
               border: OutlineInputBorder(),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter recommended value';
+                return 'فضلا ادخل التفاصيل';
               }
               return null;
             },
@@ -204,7 +207,7 @@ class _AppRecommendedDetailsScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: const Text('الغاء'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -214,7 +217,7 @@ class _AppRecommendedDetailsScreenState
                     index, item, recommendedController.text.trim());
               }
             },
-            child: const Text('Update'),
+            child: const Text('تحديث'),
           ),
         ],
       ),
@@ -248,7 +251,7 @@ class _AppRecommendedDetailsScreenState
         provider.clearError();
       } else {
         ReusableToast.showToast(
-          message: 'Recommended updated successfully',
+          message: 'تم تحديث التفاصيل بنجاح',
           bgColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16,
@@ -272,15 +275,14 @@ class _AppRecommendedDetailsScreenState
           children: [
             Icon(Icons.delete_outline, color: Colors.red),
             SizedBox(width: 12),
-            Text('Delete Recommended'),
+            Text('حذف التفاصيل'),
           ],
         ),
-        content:
-            Text('Are you sure you want to delete "${item.recommendedValue}"?'),
+        content: Text('هل أنت متاكد من حذف "${item.recommendedValue}"؟'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('الغاء'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -288,7 +290,7 @@ class _AppRecommendedDetailsScreenState
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Delete'),
+            child: const Text('حذف'),
           ),
         ],
       ),
@@ -309,7 +311,7 @@ class _AppRecommendedDetailsScreenState
           provider.clearError();
         } else {
           ReusableToast.showToast(
-            message: 'Recommended deleted successfully',
+            message: 'تم حذف التفاصيل بنجاح',
             bgColor: Colors.green,
             textColor: Colors.white,
             fontSize: 16,
@@ -331,29 +333,31 @@ class _AppRecommendedDetailsScreenState
       appBar: AppBar(
         title: Text(widget.appName),
         actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 8),
-            child: Material(
-              color: colorScheme.primary,
-              borderRadius: BorderRadius.circular(12),
-              child: InkWell(
+          // Only show add button if user is admin
+          if (widget.isAdmin)
+            Container(
+              margin: const EdgeInsets.only(right: 8),
+              child: Material(
+                color: colorScheme.primary,
                 borderRadius: BorderRadius.circular(12),
-                onTap: _showAddDialog,
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Icon(
-                    Icons.add,
-                    color: isDark ? Colors.black87 : Colors.white,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: _showAddDialog,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Icon(
+                      Icons.add,
+                      color: isDark ? Colors.black87 : Colors.white,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
       body: Consumer<AboutAppProvider>(
         builder: (context, provider, child) {
-          if (provider.isLoading && provider.aboutApps.isEmpty) {
+          if (provider.isLoading && _recommendedItems.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -361,7 +365,7 @@ class _AppRecommendedDetailsScreenState
                   CircularProgressIndicator(color: colorScheme.primary),
                   const SizedBox(height: 16),
                   Text(
-                    'Loading...',
+                    'تحميل...',
                     style: TextStyle(
                       color: isDark ? Colors.grey[400] : Colors.grey[600],
                     ),
@@ -370,10 +374,6 @@ class _AppRecommendedDetailsScreenState
               ),
             );
           }
-
-          final aboutApps = provider.aboutApps
-              .where((a) => a.appName == widget.appName)
-              .toList();
 
           return FadeTransition(
             opacity: _fadeAnimation,
@@ -394,7 +394,7 @@ class _AppRecommendedDetailsScreenState
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'Recommended Values',
+                        'التفاصيل',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -410,7 +410,7 @@ class _AppRecommendedDetailsScreenState
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          '${aboutApps.length}',
+                          '${_recommendedItems.length}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: appColor,
@@ -421,7 +421,7 @@ class _AppRecommendedDetailsScreenState
                   ),
                 ),
                 Expanded(
-                  child: aboutApps.isEmpty
+                  child: _recommendedItems.isEmpty
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -433,18 +433,20 @@ class _AppRecommendedDetailsScreenState
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'No recommended values yet',
+                                'لا يوجد تفاصيل',
                                 style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.grey[600],
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              ElevatedButton.icon(
-                                onPressed: _showAddDialog,
-                                icon: const Icon(Icons.add),
-                                label: const Text('Add Recommended'),
-                              ),
+                              // Only show add button if user is admin
+                              if (widget.isAdmin)
+                                ElevatedButton.icon(
+                                  onPressed: _showAddDialog,
+                                  icon: const Icon(Icons.add),
+                                  label: const Text('اضافة تفاصيل'),
+                                ),
                             ],
                           ),
                         )
@@ -532,39 +534,43 @@ class _AppRecommendedDetailsScreenState
               ),
               const SizedBox(width: 4),
               Text(
-                'Recommended',
+                'تفصيل',
                 style: TextStyle(
                   color: isDark ? Colors.grey[400] : Colors.grey[600],
                 ),
               ),
             ],
           ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => _showEditDialog(index, item),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: () => _showDeleteConfirmation(index, item),
-                ),
-              ),
-            ],
-          ),
+          // Only show edit/delete buttons if user is admin
+          trailing: widget.isAdmin
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () => _showEditDialog(index, item),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.red.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: IconButton(
+                        icon:
+                            const Icon(Icons.delete_outline, color: Colors.red),
+                        onPressed: () => _showDeleteConfirmation(index, item),
+                      ),
+                    ),
+                  ],
+                )
+              : null, // No trailing buttons for regular users
         ),
       ),
     );

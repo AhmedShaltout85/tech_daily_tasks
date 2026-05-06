@@ -12,10 +12,25 @@ class AboutAppProvider with ChangeNotifier {
   List<AboutApp> _aboutApps = [];
   bool _isLoading = false;
   String? _error;
+   bool _isAdmin = false; // Change from _isUser to _isAdmin
 
   List<AboutApp> get aboutApps => _aboutApps;
   bool get isLoading => _isLoading;
   String? get error => _error;
+
+
+  bool get isAdmin => _isAdmin; // Change getter to isAdmin
+
+  // Modified to set admin status
+  void setUserRole(String? role, {bool shouldNotify = true}) {
+    final newIsAdmin = role != 'USER'; // ADMIN or MANAGER = true, USER = false
+    if (_isAdmin != newIsAdmin) {
+      _isAdmin = newIsAdmin;
+      if (shouldNotify) {
+        notifyListeners();
+      }
+    }
+  }
 
   Future<void> fetchAllAboutApps() async {
     log('>>> Provider: fetchAllAboutApps called');
@@ -171,4 +186,7 @@ class AboutAppProvider with ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+
+ 
+ 
 }

@@ -357,7 +357,7 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
                       Navigator.pop(context);
                     },
                     child: Text(
-                      'Cancel',
+                      'الغاء',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
