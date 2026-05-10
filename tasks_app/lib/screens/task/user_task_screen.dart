@@ -18,9 +18,9 @@ class UserTaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<UserTaskScreen> {
-  // String? selectedEmployee;
   String? selectedApp;
-  bool? isActiveFilter;
+  String? selectedIsRemote;
+  String? selectedPriority;
   bool showFilters = false;
   final ConnectivityService _connectivity = ConnectivityService();
   int _selectedDrawerIndex = 0;
@@ -123,9 +123,22 @@ class _TaskScreenState extends State<UserTaskScreen> {
           if (taskApp != selectedApp) return false;
         }
 
-        if (isActiveFilter != null) {
-          final taskActive = task.taskStatus ?? true;
-          if (taskActive != isActiveFilter) return false;
+        if (selectedIsRemote != null && selectedIsRemote != 'الكل') {
+          final taskIsRemote = task.isRemote == true;
+          final filterValue = selectedIsRemote == 'عن بعد';
+          if (taskIsRemote != filterValue) return false;
+        }
+
+        if (selectedPriority != null && selectedPriority != 'الكل') {
+          final taskPriority = task.taskPriority?.toString() ?? '';
+          final priorityMap = {
+            'عالية': 'HIGH',
+            'متوسطة': 'MEDIUM',
+            'منخفضة': 'LOW',
+          };
+          final mappedPriority =
+              priorityMap[selectedPriority] ?? selectedPriority;
+          if (taskPriority != mappedPriority) return false;
         }
 
         return true;
@@ -138,15 +151,16 @@ class _TaskScreenState extends State<UserTaskScreen> {
 
   void resetFilters() {
     setState(() {
-      // selectedEmployee = null;
       selectedApp = null;
-      isActiveFilter = null;
+      selectedIsRemote = null;
+      selectedPriority = null;
     });
   }
 
   bool get hasActiveFilters =>
-      // selectedEmployee != null ||
-      selectedApp != null || isActiveFilter != null;
+      selectedApp != null ||
+      selectedIsRemote != null ||
+      selectedPriority != null;
 
   @override
   Widget build(BuildContext context) {
@@ -247,8 +261,8 @@ class _TaskScreenState extends State<UserTaskScreen> {
                         Row(
                           children: [
                             Expanded(
-                              child: DropdownButtonFormField<bool?>(
-                                value: isActiveFilter,
+                              child: DropdownButtonFormField<String?>(
+                                value: selectedIsRemote,
                                 isExpanded: true,
                                 dropdownColor:
                                     isDark ? colorScheme.surface : Colors.white,
@@ -256,14 +270,14 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                   color: isDark ? Colors.white : Colors.black87,
                                 ),
                                 decoration: InputDecoration(
-                                  labelText: 'الحالة',
+                                  labelText: 'نوع الصيانة',
                                   labelStyle: TextStyle(
                                     color: isDark
                                         ? Colors.grey[400]
                                         : Colors.grey[700],
                                   ),
                                   prefixIcon: Icon(
-                                    Icons.toggle_on,
+                                    Icons.location_on,
                                     color: colorScheme.primary,
                                   ),
                                   border: OutlineInputBorder(
@@ -280,10 +294,10 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                   ),
                                 ),
                                 items: [
-                                  DropdownMenuItem<bool?>(
+                                  DropdownMenuItem<String?>(
                                     value: null,
                                     child: Text(
-                                      'كل الحالات',
+                                      'الكل',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         color: isDark
@@ -292,10 +306,10 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                       ),
                                     ),
                                   ),
-                                  DropdownMenuItem<bool?>(
-                                    value: true,
+                                  DropdownMenuItem<String?>(
+                                    value: 'عن بعد',
                                     child: Text(
-                                      'النشطة فقط',
+                                      'عن بعد',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         color: isDark
@@ -304,10 +318,10 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                       ),
                                     ),
                                   ),
-                                  DropdownMenuItem<bool?>(
-                                    value: false,
+                                  DropdownMenuItem<String?>(
+                                    value: 'في الموقع',
                                     child: Text(
-                                      'الغير نشطة فقط',
+                                      'في الموقع',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         color: isDark
@@ -319,12 +333,107 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                 ],
                                 onChanged: (value) {
                                   setState(() {
-                                    isActiveFilter = value;
+                                    selectedIsRemote = value;
                                   });
                                 },
                               ),
                             ),
-                            const SizedBox(width: 5),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: DropdownButtonFormField<String?>(
+                                value: selectedPriority,
+                                isExpanded: true,
+                                dropdownColor:
+                                    isDark ? colorScheme.surface : Colors.white,
+                                style: TextStyle(
+                                  color: isDark ? Colors.white : Colors.black87,
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'الاولوية',
+                                  labelStyle: TextStyle(
+                                    color: isDark
+                                        ? Colors.grey[400]
+                                        : Colors.grey[700],
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.priority_high,
+                                    color: colorScheme.primary,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  filled: true,
+                                  fillColor: isDark
+                                      ? colorScheme.surface
+                                          .withValues(alpha: 0.5)
+                                      : Colors.white,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 14,
+                                  ),
+                                ),
+                                items: [
+                                  DropdownMenuItem<String?>(
+                                    value: null,
+                                    child: Text(
+                                      'الكل',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Colors.grey[300]
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  DropdownMenuItem<String?>(
+                                    value: 'عالية',
+                                    child: Text(
+                                      'عالية',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Colors.grey[300]
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  DropdownMenuItem<String?>(
+                                    value: 'متوسطة',
+                                    child: Text(
+                                      'متوسطة',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Colors.grey[300]
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  DropdownMenuItem<String?>(
+                                    value: 'منخفضة',
+                                    child: Text(
+                                      'منخفضة',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Colors.grey[300]
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedPriority = value;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
                             Expanded(
                               child: DropdownButtonFormField<String>(
                                 value: selectedApp,
@@ -635,7 +744,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'متأخر',
+                                    'متأخرة',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,

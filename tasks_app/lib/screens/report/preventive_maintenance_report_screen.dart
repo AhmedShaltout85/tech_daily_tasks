@@ -640,6 +640,7 @@ class _PreventiveMaintenanceReportScreenState
             departmentList = [userDepartment.isEmpty ? 'IT' : userDepartment];
             selectedDepartment = userDepartment.isEmpty ? 'IT' : userDepartment;
             usernames = [currentUser?.username ?? ''];
+            
           } else if (userRole == 'ADMIN' || userRole == 'MANAGER') {
             departmentList = [userDepartment.isEmpty ? 'IT' : userDepartment];
             if (selectedDepartment == 'الكل') {
@@ -649,6 +650,8 @@ class _PreventiveMaintenanceReportScreenState
             usernames = userProvider.users
                 .where((u) => u.department == userDepartment)
                 .map((u) => u.username)
+                .where((u) => u != 'admin')
+                .where((u) => u != 'gm')
                 .toSet()
                 .toList();
           } else if (userRole == 'GENERAL_MANAGER' ||
@@ -662,6 +665,9 @@ class _PreventiveMaintenanceReportScreenState
             usernames = userProvider.users
                 .map((u) => u.username)
                 .where((u) => u != 'admin')
+                .where((u) => u != 'gm')
+                .where((u) => u != 'manager')
+                .where((u) => u != 'manager1')
                 .toSet()
                 .toList();
           } else {
@@ -677,7 +683,11 @@ class _PreventiveMaintenanceReportScreenState
 
           final filteredData = getFilteredData(items);
           debugPrint('DEBUG: Filtered count = ${filteredData.length}');
-          final userList = ['الكل', ...usernames];
+         final userList = [
+            if (currentUser!.role != 'USER') 'الكل',
+            ...usernames,
+          ];
+          // final userList = ['الكل', ...usernames];
           final appList = ['الكل', ...appNames];
           final placeList = ['الكل', ...placeNames];
 

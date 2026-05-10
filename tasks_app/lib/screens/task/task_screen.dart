@@ -226,7 +226,9 @@ class _TaskScreenState extends State<TaskScreen> {
 
     //Filter out the admin
     List<String> employeeNames = userProvider.users
-        .map((u) => u.role == 'USER' || u.role == 'MANAGER' || u.role == 'ADMIN' ? u.username : 'admin')
+        .map((u) => u.role == 'USER' || u.role == 'MANAGER' || u.role == 'ADMIN'
+            ? u.username
+            : 'admin')
         .where((username) => username != 'admin' || username != 'manager')
         .toSet()
         // .where((username) => username != 'admin' || username != 'manager')
@@ -238,10 +240,10 @@ class _TaskScreenState extends State<TaskScreen> {
 
     List<String> placeNames = placeNameProvider.placeNameStrings;
 
-    if(employeeNames.contains('admin') || employeeNames.contains('manager')) {
+    if (employeeNames.contains('admin') || employeeNames.contains('manager')) {
       employeeNames.remove('admin');
       employeeNames.remove('manager');
-    }else{
+    } else {
       employeeNames = ['لاشئ', ...employeeNames];
     }
     List<String> uniqueEmployeeNames = ['لاشئ', ...employeeNames.toSet()];
@@ -490,91 +492,6 @@ class _TaskScreenState extends State<TaskScreen> {
                               ),
                             ),
                             const SizedBox(width: 5),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: DropdownButtonFormField<bool?>(
-                                value: isActiveFilter,
-                                isExpanded: true,
-                                dropdownColor:
-                                    isDark ? colorScheme.surface : Colors.white,
-                                style: TextStyle(
-                                  color: isDark ? Colors.white : Colors.black87,
-                                ),
-                                decoration: InputDecoration(
-                                  labelText: 'الحالة',
-                                  labelStyle: TextStyle(
-                                    color: isDark
-                                        ? Colors.grey[400]
-                                        : Colors.grey[700],
-                                  ),
-                                  prefixIcon: Icon(
-                                    Icons.toggle_on,
-                                    color: colorScheme.primary,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  filled: true,
-                                  fillColor: isDark
-                                      ? colorScheme.surface
-                                          .withValues(alpha: 0.5)
-                                      : Colors.white,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 14,
-                                  ),
-                                ),
-                                items: [
-                                  DropdownMenuItem<bool?>(
-                                    value: null,
-                                    child: Text(
-                                      'كل الحالات',
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Colors.grey[300]
-                                            : Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                  DropdownMenuItem<bool?>(
-                                    value: true,
-                                    child: Text(
-                                      'النشطة فقط',
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Colors.grey[300]
-                                            : Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                  DropdownMenuItem<bool?>(
-                                    value: false,
-                                    child: Text(
-                                      'الغير نشطة فقط',
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Colors.grey[300]
-                                            : Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                                onChanged: (value) {
-                                  setState(() {
-                                    isActiveFilter = value;
-                                  });
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            const Expanded(child: SizedBox.shrink()),
                           ],
                         ),
                       ],

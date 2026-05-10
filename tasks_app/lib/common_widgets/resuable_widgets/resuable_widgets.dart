@@ -7,7 +7,6 @@ import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/utils/app_colors.dart';
 
 import '../custom_widgets/custom_bottom_sheet.dart';
-import '../custom_widgets/custom_bottom_sheet.dart' as configs;
 
 void showSnackBar(String message, BuildContext context) => ScaffoldMessenger.of(
       context,

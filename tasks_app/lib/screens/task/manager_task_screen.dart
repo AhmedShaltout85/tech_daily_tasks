@@ -386,85 +386,6 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                         Row(
                           children: [
                             Expanded(
-                              child: DropdownButtonFormField<bool?>(
-                                value: isActiveFilter,
-                                isExpanded: true,
-                                dropdownColor:
-                                    isDark ? colorScheme.surface : Colors.white,
-                                style: TextStyle(
-                                  color: isDark ? Colors.white : Colors.black87,
-                                ),
-                                decoration: InputDecoration(
-                                  labelText: 'الحالة',
-                                  labelStyle: TextStyle(
-                                    color: isDark
-                                        ? Colors.grey[400]
-                                        : Colors.grey[700],
-                                  ),
-                                  prefixIcon: Icon(
-                                    Icons.toggle_on,
-                                    color: colorScheme.primary,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  filled: true,
-                                  fillColor: isDark
-                                      ? colorScheme.surface
-                                          .withValues(alpha: 0.5)
-                                      : Colors.white,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 14,
-                                  ),
-                                ),
-                                items: [
-                                  DropdownMenuItem<bool?>(
-                                    value: null,
-                                    child: Text(
-                                      'كل الحالات',
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Colors.grey[300]
-                                            : Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                  DropdownMenuItem<bool?>(
-                                    value: true,
-                                    child: Text(
-                                      'النشطة فقط',
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Colors.grey[300]
-                                            : Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                  DropdownMenuItem<bool?>(
-                                    value: false,
-                                    child: Text(
-                                      'الغير نشطة فقط',
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Colors.grey[300]
-                                            : Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                                onChanged: (value) {
-                                  setState(() {
-                                    isActiveFilter = value;
-                                  });
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            Expanded(
                               child: DropdownButtonFormField<String>(
                                 value: selectedApp,
                                 isExpanded: true,
@@ -512,6 +433,61 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                                 onChanged: (value) {
                                   setState(() {
                                     selectedApp = value;
+                                  });
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            Expanded(
+                              child: DropdownButtonFormField<bool?>(
+                                value: selectedIsRemote,
+                                isExpanded: true,
+                                dropdownColor:
+                                    isDark ? colorScheme.surface : Colors.white,
+                                style: TextStyle(
+                                  color: isDark ? Colors.white : Colors.black87,
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'العمل عن بعد',
+                                  labelStyle: TextStyle(
+                                    color: isDark
+                                        ? Colors.grey[400]
+                                        : Colors.grey[700],
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.work,
+                                    color: colorScheme.primary,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  filled: true,
+                                  fillColor: isDark
+                                      ? colorScheme.surface
+                                          .withValues(alpha: 0.5)
+                                      : Colors.white,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 14,
+                                  ),
+                                ),
+                                items: [
+                                  const DropdownMenuItem<bool?>(
+                                    value: null,
+                                    child: Text('الكل'),
+                                  ),
+                                  const DropdownMenuItem<bool?>(
+                                    value: true,
+                                    child: Text('نعم'),
+                                  ),
+                                  const DropdownMenuItem<bool?>(
+                                    value: false,
+                                    child: Text('لا'),
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedIsRemote = value;
                                   });
                                 },
                               ),
@@ -640,65 +616,6 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                                   setState(() {
                                     selectedUser = value;
                                     _selectedUserName = value;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: DropdownButtonFormField<bool?>(
-                                value: selectedIsRemote,
-                                isExpanded: true,
-                                dropdownColor:
-                                    isDark ? colorScheme.surface : Colors.white,
-                                style: TextStyle(
-                                  color: isDark ? Colors.white : Colors.black87,
-                                ),
-                                decoration: InputDecoration(
-                                  labelText: 'العمل عن بعد',
-                                  labelStyle: TextStyle(
-                                    color: isDark
-                                        ? Colors.grey[400]
-                                        : Colors.grey[700],
-                                  ),
-                                  prefixIcon: Icon(
-                                    Icons.work,
-                                    color: colorScheme.primary,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  filled: true,
-                                  fillColor: isDark
-                                      ? colorScheme.surface
-                                          .withValues(alpha: 0.5)
-                                      : Colors.white,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 14,
-                                  ),
-                                ),
-                                items: [
-                                  const DropdownMenuItem<bool?>(
-                                    value: null,
-                                    child: Text('الكل'),
-                                  ),
-                                  const DropdownMenuItem<bool?>(
-                                    value: true,
-                                    child: Text('نعم'),
-                                  ),
-                                  const DropdownMenuItem<bool?>(
-                                    value: false,
-                                    child: Text('لا'),
-                                  ),
-                                ],
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedIsRemote = value;
                                   });
                                 },
                               ),

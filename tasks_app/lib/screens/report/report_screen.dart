@@ -290,11 +290,20 @@ class _ReportScreenState extends State<ReportScreen>
           List<String> employeeNames = [];
           if (selectedDepartment == 'الكل' || selectedDepartment == null) {
             employeeNames =
-                allUsernames.where((u) => !u.contains('admin')).toList();
+                allUsernames.where((u) => !u.contains('admin'))
+                .where((u) => u != 'admin')
+                .where((u) => u != 'gm')
+                .where((u) => u != 'manager')
+                .where((u) => u != 'manager1')
+                .toList();
           } else {
             employeeNames = userProvider.users
                 .where((u) => u.department == selectedDepartment)
                 .map((u) => u.username)
+                .where((u) => u != 'admin')
+                .where((u) => u != 'gm')
+                .where((u) => u != 'manager')
+                .where((u) => u != 'manager1')
                 .toSet()
                 .toList();
           }
