@@ -89,22 +89,7 @@ class PreventiveProvider with ChangeNotifier {
     }
   }
 
-  // preventive_provider.dart
-  // Future<List<PreventiveItemModel>> fetchPreventiveItemByAppName(
-  //     String appName) async {
-  //   _setLoading(true, isItems: true);
-  //   try {
-  //     final items = await _api.getPreventiveItemByAppName(appName);
-  //     _preventiveItems = items;
-  //     _errorItems = null;
-  //     return items; // ← return directly
-  //   } catch (e) {
-  //     _errorItems = e.toString();
-  //     rethrow; // ← surface the error
-  //   } finally {
-  //     _setLoading(false, isItems: true);
-  //   }
-  // }
+ 
 
   Future<List<String>> fetchActionsByAppName(String appName) async {
     try {

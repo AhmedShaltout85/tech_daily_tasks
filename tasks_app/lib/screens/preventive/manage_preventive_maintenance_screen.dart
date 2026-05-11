@@ -53,7 +53,10 @@ class _ManagePreventiveMaintenanceScreenState
     final department = userProvider.currentUser?.department ?? '';
 
     await context.read<PlaceNameProvider>().fetchPlaceNameStrings();
-    await context.read<AboutAppProvider>().fetchAppsByDepartment(department);
+    // await context.read<AboutAppProvider>().fetchAppsByDepartment(department);
+    await context
+        .read<PreventiveProvider>()
+        .fetchAllPreventiveItemsByDepartment(department);
   }
 
   void _showNoInternetDialog() {
@@ -88,27 +91,7 @@ class _ManagePreventiveMaintenanceScreenState
       _loadActionItems(appName);
     }
   }
-// manage_preventive_maintenance_screen.dart
-  // Future<void> _loadActionItems(String appName) async {
-  //   setState(() => _isLoading = true);
-  //   try {
-  //     final items = await context
-  //         .read<PreventiveProvider>()
-  //         .fetchPreventiveItemByAppName(appName); // ← use returned value
-  //     setState(() {
-  //       _actions = items;
-  //     });
-  //   } catch (e) {
-  //     ReusableToast.showToast(
-  //       message: 'Error loading actions: $e',
-  //       bgColor: Colors.red,
-  //       textColor: Colors.white,
-  //       fontSize: 14,
-  //     );
-  //   } finally {
-  //     setState(() => _isLoading = false);
-  //   }
-  // }
+
   Future<void> _loadActionItems(String appName) async {
     setState(() => _isLoading = true);
     try {
