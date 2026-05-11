@@ -217,14 +217,19 @@ class _PreventiveMaintenanceReportScreenState
       });
     }
   }
-
-  Widget _buildDropdown({
+Widget _buildDropdown({
     required String label,
     required String value,
     required List<String> items,
     required IconData icon,
     required Function(String?) onChanged,
   }) {
+    // Remove duplicates to prevent the error
+    final uniqueItems = items.toSet().toList();
+
+    // Ensure value exists in items, otherwise use first item or null
+    final validValue = uniqueItems.contains(value) ? value : null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -244,18 +249,25 @@ class _PreventiveMaintenanceReportScreenState
         ),
         const SizedBox(height: 4),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey.shade300),
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButton<String>(
-            value: value,
+            value: validValue,
             isExpanded: true,
             underline: const SizedBox(),
             icon: Icon(icon, color: Colors.grey.shade600, size: 20),
-            items: items.map((item) {
-              return DropdownMenuItem(
+            hint: Text(
+              'اختر $label',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade500,
+              ),
+            ),
+            items: uniqueItems.map((item) {
+              return DropdownMenuItem<String>(
                 value: item,
                 child: Text(
                   item,
@@ -265,11 +277,72 @@ class _PreventiveMaintenanceReportScreenState
               );
             }).toList(),
             onChanged: onChanged,
+            selectedItemBuilder: (BuildContext context) {
+              return uniqueItems.map((item) {
+                return Text(
+                  item,
+                  style: const TextStyle(fontSize: 14),
+                  overflow: TextOverflow.ellipsis,
+                );
+              }).toList();
+            },
           ),
         ),
       ],
     );
   }
+  // Widget _buildDropdown({
+  //   required String label,
+  //   required String value,
+  //   required List<String> items,
+  //   required IconData icon,
+  //   required Function(String?) onChanged,
+  // }) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Row(
+  //         children: [
+  //           Icon(icon, size: 14, color: Colors.grey.shade600),
+  //           const SizedBox(width: 4),
+  //           Text(
+  //             label,
+  //             style: TextStyle(
+  //               fontSize: 12,
+  //               fontWeight: FontWeight.w500,
+  //               color: Colors.grey.shade700,
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //       const SizedBox(height: 4),
+  //       Container(
+  //         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+  //         decoration: BoxDecoration(
+  //           border: Border.all(color: Colors.grey.shade300),
+  //           borderRadius: BorderRadius.circular(8),
+  //         ),
+  //         child: DropdownButton<String>(
+  //           value: value,
+  //           isExpanded: true,
+  //           underline: const SizedBox(),
+  //           icon: Icon(icon, color: Colors.grey.shade600, size: 20),
+  //           items: items.map((item) {
+  //             return DropdownMenuItem(
+  //               value: item,
+  //               child: Text(
+  //                 item,
+  //                 style: const TextStyle(fontSize: 14),
+  //                 overflow: TextOverflow.ellipsis,
+  //               ),
+  //             );
+  //           }).toList(),
+  //           onChanged: onChanged,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildRemoteDropdown({
     required String label,
