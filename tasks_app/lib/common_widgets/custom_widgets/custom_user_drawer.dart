@@ -162,25 +162,25 @@ class _CustomDrawerState extends State<CustomUserDrawer>
                         );
                       },
                     ),
+                    // _buildDrawerItem(
+                    //   context,
+                    //   index: 4,
+                    //   icon: isDark
+                    //       ? Icons.light_mode_outlined
+                    //       : Icons.dark_mode_outlined,
+                    //   title: isDark ? 'مظهر فاتح' : 'مظهر غامق',
+                    //   isDark: isDark,
+                    //   colorScheme: colorScheme,
+                    //   onTap: () {
+                    //     setState(() => _selectedIndex = 4);
+                    //     widget.onIndexChanged?.call(4);
+                    //     Navigator.pop(context);
+                    //     themeProvider.toggleTheme();
+                    //   },
+                    // ),
                     _buildDrawerItem(
                       context,
                       index: 4,
-                      icon: isDark
-                          ? Icons.light_mode_outlined
-                          : Icons.dark_mode_outlined,
-                      title: isDark ? 'مظهر فاتح' : 'مظهر غامق',
-                      isDark: isDark,
-                      colorScheme: colorScheme,
-                      onTap: () {
-                        setState(() => _selectedIndex = 4);
-                        widget.onIndexChanged?.call(4);
-                        Navigator.pop(context);
-                        themeProvider.toggleTheme();
-                      },
-                    ),
-                    _buildDrawerItem(
-                      context,
-                      index: 5,
                       icon: Icons.settings_rounded,
                       title: 'الضبط والاعدادات',
                       isDark: isDark,
@@ -199,7 +199,7 @@ class _CustomDrawerState extends State<CustomUserDrawer>
                     ),
                     _buildDrawerItem(
                       context,
-                      index: 6,
+                      index: 5,
                       icon: Icons.info_outline_rounded,
                       title: 'حول التطبيقات',
                       isDark: isDark,

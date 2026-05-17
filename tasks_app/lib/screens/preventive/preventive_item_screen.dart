@@ -24,6 +24,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkUserStatus();
       _fetchData();
     });
   }
@@ -60,6 +61,15 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
     } else {
       await context.read<AboutAppProvider>().fetchAllAboutApps();
     }
+  }
+    // Check user status - ADMINS/MANAGERS can edit, USERS can only view
+  void _checkUserStatus() {
+    final userProvider = context.read<UserProvider>();
+    final role = userProvider.currentUser?.role;
+    context.read<AboutAppProvider>().setUserRole(
+          role,
+          shouldNotify: false,
+        );
   }
 
   void _showNoInternetDialog() {
@@ -269,13 +279,26 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
           ),
         ],
       ),
-      floatingActionButton: _selectedAppName != null
-          ? FloatingActionButton.extended(
-              onPressed: () => _showAddEditDialog(appName: _selectedAppName!),
-              icon: const Icon(Icons.add),
-              label: const Text('اضافة حدث'),
-            )
-          : null,
+      // AFTER — FAB only shows for admins
+      floatingActionButton: Consumer<AboutAppProvider>(
+        builder: (context, aboutAppProvider, child) {
+          if (!aboutAppProvider.isAdmin || _selectedAppName == null) {
+            return const SizedBox.shrink();
+          }
+          return FloatingActionButton.extended(
+            onPressed: () => _showAddEditDialog(appName: _selectedAppName!),
+            icon: const Icon(Icons.add),
+            label: const Text('اضافة حدث'),
+          );
+        },
+      ),
+      // floatingActionButton: _selectedAppName != null
+      //     ? FloatingActionButton.extended(
+      //         onPressed: () => _showAddEditDialog(appName: _selectedAppName!),
+      //         icon: const Icon(Icons.add),
+      //         label: const Text('اضافة حدث'),
+      //       )
+      //     : null,
       body: Consumer2<AboutAppProvider, PreventiveProvider>(
         builder: (context, aboutAppProvider, preventiveProvider, child) {
           if (aboutAppProvider.isLoading ||
@@ -473,11 +496,16 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
                           ),
                         ),
                       ),
-                      IconButton(
+                      Consumer<AboutAppProvider>(
+                                builder: (context, provider, child) {
+                                  return provider.isAdmin
+                                      ? IconButton(
                         icon:
                             const Icon(Icons.delete_outline, color: Colors.red),
                         onPressed: () => _deleteItem(item),
-                      ),
+                      ): SizedBox.shrink();
+                                },
+                              ),
                     ],
                   ),
                 ),

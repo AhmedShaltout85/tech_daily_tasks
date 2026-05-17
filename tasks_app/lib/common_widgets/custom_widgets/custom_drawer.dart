@@ -220,25 +220,25 @@ class _CustomDrawerState extends State<CustomDrawer>
                     //     );
                     //   },
                     // ),
+                    // _buildDrawerItem(
+                    //   context,
+                    //   index: 7,
+                    //   icon: isDark
+                    //       ? Icons.light_mode_outlined
+                    //       : Icons.dark_mode_outlined,
+                    //   title: isDark ? 'مظهر فاتح' : 'مظهر غامق',
+                    //   isDark: isDark,
+                    //   colorScheme: colorScheme,
+                    //   onTap: () {
+                    //     setState(() => _selectedIndex = 8);
+                    //     widget.onIndexChanged?.call(8);
+                    //     Navigator.pop(context);
+                    //     themeProvider.toggleTheme();
+                    //   },
+                    // ),
                     _buildDrawerItem(
                       context,
                       index: 7,
-                      icon: isDark
-                          ? Icons.light_mode_outlined
-                          : Icons.dark_mode_outlined,
-                      title: isDark ? 'مظهر فاتح' : 'مظهر غامق',
-                      isDark: isDark,
-                      colorScheme: colorScheme,
-                      onTap: () {
-                        setState(() => _selectedIndex = 8);
-                        widget.onIndexChanged?.call(8);
-                        Navigator.pop(context);
-                        themeProvider.toggleTheme();
-                      },
-                    ),
-                    _buildDrawerItem(
-                      context,
-                      index: 8,
                       icon: Icons.settings_rounded,
                       title: 'الضبط والاعدادات',
                       isDark: isDark,

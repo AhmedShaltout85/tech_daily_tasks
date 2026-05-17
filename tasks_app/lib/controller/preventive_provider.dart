@@ -12,6 +12,8 @@ class PreventiveProvider with ChangeNotifier {
   List<PreventiveItemModel> _preventiveItems = [];
   bool _isLoadingItems = false;
   String? _errorItems;
+     bool _isAdmin = false; // Change from _isUser to _isAdmin
+
 
   // Preventive Maintenance
   List<PreventiveMaintenanceModel> _preventiveMaintenance = [];
@@ -22,6 +24,19 @@ class PreventiveProvider with ChangeNotifier {
   List<PreventiveItemModel> get preventiveItems => _preventiveItems;
   bool get isLoadingItems => _isLoadingItems;
   String? get errorItems => _errorItems;
+    bool get isAdmin => _isAdmin; // Change getter to isAdmin
+    
+  // Modified to set admin status
+  void setUserRole(String? role, {bool shouldNotify = true}) {
+    final newIsAdmin = role != 'USER'; // ADMIN or MANAGER = true, USER = false
+    if (_isAdmin != newIsAdmin) {
+      _isAdmin = newIsAdmin;
+      if (shouldNotify) {
+        notifyListeners();
+      }
+    }
+  }
+
 
   // Getters - Preventive Maintenance
   List<PreventiveMaintenanceModel> get preventiveMaintenance =>
