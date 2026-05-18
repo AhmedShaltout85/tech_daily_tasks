@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @GetMapping("/department/{department}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('USER')")
     public ResponseEntity<List<String>> getUsersByDepartment(@PathVariable String department) {
         log.debug("Fetching users with department: {}", department);
         List<User> users = userService.findByDepartment(department);
@@ -61,7 +61,7 @@ public class UserController {
     }
 
     @GetMapping("/department/{department}/all")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('USER')")
     public ResponseEntity<List<User>> getAllUsersByDepartment(@PathVariable String department) {
         log.debug("Fetching all users with department: {}", department);
         List<User> users = userService.findByDepartment(department);

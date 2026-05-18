@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/custom_widgets/custom_drawer.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
-import 'package:tasks_app/common_widgets/resuable_widgets/resuable_widgets.dart';
+import 'package:tasks_app/common_widgets/resuable_widgets/reusable_widgets.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
 import 'package:tasks_app/controller/daily_task_provider.dart';
 import 'package:tasks_app/controller/place_name_provider.dart';

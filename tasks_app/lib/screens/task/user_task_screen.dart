@@ -3,11 +3,14 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/custom_widgets/custom_user_drawer.dart';
+import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
+import 'package:tasks_app/common_widgets/resuable_widgets/reusable_user_bottom_sheet.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
 import 'package:tasks_app/controller/daily_task_provider.dart';
 import 'package:tasks_app/controller/place_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/models/daily_task_model.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
 class UserTaskScreen extends StatefulWidget {
@@ -61,7 +64,10 @@ class _TaskScreenState extends State<UserTaskScreen> {
       final username = userProvider.currentUser?.username;
       final department = userProvider.currentUser?.department;
       log('UserTaskScreen: Username: $username, Department: $department');
-
+      // await userProvider.fetchAllUsers();
+      await context
+          .read<UserProvider>()
+          .fetchUsersByDepartment(department ?? '');
       // Step 1: Fetch tasks assigned to current user
       if (username != null) {
         log('Step1: Fetching tasks assigned to $username...');
@@ -89,6 +95,68 @@ class _TaskScreenState extends State<UserTaskScreen> {
     } catch (e, stack) {
       log('ERROR in _fetchData: $e');
       log('Stack: $stack');
+    }
+  }
+
+  // Create a new task
+  Future<void> _createTask(Map<String, dynamic> values) async {
+    final hasConnection = await _connectivity.hasConnection();
+    if (!hasConnection) {
+      _showNoInternetDialog();
+      return;
+    }
+
+    final userProvider = context.read<UserProvider>();
+    final currentUser = userProvider.currentUser;
+
+    int daysUntilDue =
+        int.tryParse(values['expected-completion-date'] ?? '7') ?? 7;
+
+    // // Filter out the selected assignee from co-operators
+    // final assignedTo = values['assign-to'] ?? '';
+    // List<dynamic> coOperators = values['co_operator_users'] ?? [];
+    // // ignore: unnecessary_type_check
+    // if (coOperators is List) {
+    //   coOperators = coOperators.where((op) => op != assignedTo).toList();
+    // }
+
+    final newTask = DailyTaskModel(
+      taskTitle: values['task_title'] ?? '',
+      taskStatus: true,
+      appName: values['app_name'] ?? '',
+      visitPlace: values['place_name'] ?? '',
+      subPlace: values['sub-place'] ?? '',
+      assignedTo: userProvider.currentUser?.username ?? '',
+      assignedBy: currentUser?.username ?? '',
+      coOperator: values['co_operator_users'] ?? [],
+      expectedCompletionDate: DateTime.now().add(Duration(days: daysUntilDue)),
+      taskPriority: values['task-priority'] ?? 'HIGH',
+      taskNote: values['task-note'] ?? 'لايوجد ملاحظات',
+      isRemote: values['is_remote'] ?? false,
+      createdAt: DateTime.now(),
+    );
+
+    await context.read<DailyTaskProvider>().createTask(newTask);
+
+    if (mounted) {
+      final provider = context.read<DailyTaskProvider>();
+      if (provider.error != null) {
+        ReusableToast.showToast(
+          message: provider.error!,
+          bgColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16,
+        );
+        provider.clearError();
+      } else {
+        ReusableToast.showToast(
+          message: 'تم إضافة المهمة بنجاح',
+          bgColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16,
+        );
+        _fetchData();
+      }
     }
   }
 
@@ -175,6 +243,18 @@ class _TaskScreenState extends State<UserTaskScreen> {
     List<String> appNames =
         aboutAppProvider.aboutApps.map((a) => a.appName).toSet().toList();
 
+    List<String> placeNames =
+        context.watch<PlaceNameProvider>().placeNameStrings;
+    List<String> employeeNames = userProvider.users
+        .map((u) => u.role == 'USER' ? u.username : 'NULL')
+        // .where((username) =>
+        //     username != 'admin' ||
+        //     username != userProvider.currentUser?.username)
+        .toSet()
+        .toList();
+        employeeNames.remove(userProvider.currentUser?.username);
+        employeeNames.remove('NULL');
+      log('employeeNames: $employeeNames');
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -206,7 +286,54 @@ class _TaskScreenState extends State<UserTaskScreen> {
                 ),
             ],
           ),
-          
+          // In your UserTaskScreen, update the onPressed callback:
+          IconButton(
+            tooltip: 'إضافة مهمة',
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              // Don't pass hardcoded initial values that might not exist in the lists
+              showUserAddTaskBottomSheet(
+                context: context,
+                appNames: appNames,
+                placeNames: placeNames,
+                coOperatorUsers: employeeNames,
+                // Only pass initial values if they exist in the lists
+                initialTaskTitle: null, // Let the user enter
+                initialAppName: appNames.isNotEmpty ? appNames.first : null,
+                initialPlaceName:
+                    placeNames.isNotEmpty ? placeNames.first : null,
+                initialSubPlace: 'لايوجد',
+                initialIsRemote: false,
+                initialCoOperatorUsers: employeeNames,
+                onSubmitTask: (values) async {
+                  // Handle the submitted values
+
+                  log('Task Title: ${values['task_title']}');
+                  log('App Name: ${values['app_name']}');
+                  log('Place Name: ${values['place_name']}');
+                  log('Sub Place: ${values['sub_place']}');
+                  log('Is Remote: ${values['is_remote']}');
+                  log('Co-operator Users: ${values['co_operator_users']}');
+                  // Add your logic here
+                  await _createTask(values);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.green.shade700,
+                      content: Center(
+                          child: Text(
+                        'Task added: ${values['task_title']}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      )),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         ],
       ),
       body: Column(

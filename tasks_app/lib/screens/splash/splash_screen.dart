@@ -4,7 +4,7 @@ import 'package:tasks_app/utils/app_assets.dart';
 import 'package:tasks_app/utils/app_colors.dart';
 import 'package:tasks_app/utils/app_route.dart';
 
-import '../../common_widgets/resuable_widgets/resuable_widgets.dart';
+import '../../common_widgets/resuable_widgets/reusable_widgets.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
