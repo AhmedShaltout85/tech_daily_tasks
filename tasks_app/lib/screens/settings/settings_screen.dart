@@ -4,6 +4,7 @@ import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
+import 'package:tasks_app/utils/app_route.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -14,6 +15,8 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final ConnectivityService _connectivity = ConnectivityService();
+  
+
 
   Future<bool> _checkConnectivity() async {
     return await _connectivity.hasConnection();
@@ -656,6 +659,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+
   void _showLogoutDialog(
       BuildContext ctx, bool isDark, ColorScheme colorScheme) {
     showDialog(
@@ -690,6 +694,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         content: Text(
           'هل أنت متاكد أنك تريد تسجيل الخروج؟',
+          textAlign: TextAlign.right,
           style: TextStyle(
             fontSize: 16,
             color: isDark ? Colors.grey.shade300 : Colors.black87,
@@ -705,24 +710,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             child: Text(
-              'تجاهل',
+              'الغاء',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(dialogContext);
-              ctx.read<UserProvider>().clearUserData();
+
+              // Get the UserProvider instance
+              final userProvider =
+                  Provider.of<UserProvider>(ctx, listen: false);
+
+              // Call clearUserData method (you need to implement this in your UserProvider)
+              userProvider.clearUserData();
+
               ReusableToast.showToast(
                 message: 'تم تسجيل الخروج بنجاح',
                 bgColor: Colors.green,
                 textColor: Colors.white,
                 fontSize: 16,
               );
+
+              // Navigate to login screen or pop until login
+              Navigator.pushNamedAndRemoveUntil(
+                  context, AppRoute.loginRouteName, (route) => false);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red.shade600,
@@ -735,7 +751,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             child: const Text(
               'تسجيل الخروج',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),
         ],

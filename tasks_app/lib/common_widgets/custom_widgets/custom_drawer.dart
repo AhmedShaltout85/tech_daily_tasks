@@ -519,14 +519,12 @@ class _CustomDrawerState extends State<CustomDrawer>
   }
 
 
+
   void _showLogoutDialog(
-    BuildContext context,
-    bool isDark,
-    ColorScheme colorScheme,
-  ) {
+      BuildContext ctx, bool isDark, ColorScheme colorScheme) {
     showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
+      context: ctx,
+      builder: (dialogContext) => AlertDialog(
         backgroundColor: isDark ? colorScheme.surface : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
@@ -562,67 +560,52 @@ class _CustomDrawerState extends State<CustomDrawer>
             color: isDark ? Colors.grey.shade300 : Colors.black87,
           ),
         ),
-        // FIX: Use a Container with Row inside, NOT Expanded directly in actions
         actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: Row(
-              children: [
-                // Cancel Button
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text(
-                      'الغاء',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: isDark
-                            ? Colors.grey.shade400
-                            : Colors.grey.shade700,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // Logout Button
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      _userProvider.clearUserData();
-                      ReusableToast.showToast(
-                        message: 'تم تسجيل الخروج بنجاح',
-                        bgColor: Colors.green,
-                        textColor: Colors.white,
-                        fontSize: 16,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red.shade600,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 7),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 2,
-                    ),
-                    child: const Text(
-                      'تسجيل الخروج',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(
+              'الغاء',
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+
+             
+              _userProvider.clearUserData();
+
+              ReusableToast.showToast(
+                message: 'تم تسجيل الخروج بنجاح',
+                bgColor: Colors.green,
+                textColor: Colors.white,
+                fontSize: 16,
+              );
+
+             
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade600,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              elevation: 2,
+            ),
+            child: const Text(
+              'تسجيل الخروج',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),
         ],
