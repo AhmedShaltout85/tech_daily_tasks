@@ -8,7 +8,6 @@ import 'package:tasks_app/controller/daily_task_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/controller/place_name_provider.dart';
 import 'package:tasks_app/models/daily_task_model.dart';
-import 'package:tasks_app/services/connectivity_service.dart';
 import 'package:tasks_app/screens/report/widgets/generate_pdf.dart';
 
 class ReportScreen extends StatefulWidget {
@@ -35,7 +34,6 @@ class _ReportScreenState extends State<ReportScreen>
 
   final List<String> statusList = ['الكل', 'معلق', 'مكتمل'];
   final List<String> isRemoteList = ['الكل', 'عن بعد', 'فى الموقع'];
-  final ConnectivityService _connectivity = ConnectivityService();
 
   @override
   void initState() {
@@ -67,28 +65,28 @@ class _ReportScreenState extends State<ReportScreen>
     super.dispose();
   }
 
-  Future<void> _fetchData() async {
-    // Data is already loaded from ManagerTaskScreen
-    // Just access existing provider data, no fetch needed
-  }
+  // Future<void> _fetchData() async {
+  //   // Data is already loaded from ManagerTaskScreen
+  //   // Just access existing provider data, no fetch needed
+  // }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('لا يوجد اتصال بالانترنت'),
-        content: const Text(
-          'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('حسنا'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showNoInternetDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('لا يوجد اتصال بالانترنت'),
+  //       content: const Text(
+  //         'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('حسنا'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
     final DateTime? picked = await showDatePicker(
@@ -289,8 +287,8 @@ class _ReportScreenState extends State<ReportScreen>
 
           List<String> employeeNames = [];
           if (selectedDepartment == 'الكل' || selectedDepartment == null) {
-            employeeNames =
-                allUsernames.where((u) => !u.contains('admin'))
+            employeeNames = allUsernames
+                .where((u) => !u.contains('admin'))
                 .where((u) => u != 'admin')
                 .where((u) => u != 'gm')
                 .where((u) => u != 'manager')
@@ -439,7 +437,7 @@ class _ReportScreenState extends State<ReportScreen>
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: 10),
                                 Row(
                                   children: [
                                     Expanded(
@@ -476,7 +474,11 @@ class _ReportScreenState extends State<ReportScreen>
                                         },
                                       ),
                                     ),
-                                    const SizedBox(width: 12),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
                                     Expanded(
                                       child: _buildDropdown(
                                         label: 'التطبيق/الجهاز',
@@ -494,11 +496,7 @@ class _ReportScreenState extends State<ReportScreen>
                                         },
                                       ),
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                Row(
-                                  children: [
+                                    const SizedBox(width: 12),
                                     Expanded(
                                       child: _buildDropdown(
                                         label: 'مكان الصيانة',
@@ -516,68 +514,76 @@ class _ReportScreenState extends State<ReportScreen>
                                         },
                                       ),
                                     ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: _buildStatusDropdown(
-                                        label: 'الحالة',
-                                        value:
-                                            statusList.contains(selectedStatus)
-                                                ? selectedStatus!
-                                                : 'الكل',
-                                        items: statusList,
-                                        onChanged: (value) {
-                                          setState(
-                                            () => selectedStatus = value,
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: _buildIsRemoteDropdown(
-                                        label: 'نوع الصيانة',
-                                        value: isRemoteList
-                                                .contains(selectedIsRemote)
-                                            ? selectedIsRemote!
-                                            : 'الكل',
-                                        items: isRemoteList,
-                                        onChanged: (value) {
-                                          setState(
-                                            () => selectedIsRemote = value,
-                                          );
-                                        },
-                                      ),
-                                    ),
                                   ],
                                 ),
-                                const SizedBox(height: 16),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: ElevatedButton.icon(
-                                        onPressed: _clearFilters,
-                                        icon: const Icon(
-                                          Icons.clear_rounded,
-                                          size: 20,
+                                const SizedBox(height: 10),
+                                IntrinsicHeight(
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: _buildStatusDropdown(
+                                          label: 'الحالة',
+                                          value:
+                                              statusList.contains(selectedStatus)
+                                                  ? selectedStatus!
+                                                  : 'الكل',
+                                          items: statusList,
+                                          onChanged: (value) {
+                                            setState(
+                                              () => selectedStatus = value,
+                                            );
+                                          },
                                         ),
-                                        label: const Text('ازالة التخصيصات'),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.grey.shade100,
-                                          foregroundColor: Colors.grey.shade700,
-                                          elevation: 0,
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 16,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Expanded(
+                                        child: _buildIsRemoteDropdown(
+                                          label: 'نوع الصيانة',
+                                          value: isRemoteList
+                                                  .contains(selectedIsRemote)
+                                              ? selectedIsRemote!
+                                              : 'الكل',
+                                          items: isRemoteList,
+                                          onChanged: (value) {
+                                            setState(
+                                              () => selectedIsRemote = value,
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Expanded(
+                                        child: Container(
+                                          margin: const EdgeInsets.only(
+                                            top: 16,
                                           ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
+                                          child: ElevatedButton.icon(
+                                            onPressed: _clearFilters,
+                                            icon: const Icon(
+                                              Icons.clear_rounded,
+                                            ),
+                                            label: const Text(''),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.grey.shade100,
+                                              foregroundColor: Colors.grey.shade700,
+                                              elevation: 0,
+                                              
+                                              // padding: const EdgeInsets.symmetric(
+                                              //   vertical: 16,
+                                              // ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(
+                                                  12,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                  ],
+                                      )
+                                    ],
+                                  ),
                                 ),
+                 
                               ],
                             ),
                           ),
@@ -660,7 +666,7 @@ class _ReportScreenState extends State<ReportScreen>
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(7),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey.shade300),
           borderRadius: BorderRadius.circular(12),
@@ -741,9 +747,10 @@ class _ReportScreenState extends State<ReportScreen>
                 color: Colors.grey.shade600,
               ),
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 color: Color(0xFF1E293B),
                 fontWeight: FontWeight.w500,
+                fontFamily: 'Cairo',
               ),
               items: items.map((item) {
                 return DropdownMenuItem<String>(
@@ -796,7 +803,7 @@ class _ReportScreenState extends State<ReportScreen>
               isExpanded: true,
               items: items
                   .map((status) =>
-                      DropdownMenuItem(value: status, child: Text(status)))
+                      DropdownMenuItem(value: status, child: Text(status, style: TextStyle(fontSize: 12))))
                   .toList(),
               onChanged: onChanged,
             ),
@@ -830,7 +837,7 @@ class _ReportScreenState extends State<ReportScreen>
               isExpanded: true,
               items: items
                   .map((type) =>
-                      DropdownMenuItem(value: type, child: Text(type)))
+                      DropdownMenuItem(value: type, child: Text(type, style: TextStyle(fontSize: 12))))
                   .toList(),
               onChanged: onChanged,
             ),
@@ -866,7 +873,7 @@ class _ReportScreenState extends State<ReportScreen>
           Text(
             value,
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
               color: color,
             ),
@@ -875,7 +882,7 @@ class _ReportScreenState extends State<ReportScreen>
           Text(
             title,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 10,
               color: Colors.grey.shade600,
               fontWeight: FontWeight.w500,
             ),
@@ -1033,37 +1040,39 @@ class _ReportScreenState extends State<ReportScreen>
 
   Widget _buildEmptyState() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              shape: BoxShape.circle,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.search_off_rounded,
+                size: 50,
+                color: Colors.grey.shade400,
+              ),
             ),
-            child: Icon(
-              Icons.search_off_rounded,
-              size: 64,
-              color: Colors.grey.shade400,
+            const SizedBox(height: 10),
+            const Text(
+              'لا توجد نتائج',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1E293B),
+              ),
             ),
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'No Results Found',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF1E293B),
+            const SizedBox(height: 8),
+            Text(
+              'لا يوجد نتائج للبحث الخاص بك',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Try adjusting your filters to find what you\'re looking for',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

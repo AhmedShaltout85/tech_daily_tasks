@@ -125,7 +125,7 @@ class _ManagePreventiveMaintenanceScreenState
   }
 
   Future<void> _addMaintenance() async {
-    final hasConnection = await _connectivity.hasConnection();
+     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
       // Create a wrapper function
 
@@ -331,9 +331,13 @@ class _ManagePreventiveMaintenanceScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // isRemote toggle
-                    Expanded(
+                    Flexible(
                       flex: 1,
                       child: Container(
+                        constraints: BoxConstraints(
+                          minWidth: 80, // Set minimum width
+                          maxWidth: 120, // Set maximum width
+                        ),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
@@ -355,7 +359,7 @@ class _ManagePreventiveMaintenanceScreenState
                               color: _isRemote
                                   ? Colors.blue.shade700
                                   : Colors.grey.shade600,
-                              size: 24,
+                              size: 18,
                             ),
                             Switch(
                               value: _isRemote,

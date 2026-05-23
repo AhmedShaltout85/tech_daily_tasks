@@ -1,3 +1,6 @@
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -35,6 +38,13 @@ class _PreventiveMaintenanceReportScreenState
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
+  // Cache for filtered data to improve performance
+  List<PreventiveMaintenanceModel>? _cachedFilteredData;
+  List<PreventiveMaintenanceModel>? _cachedItems;
+
+  // Debounce timer for filters
+  Timer? _debounceTimer;
+
   @override
   void initState() {
     super.initState();
@@ -63,8 +73,24 @@ class _PreventiveMaintenanceReportScreenState
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _animationController.dispose();
     super.dispose();
+  }
+
+  // Clear cache when filters change
+  void _clearCache() {
+    _cachedFilteredData = null;
+    _cachedItems = null;
+  }
+
+  // Debounced filter update to prevent excessive rebuilds
+  void _debouncedFilterUpdate(VoidCallback update) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      _clearCache();
+      setState(update);
+    });
   }
 
   Future<void> _fetchData() async {
@@ -107,27 +133,27 @@ class _PreventiveMaintenanceReportScreenState
       debugPrint(
           'After IT fallback - items: ${provider.preventiveMaintenance.length}');
     }
-  }
 
-  // void _showNoInternetDialog() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       title: const Text('لا يوجد إنترنت'),
-  //       content: const Text('تحقق من اتصالك بالإنترنت'),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           child: const Text('موافق'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+    // Clear cache after new data fetch
+    _clearCache();
+  }
 
   List<PreventiveMaintenanceModel> getFilteredData(
       List<PreventiveMaintenanceModel> items) {
-    return items.where((item) {
+    // Return cached data if items haven't changed and cache exists
+    if (_cachedFilteredData != null && _cachedItems == items) {
+      return _cachedFilteredData!;
+    }
+
+    // Store current items for cache validation
+    _cachedItems = items;
+
+    if (items.isEmpty) {
+      _cachedFilteredData = [];
+      return [];
+    }
+
+    final filtered = items.where((item) {
       bool matchesUser = true;
       bool matchesApp = true;
       bool matchesPlace = true;
@@ -140,46 +166,43 @@ class _PreventiveMaintenanceReportScreenState
         matchesUser = item.username == selectedUsername;
       }
 
-      // Department filtering - if a department is selected and not 'الكل'
+      // Department filtering
       if (selectedDepartment != null && selectedDepartment != 'الكل') {
         matchesDepartment = item.department == selectedDepartment;
       }
 
-      // Date filtering using createdAt
+      // Date filtering using createdAt (which is already DateTime)
       if (startDate != null && item.createdAt != null) {
-        final itemDate = item.createdAt!;
+        matchesDate = item.createdAt!
+            .isAfter(startDate!.subtract(const Duration(days: 1)));
+      } else if (startDate != null && item.createdAt == null) {
+        matchesDate = false;
+      }
+
+      if (endDate != null && item.createdAt != null && matchesDate) {
         matchesDate =
-            itemDate.isAfter(startDate!.subtract(const Duration(days: 1)));
+            item.createdAt!.isBefore(endDate!.add(const Duration(days: 1)));
+      } else if (endDate != null && item.createdAt == null) {
+        matchesDate = false;
       }
 
-      if (endDate != null && item.createdAt != null) {
-        final itemDate = item.createdAt!;
-        matchesDate = matchesDate &&
-            itemDate.isBefore(endDate!.add(const Duration(days: 1)));
-      }
-
-      if (selectedAppName != null && selectedAppName != 'الكل') {
+      // App name filtering
+      if (selectedAppName != null &&
+          selectedAppName != 'الكل' &&
+          selectedAppName != null) {
         matchesApp = item.appName == selectedAppName;
       }
 
-      if (selectedPlaceName != null && selectedPlaceName != 'الكل') {
+      // Place name filtering
+      if (selectedPlaceName != null &&
+          selectedPlaceName != 'الكل' &&
+          selectedPlaceName != null) {
         matchesPlace = item.placeName == selectedPlaceName;
       }
 
+      // Remote filtering
       if (selectedIsRemote != null) {
         matchesRemote = item.isRemote == (selectedIsRemote! ? 'true' : 'false');
-      }
-
-      if (startDate != null) {
-        final itemDate = DateTime.parse(item.action);
-        matchesDate =
-            itemDate.isAfter(startDate!.subtract(const Duration(days: 1)));
-      }
-
-      if (endDate != null) {
-        final itemDate = DateTime.parse(item.action);
-        matchesDate = matchesDate &&
-            itemDate.isBefore(endDate!.add(const Duration(days: 1)));
       }
 
       return matchesUser &&
@@ -189,10 +212,14 @@ class _PreventiveMaintenanceReportScreenState
           matchesDate &&
           matchesDepartment;
     }).toList();
+
+    // Cache the filtered result
+    _cachedFilteredData = filtered;
+    return filtered;
   }
 
   void _clearFilters() {
-    setState(() {
+    _debouncedFilterUpdate(() {
       selectedUsername = 'الكل';
       selectedAppName = 'الكل';
       selectedPlaceName = 'الكل';
@@ -212,7 +239,7 @@ class _PreventiveMaintenanceReportScreenState
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     if (picked != null) {
-      setState(() {
+      _debouncedFilterUpdate(() {
         if (isStart) {
           startDate = picked;
         } else {
@@ -236,24 +263,30 @@ class _PreventiveMaintenanceReportScreenState
     final validValue = uniqueItems.contains(value) ? value : null;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(
-          children: [
-            Icon(icon, size: 14, color: Colors.grey.shade600),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey.shade700,
+        // Centered label row
+        Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 14, color: Colors.grey.shade600),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey.shade700,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 4),
         Container(
+          width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey.shade300),
@@ -263,31 +296,43 @@ class _PreventiveMaintenanceReportScreenState
             value: validValue,
             isExpanded: true,
             underline: const SizedBox(),
-            icon: Icon(icon, color: Colors.grey.shade600, size: 20),
-            hint: Text(
-              'اختر $label',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade500,
+            icon: Icon(Icons.arrow_drop_down,
+                color: Colors.grey.shade600, size: 20),
+            hint: Center(
+              child: Text(
+                'اختر $label',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade500,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
             items: uniqueItems.map((item) {
               return DropdownMenuItem<String>(
                 value: item,
-                child: Text(
-                  item,
-                  style: const TextStyle(fontSize: 14),
-                  overflow: TextOverflow.ellipsis,
+                child: Center(
+                  child: Text(
+                    item,
+                    style: const TextStyle(fontSize: 14),
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               );
             }).toList(),
-            onChanged: onChanged,
+            onChanged: (value) {
+              _debouncedFilterUpdate(() => onChanged(value));
+            },
             selectedItemBuilder: (BuildContext context) {
               return uniqueItems.map((item) {
-                return Text(
-                  item,
-                  style: const TextStyle(fontSize: 14),
-                  overflow: TextOverflow.ellipsis,
+                return Center(
+                  child: Text(
+                    item,
+                    style: const TextStyle(fontSize: 14),
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
                 );
               }).toList();
             },
@@ -303,24 +348,30 @@ class _PreventiveMaintenanceReportScreenState
     required Function(bool?) onChanged,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(
-          children: [
-            Icon(Icons.work, size: 14, color: Colors.grey.shade600),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey.shade700,
+        // Centered label row
+        Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.work, size: 14, color: Colors.grey.shade600),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey.shade700,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 4),
         Container(
+          width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey.shade300),
@@ -332,21 +383,43 @@ class _PreventiveMaintenanceReportScreenState
             underline: const SizedBox(),
             icon: Icon(Icons.arrow_drop_down,
                 color: Colors.grey.shade600, size: 20),
+            hint: const Center(
+              child: Text(
+                'اختر نوع العمل',
+                style: TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+            ),
             items: const [
               DropdownMenuItem(
                 value: null,
-                child: Text('الكل', style: TextStyle(fontSize: 14)),
+                child: Center(
+                  child: Text('الكل', style: TextStyle(fontSize: 14)),
+                ),
               ),
               DropdownMenuItem(
                 value: true,
-                child: Text('عن بُعد', style: TextStyle(fontSize: 14)),
+                child: Center(
+                  child: Text('عن بُعد', style: TextStyle(fontSize: 14)),
+                ),
               ),
               DropdownMenuItem(
                 value: false,
-                child: Text('موقع', style: TextStyle(fontSize: 14)),
+                child: Center(
+                  child: Text('موقع', style: TextStyle(fontSize: 14)),
+                ),
               ),
             ],
-            onChanged: onChanged,
+            onChanged: (value) {
+              _debouncedFilterUpdate(() => onChanged(value));
+            },
+            selectedItemBuilder: (BuildContext context) {
+              return const [
+                Center(child: Text('الكل', style: TextStyle(fontSize: 14))),
+                Center(child: Text('عن بُعد', style: TextStyle(fontSize: 14))),
+                Center(child: Text('موقع', style: TextStyle(fontSize: 14))),
+              ];
+            },
           ),
         ),
       ],
@@ -359,32 +432,38 @@ class _PreventiveMaintenanceReportScreenState
     required VoidCallback onTap,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(
-          children: [
-            Icon(Icons.calendar_today, size: 14, color: Colors.grey.shade600),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey.shade700,
+        // Centered label row
+        Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.calendar_today, size: 14, color: Colors.grey.shade600),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey.shade700,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 4),
         InkWell(
           onTap: onTap,
           child: Container(
+            width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade300),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.calendar_today,
                     color: Colors.grey.shade600, size: 20),
@@ -395,6 +474,7 @@ class _PreventiveMaintenanceReportScreenState
                     fontSize: 14,
                     color: date != null ? Colors.black87 : Colors.grey.shade600,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
@@ -413,6 +493,7 @@ class _PreventiveMaintenanceReportScreenState
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, color: color, size: 24),
           const SizedBox(height: 8),
@@ -423,6 +504,7 @@ class _PreventiveMaintenanceReportScreenState
               fontWeight: FontWeight.bold,
               color: color,
             ),
+            textAlign: TextAlign.center,
           ),
           Text(
             label,
@@ -430,6 +512,7 @@ class _PreventiveMaintenanceReportScreenState
               fontSize: 12,
               color: color,
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -461,13 +544,13 @@ class _PreventiveMaintenanceReportScreenState
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: item.isRemote == true
+                    color: item.isRemote == 'true'
                         ? Colors.blue.withValues(alpha: 0.1)
                         : Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    item.isRemote == true ? 'عن بُعد' : 'موقع',
+                    item.isRemote == 'true' ? 'عن بُعد' : 'موقع',
                     style: TextStyle(
                       fontSize: 12,
                       color:
@@ -482,12 +565,15 @@ class _PreventiveMaintenanceReportScreenState
               children: [
                 Icon(Icons.person, size: 20, color: Colors.blue),
                 const SizedBox(width: 10),
-                Text(
-                  item.username ?? '',
-                  style: const TextStyle(
-                      fontSize: 16,
-                      color: AppColors.blackColor,
-                      fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Text(
+                    item.username ?? '',
+                    style: const TextStyle(
+                        fontSize: 16,
+                        color: AppColors.blackColor,
+                        fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
@@ -514,14 +600,17 @@ class _PreventiveMaintenanceReportScreenState
                 Icon(Icons.calendar_today,
                     size: 20, color: AppColors.purpleColor),
                 const SizedBox(width: 10),
-                Text(
-                  item.createdAt != null
-                      ? DateFormat('yyyy-MM-dd HH:mm').format(item.createdAt!)
-                      : '',
-                  style: const TextStyle(
-                      fontSize: 16,
-                      color: AppColors.blackColor,
-                      fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Text(
+                    item.createdAt != null
+                        ? DateFormat('yyyy-MM-dd HH:mm').format(item.createdAt!)
+                        : '',
+                    style: const TextStyle(
+                        fontSize: 16,
+                        color: AppColors.blackColor,
+                        fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
@@ -532,12 +621,15 @@ class _PreventiveMaintenanceReportScreenState
                   children: [
                     Icon(Icons.repartition_sharp, size: 20, color: Colors.red),
                     const SizedBox(width: 10),
-                    Text(
-                      item.action,
-                      style: const TextStyle(
-                          fontSize: 16,
-                          color: AppColors.blackColor,
-                          fontWeight: FontWeight.bold),
+                    Expanded(
+                      child: Text(
+                        item.action,
+                        style: const TextStyle(
+                            fontSize: 16,
+                            color: AppColors.blackColor,
+                            fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
@@ -550,38 +642,42 @@ class _PreventiveMaintenanceReportScreenState
 
   Widget _buildEmptyState() {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                shape: BoxShape.circle,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.search_off_rounded,
+                  size: 48,
+                  color: Colors.grey.shade400,
+                ),
               ),
-              child: Icon(
-                Icons.search_off_rounded,
-                size: 48,
-                color: Colors.grey.shade400,
+              const SizedBox(height: 16),
+              const Text(
+                'لا توجد نتائج',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'لا توجد نتائج',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+              const SizedBox(height: 8),
+              Text(
+                'جرب تعديل الفلاتر',
+                style: TextStyle(color: Colors.grey.shade600),
+                textAlign: TextAlign.center,
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'جرب تعديل الفلاتر',
-              style: TextStyle(color: Colors.grey.shade600),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -591,7 +687,10 @@ class _PreventiveMaintenanceReportScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('تقرير صيانة وقائية'),
+        title: const Text(
+          'تقرير صيانة وقائية',
+          overflow: TextOverflow.ellipsis,
+        ),
         actions: [
           Consumer<PreventiveProvider>(
             builder: (context, provider, child) {
@@ -627,7 +726,7 @@ class _PreventiveMaintenanceReportScreenState
                               startDate: startDate,
                               endDate: endDate,
                             );
-                             final hasConnection =
+                            final hasConnection =
                                 await _connectivity.hasConnection();
                             if (!hasConnection) {
                               await ConnectionDialogService
@@ -636,7 +735,6 @@ class _PreventiveMaintenanceReportScreenState
                               );
                               return;
                             }
-
                           } catch (e) {
                             ReusableToast.showToast(
                               message: 'خطأ في إنشاء PDF: $e',
@@ -658,8 +756,6 @@ class _PreventiveMaintenanceReportScreenState
         builder: (context, preventiveProvider, aboutAppProvider, userProvider,
             placeProvider, child) {
           final items = preventiveProvider.preventiveMaintenance;
-          final debugCount = items.length;
-          debugPrint('DEBUG: Items count = $debugCount');
           final appNames =
               aboutAppProvider.aboutApps.map((a) => a.appName).toSet().toList();
 
@@ -717,14 +813,15 @@ class _PreventiveMaintenanceReportScreenState
           final placeNames = placeProvider.placeNameStrings;
 
           final filteredData = getFilteredData(items);
-          debugPrint('DEBUG: Filtered count = ${filteredData.length}');
+
+          // Ensure userList has unique values
           final userList = [
-            if (currentUser!.role != 'USER') 'الكل',
+            if (currentUser != null && currentUser.role != 'USER') 'الكل',
             ...usernames,
-          ];
-          // final userList = ['الكل', ...usernames];
-          final appList = ['الكل', ...appNames];
-          final placeList = ['الكل', ...placeNames];
+          ].toSet().toList();
+
+          final appList = ['الكل', ...appNames].toSet().toList();
+          final placeList = ['الكل', ...placeNames].toSet().toList();
 
           final isLoading = preventiveProvider.isLoadingMaintenance ||
               aboutAppProvider.isLoading ||
@@ -806,91 +903,11 @@ class _PreventiveMaintenanceReportScreenState
                         ),
                       ),
                       AnimatedCrossFade(
-                        firstChild: Container(),
+                        firstChild: const SizedBox.shrink(),
                         secondChild: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Column(
                             children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildDropdown(
-                                      label: 'الادراة',
-                                      value: departmentList.contains(
-                                              selectedDepartment ?? 'الكل')
-                                          ? selectedDepartment!
-                                          : 'الكل',
-                                      items: departmentList,
-                                      icon: Icons.business,
-                                      onChanged: (value) {
-                                        setState(
-                                            () => selectedDepartment = value);
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: _buildDropdown(
-                                      label: 'المستخدم',
-                                      value: userList.contains(selectedUsername)
-                                          ? selectedUsername!
-                                          : 'الكل',
-                                      items: userList,
-                                      icon: Icons.person,
-                                      onChanged: (value) {
-                                        setState(
-                                            () => selectedUsername = value);
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: _buildDropdown(
-                                      label: 'اسم التطبيق',
-                                      value: appList.contains(selectedAppName)
-                                          ? selectedAppName!
-                                          : 'الكل',
-                                      items: appList,
-                                      icon: Icons.apps,
-                                      onChanged: (value) {
-                                        setState(() => selectedAppName = value);
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildDropdown(
-                                      label: 'مكان الزيارة',
-                                      value:
-                                          placeList.contains(selectedPlaceName)
-                                              ? selectedPlaceName!
-                                              : 'الكل',
-                                      items: placeList,
-                                      icon: Icons.location_on,
-                                      onChanged: (value) {
-                                        setState(
-                                            () => selectedPlaceName = value);
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: _buildRemoteDropdown(
-                                      label: 'نوع العمل',
-                                      value: selectedIsRemote,
-                                      onChanged: (value) {
-                                        setState(
-                                            () => selectedIsRemote = value);
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
                               Row(
                                 children: [
                                   Expanded(
@@ -910,24 +927,102 @@ class _PreventiveMaintenanceReportScreenState
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton.icon(
-                                  onPressed: _clearFilters,
-                                  icon: const Icon(Icons.clear),
-                                  label: const Text('مسح الفلاتر'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.grey.shade100,
-                                    foregroundColor: Colors.grey.shade700,
-                                    elevation: 0,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildDropdown(
+                                      label: 'الإدارة',
+                                      value: departmentList.contains(
+                                              selectedDepartment ?? 'الكل')
+                                          ? selectedDepartment!
+                                          : 'الكل',
+                                      items: departmentList,
+                                      icon: Icons.business,
+                                      onChanged: (value) {
+                                        selectedDepartment = value;
+                                      },
                                     ),
                                   ),
-                                ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: _buildDropdown(
+                                      label: 'المستخدم',
+                                      value: userList.contains(selectedUsername)
+                                          ? selectedUsername!
+                                          : 'الكل',
+                                      items: userList,
+                                      icon: Icons.person,
+                                      onChanged: (value) {
+                                        selectedUsername = value;
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildDropdown(
+                                      label: 'اسم التطبيق',
+                                      value: appList.contains(selectedAppName)
+                                          ? selectedAppName!
+                                          : 'الكل',
+                                      items: appList,
+                                      icon: Icons.apps,
+                                      onChanged: (value) {
+                                        selectedAppName = value;
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: _buildDropdown(
+                                      label: 'مكان الزيارة',
+                                      value:
+                                          placeList.contains(selectedPlaceName)
+                                              ? selectedPlaceName!
+                                              : 'الكل',
+                                      items: placeList,
+                                      icon: Icons.location_on,
+                                      onChanged: (value) {
+                                        selectedPlaceName = value;
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildRemoteDropdown(
+                                      label: 'نوع العمل',
+                                      value: selectedIsRemote,
+                                      onChanged: (value) {
+                                        selectedIsRemote = value;
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 16),
+                                    child: ElevatedButton.icon(
+                                      onPressed: _clearFilters,
+                                      icon: const Icon(Icons.clear),
+                                      label: const Text('مسح الكل'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.grey.shade100,
+                                        foregroundColor: Colors.grey.shade700,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -962,7 +1057,7 @@ class _PreventiveMaintenanceReportScreenState
                           child: _buildStatCard(
                             'عن بُعد',
                             filteredData
-                                .where((i) => i.isRemote == true)
+                                .where((i) => i.isRemote == 'true')
                                 .length
                                 .toString(),
                             Colors.blue,
