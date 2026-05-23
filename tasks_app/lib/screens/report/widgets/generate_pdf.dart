@@ -46,7 +46,7 @@ Future<void> generatePDF({
             child: pw.Directionality(
               textDirection: pw.TextDirection.rtl,
               child: pw.Text(
-                'تقرير الأنشطة - Activities Report',
+                'تقرير الأنشطة اليومية',
                 style: pw.TextStyle(
                   fontSize: 24,
                   fontWeight: pw.FontWeight.bold,
@@ -88,7 +88,7 @@ Future<void> generatePDF({
             pw.Directionality(
               textDirection: pw.TextDirection.rtl,
               child: pw.Text(
-                'اسم التطبيق - Application: $selectedApplication',
+                'اسم التطبيق : $selectedApplication',
                 style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
               ),
             ),
@@ -96,7 +96,7 @@ Future<void> generatePDF({
             pw.Directionality(
               textDirection: pw.TextDirection.rtl,
               child: pw.Text(
-                'مكان الزيارة - Visit Place: $selectedVisitPlace',
+                'مكان الزيارة : $selectedVisitPlace',
                 style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
               ),
             ),
@@ -104,7 +104,7 @@ Future<void> generatePDF({
             pw.Directionality(
               textDirection: pw.TextDirection.rtl,
               child: pw.Text(
-                'الحالة - Status: $selectedStatus',
+                'الحالة : $selectedStatus',
                 style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
               ),
             ),
@@ -112,7 +112,7 @@ Future<void> generatePDF({
             pw.Directionality(
               textDirection: pw.TextDirection.rtl,
               child: pw.Text(
-                'نوع العمل - Work Type: $selectedIsRemote',
+                'نوع العمل : $selectedIsRemote',
                 style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
               ),
             ),
@@ -126,57 +126,57 @@ Future<void> generatePDF({
                   decoration: const pw.BoxDecoration(color: PdfColors.blue100),
                   children: [
                     headerCellBilingual(
-                      'التاريخ\nDate',
+                      'التاريخ',
                       cellPadding,
                       headerTextStyle,
                     ),
                     headerCellBilingual(
-                      'اسم المهمة\nTask Name',
+                      'اسم المهمة',
                       cellPadding,
                       headerTextStyle,
                     ),
                     headerCellBilingual(
-                      'اسم التطبيق\nApplication',
+                      'اسم التطبيق',
                       cellPadding,
                       headerTextStyle,
                     ),
                     headerCellBilingual(
-                      'مخصصة لـ\nAssigned To',
+                      'مخصصة لـ',
                       cellPadding,
                       headerTextStyle,
                     ),
                     headerCellBilingual(
-                      'مخصصة من\nAssigned By',
+                      'مخصصة من',
                       cellPadding,
                       headerTextStyle,
                     ),
                     headerCellBilingual(
-                      'مكان الزيارة\nVisit Place',
+                      'مكان الزيارة',
                       cellPadding,
                       headerTextStyle,
                     ),
                     headerCellBilingual(
-                      'الحالة\nStatus',
+                      'الحالة',
                       cellPadding,
                       headerTextStyle,
                     ),
                     headerCellBilingual(
-                      'الأولوية\nPriority',
+                      'الأولوية',
                       cellPadding,
                       headerTextStyle,
                     ),
                     headerCellBilingual(
-                      'نوع العمل\nWork Type',
+                      'نوع العمل',
                       cellPadding,
                       headerTextStyle,
                     ),
                     headerCellBilingual(
-                      'الموظفين المتعاونين\nCo-operators',
+                      'الموظفين المتعاونين',
                       cellPadding,
                       headerTextStyle,
                     ),
                     headerCellBilingual(
-                      'تاريخ الاستحقاق\nDue Date',
+                      'تاريخ الاستحقاق',
                       cellPadding,
                       headerTextStyle,
                     ),

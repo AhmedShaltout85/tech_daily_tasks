@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
@@ -7,6 +6,7 @@ import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/models/about_app_model.dart';
 import 'package:tasks_app/screens/about_app/app_recommended_details_screen.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
 class ManageAboutAppScreen extends StatefulWidget {
@@ -60,7 +60,10 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
   Future<void> _fetchData() async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        onRetry: _fetchData,
+      );
       return;
     }
     await context.read<AboutAppProvider>().fetchAllAboutApps();
@@ -79,23 +82,23 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
         );
   }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('لا يوجد اتصال بالانترنت'),
-        content: const Text(
-          'يرجى التحقق من الاتصال والمحاولة مرة اخرى.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('حسنا'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showNoInternetDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('لا يوجد اتصال بالانترنت'),
+  //       content: const Text(
+  //         'يرجى التحقق من الاتصال والمحاولة مرة اخرى.',
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('حسنا'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void _showAddDialog() {
     final appNameController = TextEditingController();
@@ -177,7 +180,10 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
   Future<void> _addAboutApp(String appName, List<String> recommended) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        // onRetry: () => _addAboutApp(appName, recommended),
+      );
       return;
     }
 
@@ -311,7 +317,10 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
       int id, String appName, List<String> recommended) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        // onRetry: () => _updateAboutApp(id, appName, recommended),
+      );
       return;
     }
 
@@ -357,7 +366,10 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
   Future<void> _showDeleteConfirmation(AboutApp aboutApp) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        // onRetry: () => _showDeleteConfirmation(aboutApp),
+      );
       return;
     }
 

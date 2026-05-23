@@ -6,6 +6,7 @@ import 'package:tasks_app/controller/about_app_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/controller/place_name_provider.dart';
 import 'package:tasks_app/models/preventive_maintenance_model.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/screens/report/widgets/preventive_maintenance_export_pdf.dart';
@@ -69,7 +70,10 @@ class _PreventiveMaintenanceReportScreenState
   Future<void> _fetchData() async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        onRetry: _fetchData,
+      );
       return;
     }
 
@@ -105,21 +109,21 @@ class _PreventiveMaintenanceReportScreenState
     }
   }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('لا يوجد إنترنت'),
-        content: const Text('تحقق من اتصالك بالإنترنت'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('موافق'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showNoInternetDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('لا يوجد إنترنت'),
+  //       content: const Text('تحقق من اتصالك بالإنترنت'),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('موافق'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   List<PreventiveMaintenanceModel> getFilteredData(
       List<PreventiveMaintenanceModel> items) {
@@ -217,7 +221,8 @@ class _PreventiveMaintenanceReportScreenState
       });
     }
   }
-Widget _buildDropdown({
+
+  Widget _buildDropdown({
     required String label,
     required String value,
     required List<String> items,
@@ -291,58 +296,6 @@ Widget _buildDropdown({
       ],
     );
   }
-  // Widget _buildDropdown({
-  //   required String label,
-  //   required String value,
-  //   required List<String> items,
-  //   required IconData icon,
-  //   required Function(String?) onChanged,
-  // }) {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Row(
-  //         children: [
-  //           Icon(icon, size: 14, color: Colors.grey.shade600),
-  //           const SizedBox(width: 4),
-  //           Text(
-  //             label,
-  //             style: TextStyle(
-  //               fontSize: 12,
-  //               fontWeight: FontWeight.w500,
-  //               color: Colors.grey.shade700,
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //       const SizedBox(height: 4),
-  //       Container(
-  //         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-  //         decoration: BoxDecoration(
-  //           border: Border.all(color: Colors.grey.shade300),
-  //           borderRadius: BorderRadius.circular(8),
-  //         ),
-  //         child: DropdownButton<String>(
-  //           value: value,
-  //           isExpanded: true,
-  //           underline: const SizedBox(),
-  //           icon: Icon(icon, color: Colors.grey.shade600, size: 20),
-  //           items: items.map((item) {
-  //             return DropdownMenuItem(
-  //               value: item,
-  //               child: Text(
-  //                 item,
-  //                 style: const TextStyle(fontSize: 14),
-  //                 overflow: TextOverflow.ellipsis,
-  //               ),
-  //             );
-  //           }).toList(),
-  //           onChanged: onChanged,
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
 
   Widget _buildRemoteDropdown({
     required String label,
@@ -674,6 +627,16 @@ Widget _buildDropdown({
                               startDate: startDate,
                               endDate: endDate,
                             );
+                             final hasConnection =
+                                await _connectivity.hasConnection();
+                            if (!hasConnection) {
+                              await ConnectionDialogService
+                                  .showNoInternetDialog(
+                                context,
+                              );
+                              return;
+                            }
+
                           } catch (e) {
                             ReusableToast.showToast(
                               message: 'خطأ في إنشاء PDF: $e',
@@ -713,7 +676,6 @@ Widget _buildDropdown({
             departmentList = [userDepartment.isEmpty ? 'IT' : userDepartment];
             selectedDepartment = userDepartment.isEmpty ? 'IT' : userDepartment;
             usernames = [currentUser?.username ?? ''];
-            
           } else if (userRole == 'ADMIN' || userRole == 'MANAGER') {
             departmentList = [userDepartment.isEmpty ? 'IT' : userDepartment];
             if (selectedDepartment == 'الكل') {
@@ -756,7 +718,7 @@ Widget _buildDropdown({
 
           final filteredData = getFilteredData(items);
           debugPrint('DEBUG: Filtered count = ${filteredData.length}');
-         final userList = [
+          final userList = [
             if (currentUser!.role != 'USER') 'الكل',
             ...usernames,
           ];

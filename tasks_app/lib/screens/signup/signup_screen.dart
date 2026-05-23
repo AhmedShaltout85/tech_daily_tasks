@@ -6,6 +6,7 @@ import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/screens/auth/auth_wrapper.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 import 'package:tasks_app/utils/app_colors.dart';
 import 'package:tasks_app/utils/app_route.dart';
@@ -147,9 +148,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
-    final hasConnection = await _checkConnectivity();
+     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      // Use the dialog service with retry option
+      await ConnectionDialogService.showNoInternetDialog(
+        context,
+        onRetry: _handleSignup, // Retry the entire signup process
+      );
       return;
     }
 
@@ -215,23 +220,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('No Internet'),
-        content: const Text(
-          'خطأ في الاتصال بالانترنت, يرجى التحقق من الاتصال والمحاولة مرة اخرى',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('حسنا'),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   String capitalizeFirstLetter(String text) {
     if (text.isEmpty) return text;

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
 class ManageUserScreen extends StatefulWidget {
@@ -44,7 +45,10 @@ class _ManageUserScreenState extends State<ManageUserScreen>
   Future<void> _fetchData() async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        onRetry: _fetchData,
+      );
       return;
     }
     final provider = Provider.of<UserProvider>(context, listen: false);
@@ -67,23 +71,23 @@ class _ManageUserScreenState extends State<ManageUserScreen>
     _animationController.forward();
   }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('لا يوجد اتصال بالانترنت'),
-        content: const Text(
-          'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showNoInternetDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('لا يوجد اتصال بالانترنت'),
+  //       content: const Text(
+  //         'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('OK'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void _showAddDialog() {
     final formKey = GlobalKey<FormState>();
@@ -101,7 +105,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
             children: [
               Icon(Icons.person_add, color: Colors.green),
               SizedBox(width: 12),
-              Text('Add User'),
+              Text('اضافة مستخدم جديد'),
             ],
           ),
           content: SingleChildScrollView(
@@ -238,7 +242,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
   ) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      await ConnectionDialogService.showNoInternetDialog(context);
       return;
     }
 
@@ -550,7 +554,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
   void _showEnableDisableDialog(dynamic user) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+       ConnectionDialogService.showNoInternetDialog(context);
       return;
     }
 
@@ -581,7 +585,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('الغاء'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -630,7 +634,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
   void _showDeleteConfirmation(dynamic user) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(context);
       return;
     }
 
@@ -648,7 +652,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
               child: const Icon(Icons.delete_outline, color: Colors.red),
             ),
             const SizedBox(width: 12),
-            const Text('Delete User'),
+            const Text('حذف المستخدم'),
           ],
         ),
         content: Text(

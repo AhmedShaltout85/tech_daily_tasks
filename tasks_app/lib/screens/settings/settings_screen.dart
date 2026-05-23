@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 import 'package:tasks_app/utils/app_route.dart';
 
@@ -15,30 +16,28 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final ConnectivityService _connectivity = ConnectivityService();
-  
-
 
   Future<bool> _checkConnectivity() async {
     return await _connectivity.hasConnection();
   }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('لا يوجد إنترنت'),
-        content: const Text(
-          'تحقق من اتصالك بالإنترنت, وحاول مرة اخرى',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('موافق'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showNoInternetDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('لا يوجد إنترنت'),
+  //       content: const Text(
+  //         'تحقق من اتصالك بالإنترنت, وحاول مرة اخرى',
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('موافق'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void _showChangePasswordDialog(bool isDark, ColorScheme colorScheme) {
     final formKey = GlobalKey<FormState>();
@@ -272,7 +271,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   final hasConnection =
                                       await _checkConnectivity();
                                   if (!hasConnection) {
-                                    _showNoInternetDialog();
+                                    ConnectionDialogService
+                                        .showNoInternetDialog(
+                                      dialogContext,
+                                    );
                                     return;
                                   }
 
@@ -658,7 +660,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
-
 
   void _showLogoutDialog(
       BuildContext ctx, bool isDark, ColorScheme colorScheme) {

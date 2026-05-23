@@ -4,6 +4,7 @@ import 'package:tasks_app/controller/preventive_provider.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/models/preventive_item_model.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 
@@ -38,7 +39,10 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
   Future<void> _fetchData() async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        onRetry: _fetchData,
+      );
       return;
     }
 
@@ -62,7 +66,8 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
       await context.read<AboutAppProvider>().fetchAllAboutApps();
     }
   }
-    // Check user status - ADMINS/MANAGERS can edit, USERS can only view
+
+  // Check user status - ADMINS/MANAGERS can edit, USERS can only view
   void _checkUserStatus() {
     final userProvider = context.read<UserProvider>();
     final role = userProvider.currentUser?.role;
@@ -72,21 +77,21 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
         );
   }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('لا يوجد اتصال بالانترنت'),
-        content: const Text('يرجى التحقق من الاتصال والمحاولة مرة اخرى'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('حسنا'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showNoInternetDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('لا يوجد اتصال بالانترنت'),
+  //       content: const Text('يرجى التحقق من الاتصال والمحاولة مرة اخرى'),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('حسنا'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   List<PreventiveItemModel> _getItemsForApp(String appName) {
     final provider = context.read<PreventiveProvider>();
@@ -175,6 +180,15 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
   }
 
   Future<void> _saveItem(PreventiveItemModel? item, String appName) async {
+    final hasConnection = await _connectivity.hasConnection();
+    if (!hasConnection) {
+      // Create a wrapper function
+
+      await ConnectionDialogService.showNoInternetDialog(
+        context,
+      );
+      return;
+    }
     if (_actionController.text.isEmpty) {
       ReusableToast.showToast(
         message: 'يرجى ادخال الحدث',
@@ -225,6 +239,15 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
   }
 
   Future<void> _deleteItem(PreventiveItemModel item) async {
+    final hasConnection = await _connectivity.hasConnection();
+    if (!hasConnection) {
+      // Create a wrapper function
+
+      await ConnectionDialogService.showNoInternetDialog(
+        context,
+      );
+      return;
+    }
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -497,15 +520,16 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
                         ),
                       ),
                       Consumer<AboutAppProvider>(
-                                builder: (context, provider, child) {
-                                  return provider.isAdmin
-                                      ? IconButton(
-                        icon:
-                            const Icon(Icons.delete_outline, color: Colors.red),
-                        onPressed: () => _deleteItem(item),
-                      ): SizedBox.shrink();
-                                },
-                              ),
+                        builder: (context, provider, child) {
+                          return provider.isAdmin
+                              ? IconButton(
+                                  icon: const Icon(Icons.delete_outline,
+                                      color: Colors.red),
+                                  onPressed: () => _deleteItem(item),
+                                )
+                              : SizedBox.shrink();
+                        },
+                      ),
                     ],
                   ),
                 ),

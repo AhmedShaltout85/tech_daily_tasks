@@ -1,10 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/models/recommended_item_model.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
 class AppRecommendedDetailsScreen extends StatefulWidget {
@@ -57,7 +57,10 @@ class _AppRecommendedDetailsScreenState
   Future<void> _fetchData() async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        onRetry: _fetchData,
+      );
       return;
     }
     final recommended = await context
@@ -69,23 +72,23 @@ class _AppRecommendedDetailsScreenState
     _animationController.forward();
   }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('لا يوجد اتصال بالانترنت'),
-        content: const Text(
-          'يرجى التحقق من الاتصال والمحاولة مرة اخرى.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('حسنا'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showNoInternetDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('لا يوجد اتصال بالانترنت'),
+  //       content: const Text(
+  //         'يرجى التحقق من الاتصال والمحاولة مرة اخرى.',
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('حسنا'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void _showAddDialog() {
     final recommendedController = TextEditingController();
@@ -141,7 +144,10 @@ class _AppRecommendedDetailsScreenState
   Future<void> _addRecommended(String recommendedValue) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        // onRetry: () => _addRecommended(recommendedValue),
+      );
       return;
     }
 
@@ -228,7 +234,10 @@ class _AppRecommendedDetailsScreenState
       int index, RecommendedItem item, String newValue) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        // onRetry: () => _updateRecommended(index, item, newValue),
+      );
       return;
     }
 
@@ -264,7 +273,10 @@ class _AppRecommendedDetailsScreenState
   Future<void> _showDeleteConfirmation(int index, RecommendedItem item) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        // onRetry: () => _showDeleteConfirmation(index, item),
+      );
       return;
     }
 

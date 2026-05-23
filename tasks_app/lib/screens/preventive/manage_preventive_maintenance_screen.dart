@@ -5,6 +5,7 @@ import 'package:tasks_app/controller/about_app_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/controller/place_name_provider.dart';
 import 'package:tasks_app/models/preventive_item_model.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 
@@ -45,7 +46,10 @@ class _ManagePreventiveMaintenanceScreenState
   Future<void> _fetchData() async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        onRetry: _fetchData,
+      );
       return;
     }
 
@@ -59,21 +63,21 @@ class _ManagePreventiveMaintenanceScreenState
         .fetchAllPreventiveItemsByDepartment(department);
   }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('لا يوجد إنترنت'),
-        content: const Text('تحقق من اتصالك بالإنترنت'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('موافق'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showNoInternetDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('لا يوجد إنترنت'),
+  //       content: const Text('تحقق من اتصالك بالإنترنت'),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('موافق'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void _onPlaceSelected(String? placeName) {
     setState(() {
@@ -121,6 +125,15 @@ class _ManagePreventiveMaintenanceScreenState
   }
 
   Future<void> _addMaintenance() async {
+    final hasConnection = await _connectivity.hasConnection();
+    if (!hasConnection) {
+      // Create a wrapper function
+
+      await ConnectionDialogService.showNoInternetDialog(
+        context,
+      );
+      return;
+    }
     if (selectedPlaceName == null || selectedPlaceName == 'الكل') {
       ReusableToast.showToast(
         message: 'الرجاء اختيار مكان الزيارة',

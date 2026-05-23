@@ -6,6 +6,7 @@ import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_widgets.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/utils/app_route.dart';
 import 'package:tasks_app/screens/signup/signup_screen.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
@@ -54,9 +55,14 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final hasConnection = await _checkConnectivity();
+ 
+      final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      // Use the dialog service with retry option
+      await ConnectionDialogService.showNoInternetDialog(
+        context,
+        onRetry: _handleLogin, // Retry the entire signup process
+      );
       return;
     }
 

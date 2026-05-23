@@ -112,20 +112,20 @@ Future<void> generatePreventiveMaintenancePDF({
                   decoration: const pw.BoxDecoration(color: PdfColors.blue100),
                   children: [
                     _headerCell(
-                        'اسم التطبيق\nApp', cellPadding, headerTextStyle),
+                        'اسم التطبيق', cellPadding, headerTextStyle),
                     _headerCell(
-                        'الإجراء\nAction', cellPadding, headerTextStyle),
-                    _headerCell('المستخدم\nUser', cellPadding, headerTextStyle),
-                    _headerCell('المكان\nPlace', cellPadding, headerTextStyle),
-                    _headerCell('المكان الفرعي\nSub Place', cellPadding,
+                        'الإجراء', cellPadding, headerTextStyle),
+                    _headerCell('المستخدم', cellPadding, headerTextStyle),
+                    _headerCell('المكان', cellPadding, headerTextStyle),
+                    _headerCell('المكان الفرعي', cellPadding,
                         headerTextStyle),
-                    _headerCell('النوع\nType', cellPadding, headerTextStyle),
+                    _headerCell('النوع', cellPadding, headerTextStyle),
                   ],
                 ),
                 ...filteredData.map((item) {
                   String type = item.isRemote == 'true'
-                      ? 'عن بُعد\nRemote'
-                      : 'موقع\nOnsite';
+                      ? 'عن بُعد'
+                      : 'موقع';
                   return pw.TableRow(
                     children: [
                       _contentCell(cellPadding, item.appName, contentTextStyle),

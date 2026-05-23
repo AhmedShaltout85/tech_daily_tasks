@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/place_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
 class ManagePlaceScreen extends StatefulWidget {
@@ -43,30 +44,33 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
   Future<void> _fetchData() async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        onRetry: _fetchData,
+      );
       return;
     }
     await context.read<PlaceNameProvider>().fetchAllPlaceNames();
     _animationController.forward();
   }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('لا يوجد اتصال بالانترنت'),
-        content: const Text(
-          'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('حسنا'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showNoInternetDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('لا يوجد اتصال بالانترنت'),
+  //       content: const Text(
+  //         'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('حسنا'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void _showAddDialog() {
     final placeNameController = TextEditingController();
@@ -122,7 +126,10 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
   Future<void> _addPlace(String placeName) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        // onRetry: () => _addPlace(placeName),
+      );
       return;
     }
 
@@ -207,7 +214,10 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
   Future<void> _updatePlace(int id, String placeName) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        // onRetry: () => _updatePlace(id, placeName),
+      );
       return;
     }
 
@@ -238,7 +248,10 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
   Future<void> _showDeleteConfirmation(dynamic place) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        // onRetry: () => _showDeleteConfirmation(place),
+      );
       return;
     }
 

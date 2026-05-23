@@ -6,6 +6,7 @@ import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/models/user_model.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
 class ManageUsersScreen extends StatefulWidget {
@@ -43,7 +44,11 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
   Future<void> _fetchUsers() async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      // Use the dialog service with retry option
+      await ConnectionDialogService.showNoInternetDialog(
+        context,
+        onRetry: _fetchUsers, // Retry the entire signup process
+      );
       return;
     }
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -64,28 +69,20 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
     log('Users loaded: ${userProvider.users.length}');
   }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('No Internet'),
-        content: const Text(
-          'No internet found. Please check your internet connection and try again.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Future<void> _showDisableEnableDialog(UserModel user, bool enable) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      // Create a wrapper function
+      void retryAction() {
+        _showDisableEnableDialog(user, enable);
+      }
+
+      await ConnectionDialogService.showNoInternetDialog(
+        context,
+        onRetry: retryAction,
+      );
       return;
     }
 
@@ -120,7 +117,15 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
   Future<void> _showDeleteConfirmation(UserModel user) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      // Create a wrapper function
+      void retryAction() {
+        _showDeleteConfirmation(user);
+      }
+
+      await ConnectionDialogService.showNoInternetDialog(
+        context,
+        onRetry: retryAction,
+      );
       return;
     }
 
