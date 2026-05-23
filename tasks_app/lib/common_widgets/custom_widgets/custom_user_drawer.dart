@@ -479,6 +479,7 @@ class _CustomDrawerState extends State<CustomUserDrawer>
     );
   }
 
+
   void _showLogoutDialog(
     BuildContext context,
     bool isDark,
@@ -516,53 +517,73 @@ class _CustomDrawerState extends State<CustomUserDrawer>
         ),
         content: Text(
           'هل أنت متاكد أنك تريد تسجيل الخروج؟',
+          textAlign: TextAlign.right,
           style: TextStyle(
             fontSize: 16,
             color: isDark ? Colors.grey.shade300 : Colors.black87,
           ),
         ),
+        // FIX: Use a Container with Row inside, NOT Expanded directly in actions
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: Text(
-              'تجاهل',
-              style: TextStyle(
-                fontSize: 16,
-                color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              // Clear user data and navigate
-              _userProvider.clearUserData();
-              ReusableToast.showToast(
-                message: 'تم تسجيل الخروج بنجاح',
-                bgColor: Colors.green,
-                textColor: Colors.white,
-                fontSize: 16,
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade600,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              elevation: 2,
-            ),
-            child: const Text(
-              'تسجيل الخروج',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Row(
+              children: [
+                // Cancel Button
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      'الغاء',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: isDark
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade700,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // Logout Button
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _userProvider.clearUserData();
+                      ReusableToast.showToast(
+                        message: 'تم تسجيل الخروج بنجاح',
+                        bgColor: Colors.green,
+                        textColor: Colors.white,
+                        fontSize: 16,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red.shade600,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 2,
+                    ),
+                    child: const Text(
+                      'تسجيل الخروج',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
