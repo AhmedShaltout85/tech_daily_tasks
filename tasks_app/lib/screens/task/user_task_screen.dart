@@ -11,6 +11,7 @@ import 'package:tasks_app/controller/place_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/models/daily_task_model.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
 class UserTaskScreen extends StatefulWidget {
@@ -57,7 +58,10 @@ class _TaskScreenState extends State<UserTaskScreen> {
       final hasConnection = await _connectivity.hasConnection();
       if (!hasConnection) {
         log('UserTaskScreen: No connection');
-        _showNoInternetDialog();
+        ConnectionDialogService.showNoInternetDialog(
+          context,
+          onRetry: _fetchDataImpl,
+        );
         return;
       }
       final userProvider = context.read<UserProvider>();
@@ -102,7 +106,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
   Future<void> _createTask(Map<String, dynamic> values) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      await ConnectionDialogService.showNoInternetDialog(context);
       return;
     }
 
@@ -111,14 +115,6 @@ class _TaskScreenState extends State<UserTaskScreen> {
 
     int daysUntilDue =
         int.tryParse(values['expected-completion-date'] ?? '7') ?? 7;
-
-    // // Filter out the selected assignee from co-operators
-    // final assignedTo = values['assign-to'] ?? '';
-    // List<dynamic> coOperators = values['co_operator_users'] ?? [];
-    // // ignore: unnecessary_type_check
-    // if (coOperators is List) {
-    //   coOperators = coOperators.where((op) => op != assignedTo).toList();
-    // }
 
     final newTask = DailyTaskModel(
       taskTitle: values['task_title'] ?? '',
@@ -160,32 +156,27 @@ class _TaskScreenState extends State<UserTaskScreen> {
     }
   }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('لا يوجد اتصال بالانترنت'),
-        content: const Text(
-          'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('حسنا'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showNoInternetDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('لا يوجد اتصال بالانترنت'),
+  //       content: const Text(
+  //         'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('حسنا'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   List<dynamic> getFilteredTasks(List<dynamic> tasks) {
     return tasks.where((task) {
       try {
-        // if (selectedEmployee != null && selectedEmployee!.isNotEmpty) {
-        //   final taskEmployee = Provider.of<UserProvider>(context).currentUser ?? '';
-        //   if (taskEmployee != selectedEmployee) return false;
-        // }
-
         if (selectedApp != null && selectedApp!.isNotEmpty) {
           final taskApp = task.appName?.toString() ?? '';
           if (taskApp != selectedApp) return false;
@@ -252,9 +243,9 @@ class _TaskScreenState extends State<UserTaskScreen> {
         //     username != userProvider.currentUser?.username)
         .toSet()
         .toList();
-        employeeNames.remove(userProvider.currentUser?.username);
-        employeeNames.remove('NULL');
-      log('employeeNames: $employeeNames');
+    employeeNames.remove(userProvider.currentUser?.username);
+    employeeNames.remove('NULL');
+    log('employeeNames: $employeeNames');
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -1287,6 +1278,14 @@ class _TaskScreenState extends State<UserTaskScreen> {
     DailyTaskProvider provider,
   ) async {
     try {
+      final hasConnection = await _connectivity.hasConnection();
+      if (!hasConnection) {
+        // Create a wrapper function
+        await ConnectionDialogService.showNoInternetDialog(
+          context,
+        );
+        return;
+      }
       final userProvider = context.read<UserProvider>();
       final username = userProvider.currentUser?.username;
       final newIsRemote = !(task.isRemote ?? false);
@@ -1403,6 +1402,13 @@ class _TaskScreenState extends State<UserTaskScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
+              final hasConnection = await _connectivity.hasConnection();
+              if (!hasConnection) {
+                await ConnectionDialogService.showNoInternetDialog(
+                  context,
+                );
+                return;
+              }
               final newNote = noteController.text.trim();
               final provider = context.read<DailyTaskProvider>();
               final taskId = task.id is int

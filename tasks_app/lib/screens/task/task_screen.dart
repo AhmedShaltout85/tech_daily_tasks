@@ -11,6 +11,7 @@ import 'package:tasks_app/controller/place_name_provider.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/models/daily_task_model.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
 class TaskScreen extends StatefulWidget {
@@ -57,7 +58,10 @@ class _TaskScreenState extends State<TaskScreen> {
       final hasConnection = await _connectivity.hasConnection();
       if (!hasConnection) {
         log('TaskScreen: No connection');
-        _showNoInternetDialog();
+        ConnectionDialogService.showNoInternetDialog(
+          context,
+          onRetry: _fetchDataImpl,
+        );
         return;
       }
       final userProvider = context.read<UserProvider>();
@@ -101,7 +105,10 @@ class _TaskScreenState extends State<TaskScreen> {
   Future<void> _createTask(Map<String, dynamic> values) async {
     final hasConnection = await _connectivity.hasConnection();
     if (!hasConnection) {
-      _showNoInternetDialog();
+      ConnectionDialogService.showNoInternetDialog(
+        context,
+        // onRetry: () => _createTask(values),
+      );
       return;
     }
 
@@ -159,23 +166,23 @@ class _TaskScreenState extends State<TaskScreen> {
     }
   }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('لا يوجد اتصال بالانترنت'),
-        content: const Text(
-          'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('موافق'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showNoInternetDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('لا يوجد اتصال بالانترنت'),
+  //       content: const Text(
+  //         'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('موافق'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   List<dynamic> getFilteredTasks(List<dynamic> tasks) {
     return tasks.where((task) {
@@ -1018,6 +1025,15 @@ class _TaskScreenState extends State<TaskScreen> {
     DailyTaskProvider provider,
   ) async {
     try {
+      final hasConnection = await _connectivity.hasConnection();
+      if (!hasConnection) {
+        // Create a wrapper function
+
+        await ConnectionDialogService.showNoInternetDialog(
+          context,
+        );
+        return;
+      }
       final updatedTask = task.copyWith(taskStatus: !task.taskStatus);
       await provider.updateTask(task.id, updatedTask);
       await provider.fetchAllTasks();
@@ -1165,6 +1181,17 @@ class _TaskScreenState extends State<TaskScreen> {
               }
 
               try {
+                // Delete task
+                final hasConnection = await _connectivity.hasConnection();
+                if (!hasConnection) {
+                  // Create a wrapper function
+
+                  await ConnectionDialogService.showNoInternetDialog(
+                    context,
+                    // onRetry: retryAction,
+                  );
+                  return;
+                }
                 final taskId = task.id is int
                     ? task.id
                     : int.tryParse(task.id.toString()) ?? 0;

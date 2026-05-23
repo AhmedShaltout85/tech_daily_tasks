@@ -16,6 +16,7 @@ class DailyTaskProvider with ChangeNotifier {
   String? get error => _error;
 
   Future<void> fetchAllTasks() async {
+    
     _setLoading(true);
     try {
       log('DailyTaskProvider: Fetching all tasks...');

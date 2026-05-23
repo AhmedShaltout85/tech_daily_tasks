@@ -12,6 +12,7 @@ import 'package:tasks_app/models/user_model.dart';
 import 'package:tasks_app/screens/report/preventive_maintenance_report_screen.dart';
 import 'package:tasks_app/screens/report/report_screen.dart';
 import 'package:tasks_app/screens/settings/settings_screen.dart';
+import 'package:tasks_app/services/connection_dialog_service.dart';
 import 'package:tasks_app/services/connectivity_service.dart';
 
 class ManagerTaskScreen extends StatefulWidget {
@@ -64,8 +65,10 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
       log('ManagerTaskScreen: _fetchData started');
       final hasConnection = await _connectivity.hasConnection();
       if (!hasConnection) {
-        log('ManagerTaskScreen: No connection');
-        _showNoInternetDialog();
+        ConnectionDialogService.showNoInternetDialog(
+          context,
+          onRetry: _fetchDataImpl,
+        );
         return;
       }
 
@@ -112,23 +115,23 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
     }
   }
 
-  void _showNoInternetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('لا يوجد اتصال بالانترنت'),
-        content: const Text(
-          'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('حسنا'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showNoInternetDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('لا يوجد اتصال بالانترنت'),
+  //       content: const Text(
+  //         'يرجى التحقق من الاتصال والمحاولة مرة اخرى',
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('حسنا'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   List<dynamic> getFilteredTasks(List<dynamic> tasks) {
     return tasks.where((task) {
