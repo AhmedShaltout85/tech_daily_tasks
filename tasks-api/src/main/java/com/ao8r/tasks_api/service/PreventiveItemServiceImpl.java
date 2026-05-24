@@ -65,7 +65,8 @@ public class PreventiveItemServiceImpl implements PreventiveItemService {
 
         // Debug - show matching count with exact SQL
         Integer exactCount = jdbcTemplate.queryForObject(
-            "SELECT COUNT(*) FROM preventive_item WHERE TRIM(LOWER(app_name)) = TRIM(LOWER(?))", 
+//            "SELECT COUNT(*) FROM preventive_item WHERE TRIM(LOWER(app_name)) = TRIM(LOWER(?))",
+                "SELECT COUNT(*) FROM preventive_item WHERE LOWER(app_name) = LOWER(?)",
             Integer.class, appName);
         log.debug(">>> Exact match count: {}", exactCount);
 

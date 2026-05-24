@@ -2,9 +2,9 @@ import 'package:dio/dio.dart';
 import 'dart:developer';
 
 class DioClient {
-  // static const String _baseUrl = 'http://localhost:9999/tasks-api/api'; //LOCALHOST(LOCAL_SERVER)
+  static const String _baseUrl = 'http://localhost:9999/tasks-api/api'; //LOCALHOST(LOCAL_SERVER)
   // static const String _baseUrl = 'http://172.18.0.101:9999/tasks-api/api'; //LOCALHOST(ONLINE_SERVER)
-  static const String _baseUrl = 'http://41.33.226.211:8099/tasks-api/api'; //PUBLIC_SERVER(PUBLIC_ONLINE_SERVER)
+  // static const String _baseUrl = 'http://41.33.226.211:8099/tasks-api/api'; //PUBLIC_SERVER(PUBLIC_ONLINE_SERVER)
   static final DioClient instance = DioClient._();
   late final Dio _dio;
   String? _token;
