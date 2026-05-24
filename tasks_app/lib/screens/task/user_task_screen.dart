@@ -249,7 +249,9 @@ class _TaskScreenState extends State<UserTaskScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            '${userProvider.currentUser?.username}' + ' - ' + 'المهام اليومية'),
+            '${userProvider.currentUser?.username}' + ' - ' + 'المهام اليومية', style: TextStyle(
+            fontFamily: 'Cairo',
+          ),),
         actions: [
           Stack(
             children: [
@@ -315,6 +317,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                           child: Text(
                         'Task added: ${values['task_title']}',
                         style: const TextStyle(
+                          fontFamily: 'Cairo',
                           color: Colors.white,
                           fontSize: 16,
                         ),
@@ -356,6 +359,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                             Text(
                               'تخصيصات',
                               style: TextStyle(
+                                fontFamily: 'Cairo',
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: isDark ? Colors.white : Colors.black87,
@@ -371,7 +375,8 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                 ),
                                 label: Text(
                                   'حذف التصفية',
-                                  style: TextStyle(color: colorScheme.primary),
+                                  style: TextStyle(color: colorScheme.primary, fontFamily: 'Cairo',
+                                  ),
                                 ),
                               ),
                           ],
@@ -386,11 +391,13 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                 dropdownColor:
                                     isDark ? colorScheme.surface : Colors.white,
                                 style: TextStyle(
+                                  fontFamily: 'Cairo',
                                   color: isDark ? Colors.white : Colors.black87,
                                 ),
                                 decoration: InputDecoration(
                                   labelText: 'نوع الصيانة',
                                   labelStyle: TextStyle(
+                                    fontFamily: 'Cairo',
                                     color: isDark
                                         ? Colors.grey[400]
                                         : Colors.grey[700],
@@ -419,6 +426,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                       'الكل',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
+                                        fontFamily: 'Cairo',
                                         color: isDark
                                             ? Colors.grey[300]
                                             : Colors.black87,
@@ -431,6 +439,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                       'عن بعد',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
+                                        fontFamily: 'Cairo',
                                         color: isDark
                                             ? Colors.grey[300]
                                             : Colors.black87,
@@ -443,6 +452,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                       'في الموقع',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
+                                        fontFamily: 'Cairo',
                                         color: isDark
                                             ? Colors.grey[300]
                                             : Colors.black87,
@@ -465,11 +475,13 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                 dropdownColor:
                                     isDark ? colorScheme.surface : Colors.white,
                                 style: TextStyle(
+                                  fontFamily: 'Cairo',
                                   color: isDark ? Colors.white : Colors.black87,
                                 ),
                                 decoration: InputDecoration(
                                   labelText: 'الاولوية',
                                   labelStyle: TextStyle(
+                                    fontFamily: 'Cairo',
                                     color: isDark
                                         ? Colors.grey[400]
                                         : Colors.grey[700],
@@ -498,6 +510,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                       'الكل',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
+                                        fontFamily: 'Cairo',
                                         color: isDark
                                             ? Colors.grey[300]
                                             : Colors.black87,
@@ -510,6 +523,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                       'عالية',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
+                                        fontFamily: 'Cairo',
                                         color: isDark
                                             ? Colors.grey[300]
                                             : Colors.black87,
@@ -522,6 +536,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                       'متوسطة',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
+                                        fontFamily: 'Cairo',
                                         color: isDark
                                             ? Colors.grey[300]
                                             : Colors.black87,
@@ -534,6 +549,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                       'منخفضة',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
+                                        fontFamily: 'Cairo',
                                         color: isDark
                                             ? Colors.grey[300]
                                             : Colors.black87,
@@ -560,11 +576,13 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                 dropdownColor:
                                     isDark ? colorScheme.surface : Colors.white,
                                 style: TextStyle(
+                                  fontFamily: 'Cairo',
                                   color: isDark ? Colors.white : Colors.black87,
                                 ),
                                 decoration: InputDecoration(
                                   labelText: 'التطبيق/الجهاز',
                                   labelStyle: TextStyle(
+                                    fontFamily: 'Cairo',
                                     color: isDark
                                         ? Colors.grey[400]
                                         : Colors.grey[700],
@@ -574,6 +592,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                     color: colorScheme.primary,
                                   ),
                                   border: OutlineInputBorder(
+
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   filled: true,
@@ -593,6 +612,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                       'كل التطبيقات',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
+                                        fontFamily: 'Cairo',
                                         color: isDark
                                             ? Colors.grey[300]
                                             : Colors.black87,
@@ -606,6 +626,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                         name,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
+                                          fontFamily: 'Cairo',
                                           color: isDark
                                               ? Colors.grey[300]
                                               : Colors.black87,
@@ -665,7 +686,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                             provider.fetchTasksAssignedTo(
                                 userProvider.currentUser!.username);
                           },
-                          child: const Text('اعادة المحاولة'),
+                          child: const Text('اعادة المحاولة', style: TextStyle(fontFamily: 'Cairo'),),
                         ),
                       ],
                     ),
@@ -686,6 +707,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                         Text(
                           'لا توجد مهام',
                           style: TextStyle(
+                            fontFamily: 'Cairo',
                             fontSize: 18,
                             color: isDark ? Colors.grey[400] : Colors.grey,
                           ),
@@ -715,6 +737,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                         Text(
                           'لا توجد نتائج للبحث الحالي',
                           style: TextStyle(
+                            fontFamily: 'Cairo',
                             fontSize: 18,
                             color: isDark ? Colors.grey[400] : Colors.grey,
                           ),
@@ -723,7 +746,8 @@ class _TaskScreenState extends State<UserTaskScreen> {
                         TextButton.icon(
                           onPressed: resetFilters,
                           icon: const Icon(Icons.clear_all),
-                          label: const Text('Clear Filters'),
+                          label: const Text('حذف الفلترات',
+                              style: TextStyle(fontFamily: 'Cairo')),
                         ),
                       ],
                     ),
@@ -754,6 +778,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                 child: Text(
                                   'إظهار ${filteredTasks.length} of ${provider.tasks.length} مهام',
                                   style: TextStyle(
+                                    fontFamily: 'Cairo',
                                     fontSize: 14,
                                     color: colorScheme.primary,
                                   ),
@@ -835,6 +860,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                           Text(
                             task.taskTitle ?? '',
                             style: const TextStyle(
+                              fontFamily: 'Cairo',
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.black87,
@@ -865,6 +891,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                                   Text(
                                     'متأخرة',
                                     style: TextStyle(
+                                      fontFamily: 'Cairo',
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.red.shade700,
@@ -963,6 +990,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                             Text(
                               task.taskStatus == true ? 'نشط' : 'غير نشط',
                               style: TextStyle(
+                                fontFamily: 'Cairo',
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: task.taskStatus == true
@@ -1142,6 +1170,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
           Text(
             priority.toUpperCase(),
             style: TextStyle(
+              fontFamily: 'Cairo',
               fontSize: 12,
               fontWeight: FontWeight.bold,
               color: textColor,
@@ -1167,11 +1196,13 @@ class _TaskScreenState extends State<UserTaskScreen> {
         Expanded(
           child: RichText(
             text: TextSpan(
-              style: const TextStyle(fontSize: 14, color: Colors.black87),
+              style: const TextStyle(
+                  fontFamily: 'Cairo', fontSize: 14, color: Colors.black87),
               children: [
                 TextSpan(
                   text: '$label',
                   style: const TextStyle(
+                    fontFamily: 'Cairo',
                     fontWeight: FontWeight.w600,
                     color: Colors.black54,
                   ),
@@ -1179,6 +1210,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                 TextSpan(
                   text: value,
                   style: const TextStyle(
+                    fontFamily: 'Cairo',
                     fontWeight: FontWeight.w500,
                     color: Colors.black87,
                   ),
@@ -1237,7 +1269,9 @@ class _TaskScreenState extends State<UserTaskScreen> {
                 Expanded(
                   child: Text(
                     task.taskStatus ? 'المهمة تم تعطيلها' : 'المهمة تم تفعيلها',
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontWeight: FontWeight.w500,
+                      fontFamily: 'Cairo',
+                    ),
                   ),
                 ),
               ],
@@ -1325,7 +1359,8 @@ class _TaskScreenState extends State<UserTaskScreen> {
                     newIsRemote
                         ? 'تم تغيير إلى العمل عن بعد'
                         : 'تم تغيير إلى موقع العمل',
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Cairo',
+                    ),
                   ),
                 ),
               ],
@@ -1371,7 +1406,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
           children: [
             Icon(Icons.note_alt_outlined),
             SizedBox(width: 12),
-            Text('ملاحظة المهمة'),
+            Text('ملاحظة المهمة', style: TextStyle(fontFamily: 'Cairo'),),
           ],
         ),
         content: Column(
@@ -1380,7 +1415,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
           children: [
             Text(
               'ملاحظة: ${task.taskTitle}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -1398,7 +1433,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('إلغاء'),
+            child: const Text('إلغاء', style: TextStyle(fontFamily: 'Cairo',),),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -1430,13 +1465,13 @@ class _TaskScreenState extends State<UserTaskScreen> {
                 Navigator.pop(dialogContext);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('تم تحديث الملاحظة'),
+                    content: Text('تم تحديث الملاحظة', style: TextStyle(fontFamily: 'Cairo',),),
                     backgroundColor: Colors.green,
                   ),
                 );
               }
             },
-            child: const Text('حفظ'),
+            child: const Text('حفظ', style: TextStyle(fontFamily: 'Cairo',),),
           ),
         ],
       ),

@@ -41,7 +41,7 @@ class CustomTextFiled extends StatelessWidget {
             hintText: hintText,
             hintStyle:
                 hintStyle ??
-                TextStyle(color: AppColors.grayColor, fontSize: 16),
+                TextStyle(fontFamily: 'Cairo', color: AppColors.grayColor, fontSize: 16),
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
             border: InputBorder.none,

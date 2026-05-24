@@ -28,6 +28,7 @@ class CustomText extends StatelessWidget {
       maxLines: maxLines,
       softWrap: softWrap,
       style: TextStyle(
+        fontFamily: 'Cairo',
         fontSize: fontSize,
         color: color,
         fontWeight: fontWeight,

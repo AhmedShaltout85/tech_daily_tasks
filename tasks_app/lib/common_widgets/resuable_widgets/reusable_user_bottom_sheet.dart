@@ -350,6 +350,7 @@ class _UserAddTaskBottomSheetContentState
               Text(
                 widget.title,
                 style: TextStyle(
+                  fontFamily: 'Cairo',
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: isDark ? Colors.white : Colors.blue,
@@ -376,6 +377,7 @@ class _UserAddTaskBottomSheetContentState
                       child: Text(
                         widget.submitButtonText,
                         style: const TextStyle(
+                          fontFamily: 'Cairo',
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -397,6 +399,7 @@ class _UserAddTaskBottomSheetContentState
                       child: Text(
                         'الغاء',
                         style: TextStyle(
+                          fontFamily: 'Cairo',
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: isDark ? Colors.grey[400] : Colors.grey[600],
@@ -418,15 +421,16 @@ class _UserAddTaskBottomSheetContentState
       return Padding(
         padding: const EdgeInsets.only(bottom: 16),
         child: TextFormField(
+          strutStyle: StrutStyle(fontFamily: 'Cairo'),
           controller: _controllers[field.key],
-          style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+          style: TextStyle(fontFamily: 'Cairo', color: isDark ? Colors.white : Colors.black87),
           decoration: InputDecoration(
             labelText: field.label,
             labelStyle:
-                TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[700]),
+                TextStyle(fontFamily: 'Cairo', color: isDark ? Colors.grey[400] : Colors.grey[700]),
             hintText: field.hint,
             hintStyle:
-                TextStyle(color: isDark ? Colors.grey[600] : Colors.grey[400]),
+                TextStyle(fontFamily: 'Cairo', color: isDark ? Colors.grey[600] : Colors.grey[400]),
             prefixIcon: field.icon != null
                 ? Icon(field.icon, color: colorScheme.primary)
                 : null,
@@ -474,14 +478,14 @@ class _UserAddTaskBottomSheetContentState
         child: DropdownButtonFormField<String>(
           value: validValue,
           dropdownColor: isDark ? colorScheme.surface : Colors.white,
-          style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+          style: TextStyle(fontFamily: 'Cairo', color: isDark ? Colors.white : Colors.black87),
           decoration: InputDecoration(
             labelText: field.label,
             labelStyle:
-                TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[700]),
+                TextStyle(fontFamily: 'Cairo', color: isDark ? Colors.grey[400] : Colors.grey[700]),
             hintText: field.hint,
             hintStyle:
-                TextStyle(color: isDark ? Colors.grey[600] : Colors.grey[400]),
+                TextStyle(fontFamily: 'Cairo', color: isDark ? Colors.grey[600] : Colors.grey[400]),
             prefixIcon: field.icon != null
                 ? Icon(field.icon, color: colorScheme.primary)
                 : null,
@@ -506,6 +510,7 @@ class _UserAddTaskBottomSheetContentState
                     child: Text(
                       item,
                       style: TextStyle(
+                          fontFamily: 'Cairo',
                           color: isDark ? Colors.grey[300] : Colors.black87),
                     ),
                   ))
@@ -544,6 +549,7 @@ class _UserAddTaskBottomSheetContentState
                     Text(
                       field.label,
                       style: TextStyle(
+                        fontFamily: 'Cairo',
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         color: isDark ? Colors.grey[300] : Colors.black87,
@@ -565,6 +571,7 @@ class _UserAddTaskBottomSheetContentState
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: TextField(
+                        strutStyle: StrutStyle(fontFamily: 'Cairo'),
                         style: TextStyle(
                           color: isDark ? Colors.white : Colors.black87,
                         ),
@@ -597,6 +604,7 @@ class _UserAddTaskBottomSheetContentState
                         title: Text(
                           'اختر الكل',
                           style: TextStyle(
+                            fontFamily: 'Cairo',
                             color: isDark ? Colors.white : Colors.black87,
                           ),
                         ),
@@ -628,6 +636,7 @@ class _UserAddTaskBottomSheetContentState
                         label: Text(
                           item,
                           style: TextStyle(
+                            fontFamily: 'Cairo',
                             color: isDark ? Colors.white : Colors.black87,
                           ),
                         ),
@@ -654,6 +663,7 @@ class _UserAddTaskBottomSheetContentState
                       child: Text(
                         'لا توجد نتائج',
                         style: TextStyle(
+                          fontFamily: 'Cairo',
                           color: isDark ? Colors.grey[500] : Colors.grey[400],
                         ),
                       ),
@@ -678,6 +688,7 @@ class _UserAddTaskBottomSheetContentState
                 Text(
                   field.label,
                   style: TextStyle(
+                    fontFamily: 'Cairo',
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     color: isDark ? Colors.grey[300] : Colors.black87,

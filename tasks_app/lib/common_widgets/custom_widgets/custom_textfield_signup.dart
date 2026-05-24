@@ -17,7 +17,7 @@ Widget buildInputField({
       obscureText: obscureText,
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: TextStyle(color: AppColors.grayColor, fontSize: 15),
+        hintStyle: TextStyle(fontFamily: 'Cairo', color: AppColors.grayColor, fontSize: 15),
         prefixIcon: icon,
         border: InputBorder.none,
         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),

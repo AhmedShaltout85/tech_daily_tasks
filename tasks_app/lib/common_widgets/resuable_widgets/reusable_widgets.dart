@@ -1,6 +1,5 @@
 // ignore_for_file: unused_element_parameter
 
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
@@ -314,6 +313,7 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
               Text(
                 widget.title,
                 style: TextStyle(
+                  fontFamily: 'Cairo',
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: isDark ? AppColors.whiteColor : AppColors.primaryColor,
@@ -339,7 +339,9 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
                     child: Text(
                       widget.submitButtonText,
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
+                          fontFamily: 'Cairo',
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -347,6 +349,9 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
                 Expanded(
                   child: TextButton(
                     style: TextButton.styleFrom(
+                      textStyle: const TextStyle(
+                        fontFamily: 'Cairo',
+                      ),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       backgroundColor:
                           isDark ? Colors.grey[800] : Colors.grey[200],
@@ -358,6 +363,7 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
                     child: Text(
                       'الغاء',
                       style: TextStyle(
+                        fontFamily: 'Cairo',
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: isDark ? Colors.grey[400] : Colors.grey[600],
@@ -378,15 +384,20 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
       return Padding(
         padding: const EdgeInsets.only(bottom: 16),
         child: TextFormField(
+          strutStyle: StrutStyle(fontFamily: 'Cairo'),
           controller: _controllers[field.key],
-          style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+          style: TextStyle(
+              fontFamily: 'Cairo',
+              color: isDark ? Colors.white : Colors.black87),
           decoration: InputDecoration(
             labelText: field.label,
-            labelStyle:
-                TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[700]),
+            labelStyle: TextStyle(
+                fontFamily: 'Cairo',
+                color: isDark ? Colors.grey[400] : Colors.grey[700]),
             hintText: field.hint,
-            hintStyle:
-                TextStyle(color: isDark ? Colors.grey[600] : Colors.grey[400]),
+            hintStyle: TextStyle(
+                fontFamily: 'Cairo',
+                color: isDark ? Colors.grey[600] : Colors.grey[400]),
             prefixIcon: field.icon != null
                 ? Icon(field.icon, color: colorScheme.primary)
                 : null,
@@ -417,14 +428,18 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
         child: DropdownButtonFormField<String>(
           value: _dropdownValues[field.key],
           dropdownColor: isDark ? colorScheme.surface : Colors.white,
-          style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+          style: TextStyle(
+              fontFamily: 'Cairo',
+              color: isDark ? Colors.white : Colors.black87),
           decoration: InputDecoration(
             labelText: field.label,
-            labelStyle:
-                TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[700]),
+            labelStyle: TextStyle(
+                fontFamily: 'Cairo',
+                color: isDark ? Colors.grey[400] : Colors.grey[700]),
             hintText: field.hint,
-            hintStyle:
-                TextStyle(color: isDark ? Colors.grey[600] : Colors.grey[400]),
+            hintStyle: TextStyle(
+                fontFamily: 'Cairo',
+                color: isDark ? Colors.grey[600] : Colors.grey[400]),
             prefixIcon: field.icon != null
                 ? Icon(field.icon, color: colorScheme.primary)
                 : null,
@@ -448,6 +463,7 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
                     value: item,
                     child: Text(item,
                         style: TextStyle(
+                            fontFamily: 'Cairo',
                             color: isDark ? Colors.grey[300] : Colors.black87)),
                   ))
               .toList(),
@@ -471,6 +487,7 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(field.label,
                     style: TextStyle(
+                        fontFamily: 'Cairo',
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         color: isDark ? Colors.grey[300] : Colors.black87)),
@@ -490,7 +507,10 @@ class _CustomBottomSheetContentState extends State<_CustomBottomSheetContent> {
                           _multiSelectValues[field.key]?.contains(item) ??
                               false;
                       return FilterChip(
-                        label: Text(item),
+                        label: Text(item,
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                            )),
                         selected: isSelected,
                         onSelected: (selected) {
                           setState(() {
@@ -565,6 +585,8 @@ void showCustomUpdatePasswordDialog({
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
+                            style: TextStyle(fontFamily: 'Cairo'),
+
               controller: email,
               decoration: const InputDecoration(
                 labelText: 'الايميل',
@@ -574,6 +596,7 @@ void showCustomUpdatePasswordDialog({
             ),
             const SizedBox(height: 16),
             TextField(
+              style: TextStyle(fontFamily: 'Cairo'),
               controller: password,
               decoration: const InputDecoration(
                 labelText: 'كلمة المرور',
@@ -590,7 +613,12 @@ void showCustomUpdatePasswordDialog({
             },
             child: const Text('إلغاء'),
           ),
-          ElevatedButton(onPressed: onPressed, child: Text(submitButtonText)),
+          ElevatedButton(
+              onPressed: onPressed,
+              child: Text(
+                submitButtonText,
+                style: const TextStyle(fontFamily: 'Cairo'),
+              )),
         ],
       );
     },

@@ -82,7 +82,7 @@ class _CustomReusableDialogState extends State<CustomReusableDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.title, style: const TextStyle(color: Colors.blue)),
+      title: Text(widget.title, style: const TextStyle(color: Colors.blue, fontFamily: 'Cairo')),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -91,7 +91,7 @@ class _CustomReusableDialogState extends State<CustomReusableDialog> {
             // Radio buttons
             ...widget.radioOptions.map((option) {
               return RadioListTile<String>(
-                title: Text(option, style: const TextStyle(color: Colors.blue)),
+                title: Text(option, style: const TextStyle(color: Colors.blue, fontFamily: 'Cairo')),
                 value: option,
                 groupValue: _selectedOption,
                 onChanged: (value) {
@@ -107,8 +107,10 @@ class _CustomReusableDialogState extends State<CustomReusableDialog> {
 
             // Text field with dynamic label
             TextField(
+              style: TextStyle(fontFamily: 'Cairo'),
               controller: _textController,
               decoration: InputDecoration(
+
                 labelText: _currentLabel,
                 border: const OutlineInputBorder(),
               ),
@@ -125,7 +127,7 @@ class _CustomReusableDialogState extends State<CustomReusableDialog> {
             }
             Navigator.of(context).pop();
           },
-          child: const Text('Cancel'),
+          child: const Text('الغاء', style: TextStyle(fontFamily: 'Cairo')),
         ),
 
         // Save button
@@ -134,7 +136,7 @@ class _CustomReusableDialogState extends State<CustomReusableDialog> {
             widget.onSave(_selectedOption, _textController.text);
             Navigator.of(context).pop();
           },
-          child: const Text('Save'),
+          child: const Text('Save', style: TextStyle(fontFamily: 'Cairo')),
         ),
       ],
     );

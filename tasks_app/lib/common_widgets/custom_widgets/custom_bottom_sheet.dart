@@ -117,14 +117,16 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
     if (field is TextFieldConfig) {
       return TextFormField(
         controller: _controllers[field.key],
-        style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+        style: TextStyle(fontFamily: 'Cairo', color: isDark ? Colors.white : Colors.black87),
         decoration: InputDecoration(
           labelText: field.label,
           labelStyle: TextStyle(
+            fontFamily: 'Cairo',
             color: isDark ? Colors.grey[400] : Colors.grey[700],
           ),
           hintText: field.hint,
           hintStyle: TextStyle(
+            fontFamily: 'Cairo',
             color: isDark ? Colors.grey[600] : Colors.grey[400],
           ),
           prefixIcon: field.icon != null
@@ -154,14 +156,16 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
       return DropdownButtonFormField<String>(
         initialValue: _dropdownValues[field.key],
         dropdownColor: isDark ? colorScheme.surface : Colors.white,
-        style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+        style: TextStyle(fontFamily: 'Cairo', color: isDark ? Colors.white : Colors.black87),
         decoration: InputDecoration(
           labelText: field.label,
           labelStyle: TextStyle(
+            fontFamily: 'Cairo',
             color: isDark ? Colors.grey[400] : Colors.grey[700],
           ),
           hintText: field.hint,
           hintStyle: TextStyle(
+            fontFamily: 'Cairo',
             color: isDark ? Colors.grey[600] : Colors.grey[400],
           ),
           prefixIcon: field.icon != null
@@ -188,6 +192,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
             child: Text(
               item,
               style: TextStyle(
+                fontFamily: 'Cairo',
                 color: isDark ? Colors.grey[300] : Colors.black87,
               ),
             ),
@@ -211,6 +216,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
               child: Text(
                 field.label,
                 style: TextStyle(
+                  fontFamily: 'Cairo',
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                   color: isDark ? Colors.grey[300] : Colors.black87,
@@ -249,7 +255,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                     padding: const EdgeInsets.only(top: 8.0, left: 12.0),
                     child: Text(
                       error,
-                      style: TextStyle(color: colorScheme.error, fontSize: 12),
+                      style: TextStyle(fontFamily: 'Cairo', color: colorScheme.error, fontSize: 12),
                     ),
                   );
                 }
@@ -299,6 +305,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                   Text(
                     widget.title,
                     style: TextStyle(
+                      fontFamily: 'Cairo',
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: colorScheme.primary,
@@ -341,6 +348,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                     child: OutlinedButton(
                       onPressed: _handleCancel,
                       style: OutlinedButton.styleFrom(
+                        textStyle: TextStyle(fontFamily: 'Cairo'),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         side: BorderSide(
                           color:
@@ -352,7 +360,10 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('تراجع'),
+                      child: const Text(
+                        'تراجع',
+                        style: TextStyle(fontFamily: 'Cairo'),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),

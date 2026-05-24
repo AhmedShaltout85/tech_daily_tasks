@@ -19,19 +19,20 @@ class ConnectionDialogService {
           children: [
             Icon(Icons.wifi_off, color: Colors.red, size: 28),
             SizedBox(width: 8),
-            Text('لا يوجد اتصال بالإنترنت'),
+            Text('لا يوجد اتصال بالإنترنت', style: TextStyle(fontFamily: 'Cairo'),),
           ],
         ),
         content: const Text(
-          'يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى',
+          'يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى', 
           textAlign: TextAlign.center,
+          style: TextStyle(fontFamily: 'Cairo'),
         ),
         actions: [
           TextButton(
             onPressed: () {
               if (Navigator.canPop(context)) Navigator.pop(context);
             },
-            child: const Text('إلغاء'),
+            child: const Text('إلغاء', style: TextStyle(fontFamily: 'Cairo'),),
           ),
           if (onRetry != null)
             ElevatedButton(
@@ -45,7 +46,8 @@ class ConnectionDialogService {
                   // Still no connection, show toast
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('لا يزال لا يوجد اتصال بالإنترنت'),
+                      content: Text('لا يزال لا يوجد اتصال بالإنترنت',
+                        style: TextStyle(fontFamily: 'Cairo'),),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -55,7 +57,7 @@ class ConnectionDialogService {
                 if (Navigator.canPop(context)) Navigator.pop(context);
                 onRetry();
               },
-              child: const Text('إعادة المحاولة'),
+              child: const Text('إعادة المحاولة', style: TextStyle(fontFamily: 'Cairo'),),
             ),
         ],
       ),

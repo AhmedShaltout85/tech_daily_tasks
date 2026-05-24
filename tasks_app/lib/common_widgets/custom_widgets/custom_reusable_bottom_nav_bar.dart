@@ -26,6 +26,7 @@ class CustomReusableBottomNavBar extends StatelessWidget {
           icon: Icon(item.icon),
           activeIcon: Icon(item.activeIcon ?? item.icon),
           label: item.label,
+          
         );
       }).toList(),
     );

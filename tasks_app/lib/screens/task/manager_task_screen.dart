@@ -1053,6 +1053,7 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                 TextSpan(
                   text: '$label',
                   style: const TextStyle(
+                    fontFamily: 'Cairo',
                     fontWeight: FontWeight.w600,
                     color: Colors.black54,
                   ),
@@ -1060,6 +1061,7 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                 TextSpan(
                   text: value,
                   style: const TextStyle(
+                    fontFamily: 'Cairo',
                     fontWeight: FontWeight.w500,
                     color: Colors.black87,
                   ),
@@ -1120,7 +1122,8 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                 Expanded(
                   child: Text(
                     task.taskStatus ? 'المهمة تم تعطيلها' : 'المهمة تم تفعيلها',
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontWeight: FontWeight.w500,
+                      fontFamily: 'Cairo',),
                   ),
                 ),
               ],

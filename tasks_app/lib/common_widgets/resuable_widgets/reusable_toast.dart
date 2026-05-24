@@ -10,6 +10,7 @@ class ReusableToast {
   }) {
     return Fluttertoast.showToast(
       msg: message,
+      webPosition: 'center',
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       timeInSecForIosWeb: 1,
