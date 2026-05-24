@@ -106,6 +106,8 @@ class UserProvider with ChangeNotifier {
     required String department,
   }) async {
     _setLoading(true);
+    notifyListeners();
+
     try {
       final response = await _api.signUp(
         displayName: displayName,
@@ -119,12 +121,13 @@ class UserProvider with ChangeNotifier {
         _api.setToken(_token!);
       }
       _error = null;
-      notifyListeners();
+      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      notifyListeners();
+      // notifyListeners();
     } finally {
       _setLoading(false);
+      notifyListeners();
     }
   }
 
@@ -133,6 +136,8 @@ class UserProvider with ChangeNotifier {
     required String password,
   }) async {
     _setLoading(true);
+    notifyListeners();
+
     try {
       final response = await _api.signIn(
         username: username,
@@ -145,7 +150,7 @@ class UserProvider with ChangeNotifier {
       _currentUser = UserModel.fromJson(response);
       log('Current user set: ${_currentUser?.displayName}, role: ${_currentUser?.role}, department: ${_currentUser?.department}');
       _error = null;
-      notifyListeners();
+      // notifyListeners();
     } on DioException catch (e) {
       log('SignIn error: ${e.response?.statusCode} - ${e.response?.data}');
       if (e.response?.statusCode == 401) {
@@ -154,13 +159,14 @@ class UserProvider with ChangeNotifier {
       } else {
         _error = e.message ?? 'Login failed';
       }
-      notifyListeners();
+      // notifyListeners();
     } catch (e) {
       log('SignIn error: $e');
       _error = e.toString();
-      notifyListeners();
+      // notifyListeners();
     } finally {
       _setLoading(false);
+      notifyListeners();
     }
   }
 
@@ -180,114 +186,153 @@ class UserProvider with ChangeNotifier {
 
   Future<void> fetchAllUsers() async {
     _setUsersLoading(true);
+    notifyListeners();
+
     try {
       _users = await _api.getAllUsers();
       _error = null;
-      notifyListeners();
+      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      notifyListeners();
+      // notifyListeners();
     } finally {
       _setUsersLoading(false);
+      notifyListeners();
     }
   }
 
   Future<void> fetchUserById(int id) async {
     _setUsersLoading(true);
+    notifyListeners();
+
     try {
       _currentUser = await _api.getUserById(id);
       _error = null;
-      notifyListeners();
+      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      notifyListeners();
+      // notifyListeners();
     } finally {
       _setUsersLoading(false);
+      notifyListeners();
     }
   }
 
   Future<void> fetchUsersByDepartment(String department) async {
     _setUsersLoading(true);
+    notifyListeners();
+
     try {
       _users = await _api.getUsersByDepartment(department);
       _error = null;
-      notifyListeners();
+      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      notifyListeners();
+      // notifyListeners();
     } finally {
       _setUsersLoading(false);
+      notifyListeners();
     }
   }
 
   Future<void> fetchUsersByRole(String role) async {
     _setUsersLoading(true);
+    notifyListeners();
+
     try {
       _users = await _api.getUsersByRole(role);
       _error = null;
-      notifyListeners();
+      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      notifyListeners();
+      // notifyListeners();
     } finally {
+      notifyListeners();
+
       _setUsersLoading(false);
     }
   }
 
+  // Future<void> fetchEnabledUsersByRole(String role, bool enabled) async {
+  //   log('fetchEnabledUsersByRole called - role: $role, enabled: $enabled, token: $_token');
+  //   _setUsersLoading(true);
+  //   try {
+  //     _users = await _api.getEnabledUsersByRole(role, enabled);
+  //     log('Users fetched successfully: ${_users.length}');
+  //     _error = null;
+  //     notifyListeners();
+  //   } catch (e) {
+  //     log('Error fetching users: $e');
+  //     _error = e.toString();
+  //     notifyListeners();
+  //   } finally {
+  //     _setUsersLoading(false);
+  //   }
+  // }
   Future<void> fetchEnabledUsersByRole(String role, bool enabled) async {
-    log('fetchEnabledUsersByRole called - role: $role, enabled: $enabled, token: $_token');
-    _setUsersLoading(true);
+    log('fetchEnabledUsersByRole called - role: $role, enabled: $enabled');
+
+    _isUsersLoading = true; // set directly, no notify
+    notifyListeners(); // single notify for loading start
+
     try {
       _users = await _api.getEnabledUsersByRole(role, enabled);
       log('Users fetched successfully: ${_users.length}');
       _error = null;
-      notifyListeners();
     } catch (e) {
       log('Error fetching users: $e');
       _error = e.toString();
-      notifyListeners();
     } finally {
-      _setUsersLoading(false);
+      _isUsersLoading = false; // set directly, no notify
+      notifyListeners(); // single notify for everything at the end
     }
   }
 
   Future<void> setUserEnabled(int id, bool enabled) async {
     log('setUserEnabled called - id: $id, enabled: $enabled');
-    _setLoading(true);
+
+    _isLoading = true;
+    notifyListeners();
+
     try {
-      final updatedUser = await _api.setUserEnabled(id, enabled);
-      log('Updated user: ${updatedUser.id}, enabled: ${updatedUser.enabled}');
-      log('Users in list: ${_users.map((u) => '${u.id}:${u.displayName}').toList()}');
+      await _api.setUserEnabled(id, enabled); // don't parse response
+
       final index = _users.indexWhere((u) => u.id == id);
       log('Index found: $index');
+
       if (index != -1) {
-        _users[index] = updatedUser;
+        _users[index] = _users[index].copyWith(enabled: enabled);
       }
+
       if (_currentUser?.id == id) {
-        _currentUser = updatedUser;
+        _currentUser = _currentUser!.copyWith(enabled: enabled);
       }
+
       _error = null;
-      notifyListeners();
     } catch (e) {
+      log('Error in setUserEnabled: $e');
       _error = e.toString();
-      notifyListeners();
     } finally {
-      _setLoading(false);
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
   Future<void> deleteUser(int id) async {
     _setLoading(true);
+    notifyListeners();
+
     try {
       await _api.deleteUser(id);
       _users.removeWhere((u) => u.id == id);
       _error = null;
-      notifyListeners();
+      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      notifyListeners();
+      // notifyListeners();
     } finally {
       _setLoading(false);
+      notifyListeners();
     }
   }
 
@@ -296,18 +341,21 @@ class UserProvider with ChangeNotifier {
     required String newPassword,
   }) async {
     _setLoading(true);
+    notifyListeners();
+
     try {
       await _api.changePassword(
         currentPassword: currentPassword,
         newPassword: newPassword,
       );
       _error = null;
-      notifyListeners();
+      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      notifyListeners();
+      // notifyListeners();
     } finally {
       _setLoading(false);
+      notifyListeners();
     }
   }
 
@@ -316,13 +364,15 @@ class UserProvider with ChangeNotifier {
     required String newPassword,
   }) async {
     _setLoading(true);
+    notifyListeners();
+
     try {
       await _api.forgotPassword(
         username: username,
         newPassword: newPassword,
       );
       _error = null;
-      notifyListeners();
+      // notifyListeners();
     } on DioException catch (e) {
       if (e.response?.statusCode == 404 || e.response?.statusCode == 400) {
         final data = e.response?.data;
@@ -330,23 +380,24 @@ class UserProvider with ChangeNotifier {
       } else {
         _error = e.message ?? 'Failed to reset password';
       }
-      notifyListeners();
+      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      notifyListeners();
+      // notifyListeners();
     } finally {
       _setLoading(false);
+      notifyListeners();
     }
   }
 
   void _setLoading(bool value) {
     _isLoading = value;
-    notifyListeners();
+    // notifyListeners();
   }
 
   void _setUsersLoading(bool value) {
     _isUsersLoading = value;
-    notifyListeners();
+    // notifyListeners();
   }
 
   void clearError() {

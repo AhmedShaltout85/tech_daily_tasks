@@ -26,7 +26,8 @@ abstract class ApiNetworkUserRepos {
 
   Future<List<UserModel>> getEnabledUsersByRole(String role, bool enabled);
 
-  Future<UserModel> setUserEnabled(int id, bool enabled);
+  Future<void> setUserEnabled(int id, bool enabled);
+  // Future<UserModel> setUserEnabled(int id, bool enabled);
 
   Future<void> deleteUser(int id);
 

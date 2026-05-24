@@ -373,7 +373,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
                       padding: const EdgeInsets.only(right: 8),
                       child: FilterChip(
                         selected: isSelected,
-                        label: Text(appName),
+                        label: Text(appName, strutStyle: StrutStyle(fontFamily: 'Cairo'),),
                         avatar: Icon(
                           Icons.apps,
                           size: 18,
@@ -384,6 +384,7 @@ class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
                         selectedColor: Theme.of(context).colorScheme.primary,
                         checkmarkColor: Colors.white,
                         labelStyle: TextStyle(
+                          fontFamily: 'Cairo',
                           color: isSelected ? Colors.white : Colors.black87,
                           fontWeight: FontWeight.w500,
                         ),

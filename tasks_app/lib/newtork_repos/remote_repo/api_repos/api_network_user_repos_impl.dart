@@ -97,11 +97,11 @@ class ApiNetworkUserReposImpl implements ApiNetworkUserRepos {
         .toList();
   }
 
+
   @override
-  Future<UserModel> setUserEnabled(int id, bool enabled) async {
-    final response =
-        await _client.dio.put('/users/$id/enable?enabled=$enabled');
-    return UserModel.fromJson(response.data);
+  Future<void> setUserEnabled(int id, bool enabled) async {
+    await _client.dio.put('/users/$id/enable?enabled=$enabled');
+    // no parsing — backend returns partial object without id
   }
 
   @override

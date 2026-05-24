@@ -266,7 +266,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
         provider.clearError();
       } else {
         ReusableToast.showToast(
-          message: 'User added successfully',
+          message: 'تم اضافة المستخدم بنجاح',
           bgColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16,

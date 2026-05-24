@@ -55,12 +55,17 @@ Future<void> generatePreventiveMaintenancePDF({
           ),
           pw.SizedBox(height: 15),
           pw.Directionality(
-            textDirection: pw.TextDirection.ltr,
+            textDirection: pw.TextDirection.rtl,
             child: pw.Text(
-              'تاريخ التقرير: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())}',
-              style: pw.TextStyle(fontSize: 10, font: fontArabic),
+              'تاريخ الطباعة: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}',
+              style: pw.TextStyle(
+                fontSize: 12,
+                // fontWeight: pw.FontWeight.bold,
+                font: fontArabicBold,
+              ),
             ),
           ),
+        
           pw.SizedBox(height: 10),
           if (selectedUsername != null && selectedUsername != 'الكل')
             pw.Directionality(

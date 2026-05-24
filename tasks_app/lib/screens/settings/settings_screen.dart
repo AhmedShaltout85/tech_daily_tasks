@@ -85,7 +85,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: Text(
                           'تغيير كلمة المرور',
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: isDark ? Colors.white : Colors.black87,
                           ),
@@ -93,20 +93,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 15),
                   TextFormField(
                     controller: currentPasswordController,
                     obscureText: !showCurrentPassword,
                     style: TextStyle(
+                      fontFamily: 'Cairo',
                       color: isDark ? Colors.white : Colors.black87,
                     ),
                     decoration: InputDecoration(
                       labelText: 'كلمة المرور الحالية',
                       labelStyle: TextStyle(
+                        fontSize: 10,
                         color: isDark ? Colors.grey[400] : Colors.grey[700],
                       ),
                       hintText: 'ادخل كلمة المرور الحالية',
                       hintStyle: TextStyle(
+                        fontSize: 10,
+                        fontFamily: 'Cairo',
                         color: isDark ? Colors.grey[600] : Colors.grey[400],
                       ),
                       prefixIcon: Icon(
@@ -141,8 +145,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 15),
                   TextFormField(
+                    strutStyle: StrutStyle(fontFamily: 'Cairo'),
                     controller: newPasswordController,
                     obscureText: !showNewPassword,
                     style: TextStyle(
@@ -151,10 +156,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     decoration: InputDecoration(
                       labelText: 'كلمة المرور الجديدة',
                       labelStyle: TextStyle(
+                        fontSize: 10,
                         color: isDark ? Colors.grey[400] : Colors.grey[700],
                       ),
                       hintText: 'ادخل كلمة المرور الجديدة',
                       hintStyle: TextStyle(
+                        fontSize: 10,
                         color: isDark ? Colors.grey[600] : Colors.grey[400],
                       ),
                       prefixIcon: Icon(Icons.lock, color: colorScheme.primary),
@@ -191,6 +198,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
+                    strutStyle: StrutStyle(fontFamily: 'Cairo'),
                     controller: confirmPasswordController,
                     obscureText: !showConfirmPassword,
                     style: TextStyle(
@@ -199,10 +207,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     decoration: InputDecoration(
                       labelText: 'تأكيد كلمة المرور الجديدة',
                       labelStyle: TextStyle(
+                        fontSize: 10,
                         color: isDark ? Colors.grey[400] : Colors.grey[700],
                       ),
                       hintText: 'تأكيد كلمة المرور مرة أخرى',
                       hintStyle: TextStyle(
+                        fontSize: 10,
                         color: isDark ? Colors.grey[600] : Colors.grey[400],
                       ),
                       prefixIcon: Icon(
@@ -257,103 +267,106 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: Text(
                           'إلغاء',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 14,
                             color: isDark ? Colors.grey[400] : Colors.grey[700],
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      ElevatedButton(
-                        onPressed: isLoading
-                            ? null
-                            : () async {
-                                if (formKey.currentState!.validate()) {
-                                  final hasConnection =
-                                      await _checkConnectivity();
-                                  if (!hasConnection) {
-                                    ConnectionDialogService
-                                        .showNoInternetDialog(
-                                      dialogContext,
-                                    );
-                                    return;
-                                  }
+                      const SizedBox(width: 7),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                                  if (formKey.currentState!.validate()) {
+                                    final hasConnection =
+                                        await _checkConnectivity();
+                                    if (!hasConnection) {
+                                      ConnectionDialogService
+                                          .showNoInternetDialog(
+                                        dialogContext,
+                                      );
+                                      return;
+                                    }
 
-                                  setDialogState(() {
-                                    isLoading = true;
-                                  });
+                                    setDialogState(() {
+                                      isLoading = true;
+                                    });
 
-                                  try {
-                                    final userProvider =
-                                        Provider.of<UserProvider>(
-                                      dialogContext,
-                                      listen: false,
-                                    );
+                                    try {
+                                      final userProvider =
+                                          Provider.of<UserProvider>(
+                                        dialogContext,
+                                        listen: false,
+                                      );
 
-                                    await userProvider.changePassword(
-                                      currentPassword:
-                                          currentPasswordController.text,
-                                      newPassword: newPasswordController.text,
-                                    );
+                                      await userProvider.changePassword(
+                                        currentPassword:
+                                            currentPasswordController.text,
+                                        newPassword: newPasswordController.text,
+                                      );
 
-                                    if (!dialogContext.mounted) return;
+                                      if (!dialogContext.mounted) return;
 
-                                    if (userProvider.error != null) {
+                                      if (userProvider.error != null) {
+                                        ReusableToast.showToast(
+                                          message: userProvider.error!,
+                                          bgColor: Colors.red,
+                                          textColor: Colors.white,
+                                          fontSize: 16,
+                                        );
+                                        userProvider.clearError();
+                                      } else {
+                                        Navigator.pop(dialogContext);
+                                        ReusableToast.showToast(
+                                          message: 'تم تغيير كلمة المرور بنجاح',
+                                          bgColor: Colors.green,
+                                          textColor: Colors.white,
+                                          fontSize: 16,
+                                        );
+                                      }
+                                    } catch (e) {
+                                      if (!dialogContext.mounted) return;
                                       ReusableToast.showToast(
-                                        message: userProvider.error!,
+                                        message:
+                                            'حدث خطأ اثناء تغيير كلمة المرور, يرجى المحاولة مرة أخرى',
                                         bgColor: Colors.red,
                                         textColor: Colors.white,
                                         fontSize: 16,
                                       );
-                                      userProvider.clearError();
-                                    } else {
-                                      Navigator.pop(dialogContext);
-                                      ReusableToast.showToast(
-                                        message: 'تم تغيير كلمة المرور بنجاح',
-                                        bgColor: Colors.green,
-                                        textColor: Colors.white,
-                                        fontSize: 16,
-                                      );
-                                    }
-                                  } catch (e) {
-                                    if (!dialogContext.mounted) return;
-                                    ReusableToast.showToast(
-                                      message:
-                                          'حدث خطأ اثناء تغيير كلمة المرور, يرجى المحاولة مرة أخرى',
-                                      bgColor: Colors.red,
-                                      textColor: Colors.white,
-                                      fontSize: 16,
-                                    );
-                                  } finally {
-                                    if (dialogContext.mounted) {
-                                      setDialogState(() {
-                                        isLoading = false;
-                                      });
+                                    } finally {
+                                      if (dialogContext.mounted) {
+                                        setDialogState(() {
+                                          isLoading = false;
+                                        });
+                                      }
                                     }
                                   }
-                                }
-                              },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
+                                },
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: isLoading
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: isDark ? Colors.black87 : Colors.white,
+                          child: isLoading
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color:
+                                        isDark ? Colors.black87 : Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'تغيير كلمة المرور',
+                                  style: TextStyle(fontSize: 14),
                                 ),
-                              )
-                            : const Text(
-                                'تغيير كلمة المرور',
-                                style: TextStyle(fontSize: 16),
-                              ),
+                        ),
                       ),
                     ],
                   ),
