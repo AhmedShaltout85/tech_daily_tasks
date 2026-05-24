@@ -58,26 +58,12 @@ class _ManagePreventiveMaintenanceScreenState
 
     await context.read<PlaceNameProvider>().fetchPlaceNameStrings();
     // await context.read<AboutAppProvider>().fetchAppsByDepartment(department);
-    await context
-        .read<PreventiveProvider>()
-        .fetchAllPreventiveItemsByDepartment(department);
+    // await context
+    //     .read<PreventiveProvider>()
+    //     .fetchAllPreventiveItemsByDepartment(department);
   }
 
-  // void _showNoInternetDialog() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       title: const Text('لا يوجد إنترنت'),
-  //       content: const Text('تحقق من اتصالك بالإنترنت'),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           child: const Text('موافق'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+
 
   void _onPlaceSelected(String? placeName) {
     setState(() {
@@ -223,6 +209,7 @@ class _ManagePreventiveMaintenanceScreenState
             Text(
               label,
               style: TextStyle(
+                fontFamily: 'Cairo',
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 color: Colors.grey.shade700,
@@ -245,7 +232,7 @@ class _ManagePreventiveMaintenanceScreenState
             items: items.map((item) {
               return DropdownMenuItem(
                 value: item,
-                child: Text(item, style: const TextStyle(fontSize: 14)),
+                child: Text(item, style: const TextStyle(fontFamily: 'Cairo', fontSize: 14)),
               );
             }).toList(),
             onChanged: onChanged,
@@ -482,7 +469,7 @@ class _ManagePreventiveMaintenanceScreenState
                         ),
                         ElevatedButton(
                           onPressed: _addMaintenance,
-                          child: const Text('إضافة'),
+                          child: const Text('إضافة',style: TextStyle(fontFamily: 'Cairo'),),
                         ),
                       ],
                     ),
