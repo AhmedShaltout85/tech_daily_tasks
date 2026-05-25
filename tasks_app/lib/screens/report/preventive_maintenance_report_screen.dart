@@ -1102,6 +1102,7 @@
 // }
 
 
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -1133,7 +1134,7 @@ class _PreventiveMaintenanceReportScreenState
   // ─── Filter state ─────────────────────────────────────────────────────────
   String? selectedUsername;
   String? selectedAppName;
-  String? selectedPlaceName;
+  String? selectedVisitPlace;
   String? selectedDepartment;
   bool? selectedIsRemote; // null = الكل
   DateTime? startDate;
@@ -1142,9 +1143,13 @@ class _PreventiveMaintenanceReportScreenState
   // ─── UI state ─────────────────────────────────────────────────────────────
   bool _isFilterExpanded = true;
 
-  /// Tracks whether we have already locked the USER-role filters on first build.
-  /// Without this flag, every rebuild would overwrite the user's selections.
-  bool _roleFiltersInitialized = false;
+  /// Blocked usernames that are system/admin accounts — never shown in assignee list
+  static const _blockedUsernames = {
+    'admin',
+    'gm',
+    'manager',
+    'manager1',
+  };
 
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -1163,10 +1168,10 @@ class _PreventiveMaintenanceReportScreenState
   void initState() {
     super.initState();
 
-    // Default values — may be overridden in _initRoleFilters()
+    // Default values
     selectedUsername = 'الكل';
     selectedAppName = 'الكل';
-    selectedPlaceName = 'الكل';
+    selectedVisitPlace = 'الكل';
     selectedDepartment = 'الكل';
     selectedIsRemote = null;
 
@@ -1181,7 +1186,6 @@ class _PreventiveMaintenanceReportScreenState
     _animationController.forward();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initRoleFilters(); // lock role-specific filters ONCE before fetching
       _fetchData();
     });
   }
@@ -1201,53 +1205,6 @@ class _PreventiveMaintenanceReportScreenState
     if (isRemote is bool) return isRemote;
     if (isRemote is String) return isRemote.toLowerCase() == 'true';
     return false;
-  }
-
-  // ─── Role-filter initialisation (runs once) ───────────────────────────────
-
-  /// Called once after the first frame so we can read providers safely.
-  /// Sets the initial filter values that depend on the logged-in user's role
-  /// and marks [_roleFiltersInitialized] so [build()] never overwrites them.
-  void _initRoleFilters() {
-    if (_roleFiltersInitialized) return;
-    _roleFiltersInitialized = true;
-
-    final userProvider = context.read<UserProvider>();
-    final currentUser = userProvider.currentUser;
-    if (currentUser == null) return;
-
-    final role = currentUser.role ?? '';
-    final department = (currentUser.department?.isEmpty ?? true)
-        ? 'IT'
-        : currentUser.department!;
-
-    setState(() {
-      switch (role) {
-        case 'USER':
-          // Employee sees only their own records — no way to change these.
-          selectedDepartment = department;
-          selectedUsername = currentUser.username ?? 'الكل';
-          break;
-
-        case 'ADMIN':
-        case 'MANAGER':
-          // Scoped to their department; can switch users within it.
-          selectedDepartment = department;
-          selectedUsername = 'الكل';
-          break;
-
-        case 'GENERAL_MANAGER':
-        case 'SECTOR_MANAGER':
-          // Cross-department access.
-          selectedDepartment = 'الكل';
-          selectedUsername = 'الكل';
-          break;
-
-        default:
-          selectedDepartment = 'الكل';
-          selectedUsername = 'الكل';
-      }
-    });
   }
 
   // ─── Data fetching ────────────────────────────────────────────────────────
@@ -1307,7 +1264,12 @@ class _PreventiveMaintenanceReportScreenState
   // ─── Filtering ────────────────────────────────────────────────────────────
 
   List<PreventiveMaintenanceModel> getFilteredData(
-      List<PreventiveMaintenanceModel> items) {
+    List<PreventiveMaintenanceModel> items, {
+    required String userRole,
+    required String userUsername,
+    required String userDepartment,
+    required List<Map<String, String>> allUsers,
+  }) {
     if (_cachedFilteredData != null && _cachedItems == items) {
       return _cachedFilteredData!;
     }
@@ -1319,12 +1281,27 @@ class _PreventiveMaintenanceReportScreenState
     }
 
     final filtered = items.where((item) {
-      // Username
+      // ── Role-based base filter ────────────────────────────────────────────
+      // USER: only sees tasks assigned TO them
+      if (userRole == 'USER' && item.username != userUsername) return false;
+
+      // ADMIN / MANAGER: only see tasks in their department
+      if ((userRole == 'ADMIN' || userRole == 'MANAGER')) {
+        final dept = userDepartment.isEmpty ? 'IT' : userDepartment;
+        final taskOwner = allUsers.firstWhere(
+          (u) => u['username'] == item.username,
+          orElse: () => {'department': ''},
+        );
+        if (taskOwner['department'] != dept) return false;
+      }
+
+      // ── User-selected filters ─────────────────────────────────────────────
+      // Username filter
       if (selectedUsername != null && selectedUsername != 'الكل') {
         if (item.username != selectedUsername) return false;
       }
 
-      // Department
+      // Department filter
       if (selectedDepartment != null && selectedDepartment != 'الكل') {
         if (item.department != selectedDepartment) return false;
       }
@@ -1349,12 +1326,12 @@ class _PreventiveMaintenanceReportScreenState
         if (item.appName != selectedAppName) return false;
       }
 
-      // Place name
-      if (selectedPlaceName != null && selectedPlaceName != 'الكل') {
-        if (item.placeName != selectedPlaceName) return false;
+      // Visit place name
+      if (selectedVisitPlace != null && selectedVisitPlace != 'الكل') {
+        if (item.placeName != selectedVisitPlace) return false;
       }
 
-      // Remote / on-site - FIXED: Use the helper method for consistent comparison
+      // Remote / on-site
       if (selectedIsRemote != null) {
         final itemIsRemote = _getIsRemoteBool(item.isRemote);
         if (itemIsRemote != selectedIsRemote) return false;
@@ -1379,35 +1356,111 @@ class _PreventiveMaintenanceReportScreenState
     return value ? 'عن بعد' : 'فى الموقع';
   }
 
-  void _clearFilters() {
-    final userProvider = context.read<UserProvider>();
-    final currentUser = userProvider.currentUser;
-    final role = currentUser?.role ?? '';
-    final department = (currentUser?.department?.isEmpty ?? true)
-        ? 'IT'
-        : currentUser!.department!;
+  /// Returns the department list based on role.
+  List<String> _buildDepartmentList({
+    required String userRole,
+    required String userDepartment,
+    required List<String> allDepartments,
+  }) {
+    switch (userRole) {
+      case 'USER':
+        // USER sees only their own department — lock it
+        final dept = userDepartment.isEmpty ? 'IT' : userDepartment;
+        return [dept];
 
+      case 'ADMIN':
+      case 'MANAGER':
+        // ADMIN / MANAGER see only their own department
+        final dept = userDepartment.isEmpty ? 'IT' : userDepartment;
+        return [dept];
+
+      case 'GENERAL_MANAGER':
+      case 'SECTOR_MANAGER':
+        // These roles see ALL departments
+        return ['الكل', ...allDepartments];
+
+      default:
+        return ['الكل'];
+    }
+  }
+
+  /// Returns the username list based on role and selected department.
+  List<String> _buildUsernameList({
+    required String userRole,
+    required String userUsername,
+    required String userDepartment,
+    required List<Map<String, String>> allUsers,
+  }) {
+    // Helper: strip blocked accounts
+    bool isAllowed(String username) => !_blockedUsernames.contains(username);
+
+    switch (userRole) {
+      case 'USER':
+        // USER can only see themselves — no choice
+        return [userUsername];
+
+      case 'ADMIN':
+      case 'MANAGER':
+        // See only users in their own department
+        final dept = userDepartment.isEmpty ? 'IT' : userDepartment;
+        final deptUsers = allUsers
+            .where((u) => u['department'] == dept)
+            .map((u) => u['username']!)
+            .where(isAllowed)
+            .toSet()
+            .toList();
+        return ['الكل', ...deptUsers];
+
+      case 'GENERAL_MANAGER':
+      case 'SECTOR_MANAGER':
+        // See users filtered by currently selected department
+        if (selectedDepartment == 'الكل' || selectedDepartment == null) {
+          // All users across all departments
+          final allUsernames = allUsers
+              .map((u) => u['username']!)
+              .where(isAllowed)
+              .toSet()
+              .toList();
+          return ['الكل', ...allUsernames];
+        } else {
+          final deptUsers = allUsers
+              .where((u) => u['department'] == selectedDepartment)
+              .map((u) => u['username']!)
+              .where(isAllowed)
+              .toSet()
+              .toList();
+          return ['الكل', ...deptUsers];
+        }
+
+      default:
+        return ['الكل'];
+    }
+  }
+
+  void _clearFilters({
+    required String userRole,
+    required String userDepartment,
+    required String userUsername,
+  }) {
     _debouncedFilterUpdate(() {
-      selectedAppName = 'الكل';
-      selectedPlaceName = 'الكل';
-      selectedIsRemote = null;
       startDate = null;
       endDate = null;
+      selectedAppName = 'الكل';
+      selectedVisitPlace = 'الكل';
+      selectedIsRemote = null;
 
-      // Role-locked fields must be restored to their locked values, not 'الكل'
-      switch (role) {
-        case 'USER':
-          selectedDepartment = department;
-          selectedUsername = currentUser?.username ?? 'الكل';
-          break;
-        case 'ADMIN':
-        case 'MANAGER':
-          selectedDepartment = department;
-          selectedUsername = 'الكل';
-          break;
-        default:
-          selectedDepartment = 'الكل';
-          selectedUsername = 'الكل';
+      // Reset username respecting role
+      if (userRole == 'USER') {
+        selectedUsername = userUsername;
+      } else {
+        selectedUsername = 'الكل';
+      }
+
+      // Reset department respecting role
+      if (userRole == 'USER' || userRole == 'ADMIN' || userRole == 'MANAGER') {
+        selectedDepartment = userDepartment.isEmpty ? 'IT' : userDepartment;
+      } else {
+        selectedDepartment = 'الكل';
       }
     });
 
@@ -1509,9 +1562,9 @@ class _PreventiveMaintenanceReportScreenState
     required String value,
     required List<String> items,
     required IconData icon,
-    required Function(String?) onChanged,
-    bool enabled = true,
+    required Function(String?)? onChanged, // nullable = locked/disabled
   }) {
+    final isDisabled = onChanged == null;
     final uniqueItems = items.fold<List<String>>([], (acc, e) {
       if (!acc.contains(e)) acc.add(e);
       return acc;
@@ -1532,7 +1585,7 @@ class _PreventiveMaintenanceReportScreenState
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: enabled ? null : Colors.grey.shade50,
+            color: isDisabled ? Colors.grey.shade50 : null,
             border: Border.all(color: Colors.grey.shade300),
             borderRadius: BorderRadius.circular(12),
           ),
@@ -1540,15 +1593,17 @@ class _PreventiveMaintenanceReportScreenState
             child: DropdownButton<String>(
               value: safeValue,
               isExpanded: true,
-              // When disabled (USER role locked fields) show no arrow
-              icon: enabled
-                  ? Icon(Icons.keyboard_arrow_down_rounded,
-                      color: Colors.grey.shade600)
-                  : const Icon(Icons.lock_outline_rounded,
-                      color: Colors.grey, size: 18),
+              icon: Icon(
+                isDisabled
+                    ? Icons.lock_outline_rounded
+                    : Icons.keyboard_arrow_down_rounded,
+                color: isDisabled ? Colors.grey.shade400 : Colors.grey.shade600,
+                size: 18,
+              ),
               style: TextStyle(
                 fontSize: 12,
-                color: enabled ? const Color(0xFF1E293B) : Colors.grey.shade500,
+                color:
+                    isDisabled ? Colors.grey.shade500 : const Color(0xFF1E293B),
                 fontWeight: FontWeight.w500,
                 fontFamily: 'Cairo',
               ),
@@ -1568,9 +1623,7 @@ class _PreventiveMaintenanceReportScreenState
                   ),
                 );
               }).toList(),
-              onChanged: enabled
-                  ? (val) => _debouncedFilterUpdate(() => onChanged(val))
-                  : null,
+              onChanged: onChanged,
             ),
           ),
         ),
@@ -1657,8 +1710,10 @@ class _PreventiveMaintenanceReportScreenState
   }
 
   Widget _buildCard(PreventiveMaintenanceModel item, int index) {
-    // FIXED: Use the helper method for consistent boolean conversion
     final bool isRemoteValue = _getIsRemoteBool(item.isRemote);
+    final date = item.createdAt != null
+        ? DateFormat('MMM dd, yyyy').format(item.createdAt!)
+        : '';
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
@@ -1747,9 +1802,7 @@ class _PreventiveMaintenanceReportScreenState
                 const SizedBox(height: 8),
                 _buildInfoRow(
                   Icons.calendar_today_rounded,
-                  item.createdAt != null
-                      ? DateFormat('MMM dd, yyyy').format(item.createdAt!)
-                      : '',
+                  date,
                   const Color(0xFF60048B),
                 ),
                 if (item.action.isNotEmpty) ...[
@@ -1818,8 +1871,26 @@ class _PreventiveMaintenanceReportScreenState
         actions: [
           Consumer<PreventiveProvider>(
             builder: (context, provider, child) {
-              final filteredData =
-                  getFilteredData(provider.preventiveMaintenance);
+              final userProvider = context.read<UserProvider>();
+              final currentUser = userProvider.currentUser;
+              final userRole = currentUser?.role ?? '';
+              final userUsername = currentUser?.username ?? '';
+              final userDepartment = currentUser?.department ?? '';
+              final allUsers = userProvider.users
+                  .map((u) => ({
+                        'username': u.username,
+                        'department': u.department ?? '',
+                      }))
+                  .toList();
+
+              final filteredData = getFilteredData(
+                provider.preventiveMaintenance,
+                userRole: userRole,
+                userUsername: userUsername,
+                userDepartment: userDepartment,
+                allUsers: allUsers,
+              );
+
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 decoration: BoxDecoration(
@@ -1845,7 +1916,7 @@ class _PreventiveMaintenanceReportScreenState
                               filteredData: filteredData,
                               selectedUsername: selectedUsername,
                               selectedAppName: selectedAppName,
-                              selectedPlaceName: selectedPlaceName,
+                              selectedPlaceName: selectedVisitPlace,
                               selectedIsRemote: selectedIsRemote,
                               startDate: startDate,
                               endDate: endDate,
@@ -1879,78 +1950,51 @@ class _PreventiveMaintenanceReportScreenState
           // ── Current user info ───────────────────────────────────────────
           final currentUser = userProvider.currentUser;
           final userRole = currentUser?.role ?? '';
+          final userUsername = currentUser?.username ?? '';
           final userDepartment = (currentUser?.department?.isEmpty ?? true)
               ? 'IT'
               : currentUser!.department!;
 
-          // ── Build role-specific dropdown lists ──────────────────────────
-          //
-          // Rules:
-          //   USER          → department locked, username locked (own only)
-          //   ADMIN/MANAGER → department locked, can pick any user in dept
-          //   GM/SECTOR_MGR → all departments, all users
-          //   default       → all departments, all users
+          final allUsers = userProvider.users
+              .map((u) => ({
+                    'username': u.username,
+                    'department': u.department ?? '',
+                  }))
+              .toList();
 
-          List<String> departmentList;
-          List<String> usernames;
-          bool isDepartmentLocked;
-          bool isUsernameLocked;
+          final allDepartments = userProvider.users
+              .map((u) => u.department ?? '')
+              .where((d) => d.isNotEmpty)
+              .toSet()
+              .toList();
 
-          switch (userRole) {
-            case 'USER':
-              departmentList = [userDepartment];
-              usernames = [currentUser?.username ?? '']
-                  .where((u) => u.isNotEmpty)
-                  .toList();
-              isDepartmentLocked = true;
-              isUsernameLocked = true;
-              break;
+          // ── Build role-aware lists ─────────────────────────────────────────
+          final departmentList = _buildDepartmentList(
+            userRole: userRole,
+            userDepartment: userDepartment,
+            allDepartments: allDepartments,
+          );
 
-            case 'ADMIN':
-            case 'MANAGER':
-              departmentList = [userDepartment];
-              usernames = userProvider.users
-                  .where((u) => u.department == userDepartment)
-                  .map((u) => u.username)
-                  .where((u) => u.isNotEmpty && u != 'admin' && u != 'gm')
-                  .toSet()
-                  .toList();
-              isDepartmentLocked = true;
-              isUsernameLocked = false;
-              break;
+          final usernameList = _buildUsernameList(
+            userRole: userRole,
+            userUsername: userUsername,
+            userDepartment: userDepartment,
+            allUsers: allUsers,
+          );
 
-            case 'GENERAL_MANAGER':
-            case 'SECTOR_MANAGER':
-              final allDepts = userProvider.users
-                  .map((u) => u.department ?? '')
-                  .where((d) => d.isNotEmpty)
-                  .toSet()
-                  .toList()
-                ..sort();
-              departmentList = ['الكل', ...allDepts];
-              usernames = userProvider.users
-                  .map((u) => u.username)
-                  .where((u) =>
-                      u.isNotEmpty &&
-                      u != 'admin' &&
-                      u != 'gm' &&
-                      u != 'manager' &&
-                      u != 'manager1')
-                  .toSet()
-                  .toList();
-              isDepartmentLocked = false;
-              isUsernameLocked = false;
-              break;
+          // For USER role, force selectedUsername to themselves
+          if (userRole == 'USER') {
+            selectedUsername = userUsername;
+          }
 
-            default:
-              departmentList = ['الكل'];
-              usernames = userProvider.users
-                  .map((u) => u.username)
-                  .where((u) => u.isNotEmpty && u != 'admin')
-                  .toSet()
-                  .toList();
-              isDepartmentLocked = false;
-              isUsernameLocked = false;
+          // Guard: if current selectedUsername is no longer in list, reset
+          if (!usernameList.contains(selectedUsername)) {
+            selectedUsername = usernameList.first;
+          }
+
+          // Guard: if current selectedDepartment is no longer in list, reset
+          if (!departmentList.contains(selectedDepartment)) {
+            selectedDepartment = departmentList.first;
           }
 
           // App / place lists
@@ -1964,10 +2008,6 @@ class _PreventiveMaintenanceReportScreenState
               .toSet()
               .toList();
 
-          final userList = [
-            if (!isUsernameLocked) 'الكل',
-            ...usernames.where((u) => u != 'الكل'),
-          ];
           final appList = ['الكل', ...appNames.where((a) => a != 'الكل')];
           final placeList = ['الكل', ...placeNames];
 
@@ -1976,18 +2016,25 @@ class _PreventiveMaintenanceReportScreenState
               ? selectedDepartment!
               : (departmentList.isNotEmpty ? departmentList.first : 'الكل');
 
-          final safeUsername = userList.contains(selectedUsername)
+          final safeUsername = usernameList.contains(selectedUsername)
               ? selectedUsername!
-              : (userList.isNotEmpty ? userList.first : 'الكل');
+              : (usernameList.isNotEmpty ? usernameList.first : 'الكل');
 
           final safeAppName =
               appList.contains(selectedAppName) ? selectedAppName! : 'الكل';
 
-          final safePlaceName = placeList.contains(selectedPlaceName)
-              ? selectedPlaceName!
+          final safePlaceName = placeList.contains(selectedVisitPlace)
+              ? selectedVisitPlace!
               : 'الكل';
 
           final safeIsRemote = _isRemoteBoolToString(selectedIsRemote);
+
+          // Determine which dropdowns are locked based on role
+          final isDepartmentLocked = (userRole == 'USER' ||
+              userRole == 'ADMIN' ||
+              userRole == 'MANAGER');
+
+          final isUsernameLocked = (userRole == 'USER');
 
           // ── Loading state ───────────────────────────────────────────────
           final isLoading = preventiveProvider.isLoadingMaintenance ||
@@ -2011,7 +2058,13 @@ class _PreventiveMaintenanceReportScreenState
           }
 
           final items = preventiveProvider.preventiveMaintenance;
-          final filteredData = getFilteredData(items);
+          final filteredData = getFilteredData(
+            items,
+            userRole: userRole,
+            userUsername: userUsername,
+            userDepartment: userDepartment,
+            allUsers: allUsers,
+          );
 
           return FadeTransition(
             opacity: _fadeAnimation,
@@ -2120,13 +2173,15 @@ class _PreventiveMaintenanceReportScreenState
                                         value: safeDepartment,
                                         items: departmentList,
                                         icon: Icons.business_rounded,
-                                        enabled: !isDepartmentLocked,
-                                        onChanged: (value) {
-                                          selectedDepartment = value;
-                                          // When GM changes department,
-                                          // reset username to 'الكل'
-                                          selectedUsername = 'الكل';
-                                        },
+                                        onChanged: isDepartmentLocked
+                                            ? null
+                                            : (value) {
+                                                _debouncedFilterUpdate(() {
+                                                  selectedDepartment = value;
+                                                  // When GM changes department, reset username to 'الكل'
+                                                  selectedUsername = 'الكل';
+                                                });
+                                              },
                                       ),
                                     ),
                                     const SizedBox(width: 12),
@@ -2134,12 +2189,15 @@ class _PreventiveMaintenanceReportScreenState
                                       child: _buildDropdown(
                                         label: 'المستخدم',
                                         value: safeUsername,
-                                        items: userList,
+                                        items: usernameList,
                                         icon: Icons.person_outline_rounded,
-                                        enabled: !isUsernameLocked,
-                                        onChanged: (value) {
-                                          selectedUsername = value;
-                                        },
+                                        onChanged: isUsernameLocked
+                                            ? null
+                                            : (value) {
+                                                _debouncedFilterUpdate(() {
+                                                  selectedUsername = value;
+                                                });
+                                              },
                                       ),
                                     ),
                                   ],
@@ -2156,7 +2214,9 @@ class _PreventiveMaintenanceReportScreenState
                                         items: appList,
                                         icon: Icons.apps_rounded,
                                         onChanged: (value) {
-                                          selectedAppName = value;
+                                          _debouncedFilterUpdate(() {
+                                            selectedAppName = value;
+                                          });
                                         },
                                       ),
                                     ),
@@ -2168,7 +2228,9 @@ class _PreventiveMaintenanceReportScreenState
                                         items: placeList,
                                         icon: Icons.location_on_rounded,
                                         onChanged: (value) {
-                                          selectedPlaceName = value;
+                                          _debouncedFilterUpdate(() {
+                                            selectedVisitPlace = value;
+                                          });
                                         },
                                       ),
                                     ),
@@ -2186,8 +2248,10 @@ class _PreventiveMaintenanceReportScreenState
                                           value: safeIsRemote,
                                           items: isRemoteList,
                                           onChanged: (value) {
-                                            selectedIsRemote =
-                                                _isRemoteStringToBool(value);
+                                            _debouncedFilterUpdate(() {
+                                              selectedIsRemote =
+                                                  _isRemoteStringToBool(value);
+                                            });
                                           },
                                         ),
                                       ),
@@ -2197,7 +2261,11 @@ class _PreventiveMaintenanceReportScreenState
                                           margin:
                                               const EdgeInsets.only(top: 16),
                                           child: ElevatedButton.icon(
-                                            onPressed: _clearFilters,
+                                            onPressed: () => _clearFilters(
+                                              userRole: userRole,
+                                              userDepartment: userDepartment,
+                                              userUsername: userUsername,
+                                            ),
                                             icon:
                                                 const Icon(Icons.clear_rounded),
                                             label: const Text(''),
