@@ -130,4 +130,12 @@ public class PreventiveMaintenanceController {
         log.debug("Fetching by place name and isRemote: {}, {}", placeName, isRemote);
         return ResponseEntity.ok(preventiveMaintenanceService.getByPlaceNameAndIsRemote(placeName, isRemote));
     }
+    @GetMapping("/department/{department}")
+    public ResponseEntity<List<PreventiveMaintenanceResponse>> getByDepartment(
+            @PathVariable String department) {
+        log.debug("Fetching by place name and isRemote: {}", department);
+        return ResponseEntity.ok(preventiveMaintenanceService.getByDepartment(department));
+    }
+
+
 }

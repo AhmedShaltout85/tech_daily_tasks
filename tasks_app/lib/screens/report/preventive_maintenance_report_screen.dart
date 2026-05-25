@@ -1101,6 +1101,7 @@
 //   }
 // }
 
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -1190,6 +1191,16 @@ class _PreventiveMaintenanceReportScreenState
     _debounceTimer?.cancel();
     _animationController.dispose();
     super.dispose();
+  }
+
+  // ─── Helper method to get boolean value from isRemote ─────────────────────
+
+  /// Safely converts isRemote (which could be bool or String) to a boolean
+  bool _getIsRemoteBool(dynamic isRemote) {
+    if (isRemote == null) return false;
+    if (isRemote is bool) return isRemote;
+    if (isRemote is String) return isRemote.toLowerCase() == 'true';
+    return false;
   }
 
   // ─── Role-filter initialisation (runs once) ───────────────────────────────
@@ -1343,10 +1354,10 @@ class _PreventiveMaintenanceReportScreenState
         if (item.placeName != selectedPlaceName) return false;
       }
 
-      // Remote / on-site
+      // Remote / on-site - FIXED: Use the helper method for consistent comparison
       if (selectedIsRemote != null) {
-        final expected = selectedIsRemote! ? 'true' : 'false';
-        if (item.isRemote != expected) return false;
+        final itemIsRemote = _getIsRemoteBool(item.isRemote);
+        if (itemIsRemote != selectedIsRemote) return false;
       }
 
       return true;
@@ -1646,6 +1657,9 @@ class _PreventiveMaintenanceReportScreenState
   }
 
   Widget _buildCard(PreventiveMaintenanceModel item, int index) {
+    // FIXED: Use the helper method for consistent boolean conversion
+    final bool isRemoteValue = _getIsRemoteBool(item.isRemote);
+
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 300 + (index * 50)),
@@ -1694,9 +1708,7 @@ class _PreventiveMaintenanceReportScreenState
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: (item.isRemote == 'true'
-                                ? Colors.blue
-                                : Colors.orange)
+                        color: (isRemoteValue ? Colors.blue : Colors.orange)
                             .withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -1708,18 +1720,16 @@ class _PreventiveMaintenanceReportScreenState
                             height: 8,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: item.isRemote == 'true'
-                                  ? Colors.blue
-                                  : Colors.orange,
+                              color:
+                                  isRemoteValue ? Colors.blue : Colors.orange,
                             ),
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            item.isRemote == 'true' ? 'عن بُعد' : 'موقع',
+                            isRemoteValue ? 'عن بعد' : 'فى الموقع',
                             style: TextStyle(
-                              color: item.isRemote == 'true'
-                                  ? Colors.blue
-                                  : Colors.orange,
+                              color:
+                                  isRemoteValue ? Colors.blue : Colors.orange,
                               fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
@@ -2238,9 +2248,10 @@ class _PreventiveMaintenanceReportScreenState
                         const SizedBox(width: 12),
                         Expanded(
                           child: _buildStatCard(
-                            'عن بُعد',
+                            'عن بعد',
                             filteredData
-                                .where((i) => i.isRemote == 'true')
+                                .where(
+                                    (i) => _getIsRemoteBool(i.isRemote) == true)
                                 .length
                                 .toString(),
                             Colors.blue,
@@ -2250,9 +2261,10 @@ class _PreventiveMaintenanceReportScreenState
                         const SizedBox(width: 12),
                         Expanded(
                           child: _buildStatCard(
-                            'موقع',
+                            'فى الموقع',
                             filteredData
-                                .where((i) => i.isRemote != 'true')
+                                .where((i) =>
+                                    _getIsRemoteBool(i.isRemote) == false)
                                 .length
                                 .toString(),
                             Colors.orange,

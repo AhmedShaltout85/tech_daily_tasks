@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PreventiveMaintenanceServiceImpl implements PreventiveMaintenanceService {
 
+
     private final PreventiveMaintenanceRepository preventiveMaintenanceRepository;
 
     @Override
@@ -167,6 +168,13 @@ public class PreventiveMaintenanceServiceImpl implements PreventiveMaintenanceSe
     public List<PreventiveMaintenanceResponse> getByPlaceNameAndIsRemote(String placeName, Boolean isRemote) {
         return preventiveMaintenanceRepository.findByPlaceNameAndIsRemote(placeName, isRemote).stream()
                 .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PreventiveMaintenanceResponse> getByDepartment(String department) {
+        return preventiveMaintenanceRepository.findByDepartment(department)
+                .stream().map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
