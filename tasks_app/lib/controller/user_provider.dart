@@ -253,22 +253,7 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  // Future<void> fetchEnabledUsersByRole(String role, bool enabled) async {
-  //   log('fetchEnabledUsersByRole called - role: $role, enabled: $enabled, token: $_token');
-  //   _setUsersLoading(true);
-  //   try {
-  //     _users = await _api.getEnabledUsersByRole(role, enabled);
-  //     log('Users fetched successfully: ${_users.length}');
-  //     _error = null;
-  //     notifyListeners();
-  //   } catch (e) {
-  //     log('Error fetching users: $e');
-  //     _error = e.toString();
-  //     notifyListeners();
-  //   } finally {
-  //     _setUsersLoading(false);
-  //   }
-  // }
+
   Future<void> fetchEnabledUsersByRole(String role, bool enabled) async {
     log('fetchEnabledUsersByRole called - role: $role, enabled: $enabled');
 
