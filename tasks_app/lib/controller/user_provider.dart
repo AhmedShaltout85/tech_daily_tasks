@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
@@ -36,35 +37,25 @@ class UserProvider with ChangeNotifier {
     if (savedToken != null) {
       _token = savedToken as String;
       _api.setToken(_token!);
-      log('Token loaded from cache, fetching user data...');
+      log('Token loaded from cache');
 
-      // Try to fetch user data with timeout
-      try {
-        final users = await _api.getAllUsers().timeout(
-          const Duration(seconds: 5),
-          onTimeout: () {
-            log('Timeout fetching users, continuing');
-            return [];
-          },
-        );
-        log('Fetched ${users.length} users from cache');
-        if (users.isNotEmpty) {
-          _currentUser = users.first;
-          log('User data restored: ${_currentUser?.displayName}, role: ${_currentUser?.role}');
-          // Don't notify here - will notify in _init
-        } else {
-          // No users found, clear token
+      final savedUserData = CacheHelper.getData(key: 'current_user');
+      if (savedUserData != null) {
+        try {
+          final userMap = jsonDecode(savedUserData as String);
+          _currentUser = UserModel.fromJson(userMap);
+          log('User data restored from cache: ${_currentUser?.displayName}, role: ${_currentUser?.role}');
+        } catch (e) {
+          log('Failed to parse cached user data: $e');
           _token = null;
           _api.clearToken();
           await _clearTokenFromCache();
-          log('No users found, cleared token');
         }
-      } catch (e) {
-        log('Failed to restore user data: $e');
-        // Clear invalid token
+      } else {
         _token = null;
         _api.clearToken();
         await _clearTokenFromCache();
+        log('No cached user data found, cleared token');
       }
     } else {
       log('No cached token found');
@@ -75,8 +66,14 @@ class UserProvider with ChangeNotifier {
     await CacheHelper.saveData(key: 'auth_token', value: token);
   }
 
+  Future<void> _saveUserToCache(UserModel user) async {
+    await CacheHelper.saveData(
+        key: 'current_user', value: jsonEncode(user.toJson()));
+  }
+
   Future<void> _clearTokenFromCache() async {
     await CacheHelper.removeData(key: 'auth_token');
+    await CacheHelper.removeData(key: 'current_user');
   }
 
   UserModel? get currentUser => _currentUser;
@@ -148,6 +145,7 @@ class UserProvider with ChangeNotifier {
       _api.setToken(_token!);
       await _saveTokenToCache(_token!);
       _currentUser = UserModel.fromJson(response);
+      await _saveUserToCache(_currentUser!);
       log('Current user set: ${_currentUser?.displayName}, role: ${_currentUser?.role}, department: ${_currentUser?.department}');
       _error = null;
       // notifyListeners();
@@ -252,7 +250,6 @@ class UserProvider with ChangeNotifier {
       _setUsersLoading(false);
     }
   }
-
 
   Future<void> fetchEnabledUsersByRole(String role, bool enabled) async {
     log('fetchEnabledUsersByRole called - role: $role, enabled: $enabled');
