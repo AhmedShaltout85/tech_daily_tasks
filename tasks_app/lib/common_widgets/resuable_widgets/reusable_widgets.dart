@@ -25,9 +25,9 @@ void navigateToReplacement(BuildContext context, Widget widget) =>
       MaterialPageRoute(builder: (context) => widget),
     );
 
-//navigation function using pushNamed
+//navigation function using pushNamed and pushReplacement(lastchange-1-6-2026)
 void navigateToReplacementNamed(BuildContext context, String routeName) =>
-    Navigator.pushNamed(context, routeName);
+    Navigator.pushReplacementNamed(context, routeName);
 
 Widget gap({double? height, double? width}) =>
     SizedBox(height: height, width: width);
