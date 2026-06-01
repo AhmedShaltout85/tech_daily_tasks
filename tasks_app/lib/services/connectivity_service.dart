@@ -1,6 +1,6 @@
 
 
-// // lib/services/connectivity_service.dart
+// // lib/services/connectivity_service.dart(ACTIVE-WITH-MOBILE)
 // import 'package:connectivity_plus/connectivity_plus.dart';
 // import 'dart:async';
 // import 'package:http/http.dart' as http;
@@ -72,7 +72,7 @@
 //   }
 // }
 
-// lib/services/connectivity_service.dart
+// lib/services/connectivity_service.dart(ACTIVE-WITH-WEB)
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
