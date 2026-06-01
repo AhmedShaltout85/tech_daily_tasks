@@ -763,6 +763,7 @@ class _TaskScreenState extends State<ManagerTaskScreen> {
                         ),
                       Expanded(
                         child: ListView.builder(
+                          reverse: true,
                           itemCount: filteredTasks.length,
                           itemBuilder: (context, index) {
                             final task = filteredTasks[index];

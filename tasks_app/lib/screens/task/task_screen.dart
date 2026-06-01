@@ -217,7 +217,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
     //Filter out the admin
     List<String> employeeNames = userProvider.users
-        .map((u) => u.role == 'USER' || u.role == 'MANAGER' || u.role == 'ADMIN'
+        .map((u) => u.role == 'USER' && u.enabled == true || u.role == 'MANAGER' || u.role == 'ADMIN'
             ? u.username
             : 'admin')
         .where((username) => username != 'admin' || username != 'manager')
@@ -649,6 +649,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         ),
                       Expanded(
                         child: ListView.builder(
+                          reverse: true ,
                           itemCount: filteredTasks.length,
                           itemBuilder: (context, index) {
                             final task = filteredTasks[index];

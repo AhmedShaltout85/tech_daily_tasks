@@ -237,7 +237,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
     List<String> placeNames =
         context.watch<PlaceNameProvider>().placeNameStrings;
     List<String> employeeNames = userProvider.users
-        .map((u) => u.role == 'USER' ? u.username : 'NULL')
+        .map((u) => u.role == 'USER' && u.enabled == true ? u.username : 'NULL')
         // .where((username) =>
         //     username != 'admin' ||
         //     username != userProvider.currentUser?.username)
@@ -789,6 +789,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                         ),
                       Expanded(
                         child: ListView.builder(
+                          reverse: true,
                           itemCount: filteredTasks.length,
                           itemBuilder: (context, index) {
                             final task = filteredTasks[index];
