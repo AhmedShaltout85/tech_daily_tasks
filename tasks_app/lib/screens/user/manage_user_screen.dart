@@ -576,7 +576,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
               ),
             ),
             const SizedBox(width: 12),
-            Text(enable ? 'تفعيل المستخدم' : 'الغاء التفعيل'),
+            Text(enable ? 'تفعيل المستخدم' : 'مستخدم غير نشط'),
           ],
         ),
         content: Text(
@@ -620,8 +620,8 @@ class _ManageUserScreenState extends State<ManageUserScreen>
         } else {
           ReusableToast.showToast(
             message: enable
-                ? 'المستخدم تم تفعيله بنجاح'
-                : 'المستخدم تم تعطيله بنجاح',
+                ? ' تم تنشيط حساب المستخدم بنجاح'
+                : ' تم تعطيل حساب المستخدم بنجاح',
             bgColor: Colors.green,
             textColor: Colors.white,
             fontSize: 16,
@@ -692,7 +692,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
           provider.clearError();
         } else {
           ReusableToast.showToast(
-            message: 'تم حذف المستخدم بنجاح',
+            message: 'تم حذف حساب المستخدم بنجاح',
             bgColor: Colors.green,
             textColor: Colors.white,
             fontSize: 16,
