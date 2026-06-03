@@ -1092,10 +1092,13 @@ class _ReportScreenState extends State<ReportScreen>
                   _buildInfoRow(
                     Icons.group,
                     task.coOperator.isNotEmpty
-                        ? '${task.coOperator.toString().replaceAll('[', ' ').replaceAll(']', ' ')} Co-Operators'
-                        : 'No Co-Operators',
-                    const Color(0xFF69948B),
+                        ? '${task.coOperator.toString().replaceAll('[', ' ').replaceAll(']', ' ')} المشاركين'
+                        : 'لا يوجد مشاركين',
+                    const Color.fromARGB(255, 20, 176, 41),
                   ),
+                  const SizedBox(height: 8),
+                  _buildInfoRow(Icons.note, task.taskNote ?? 'لايوجد ملاحظات',
+                      const Color.fromARGB(255, 118, 105, 148)),
                 ],
               ),
             ),

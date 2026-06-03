@@ -13,6 +13,7 @@ Future<void> generatePDF({
   String? selectedVisitPlace,
   String? selectedStatus,
   String? selectedIsRemote,
+  String? selectedTaskNote,
 }) async {
   final pdf = pw.Document();
 
@@ -80,7 +81,7 @@ Future<void> generatePDF({
             pw.Directionality(
               textDirection: pw.TextDirection.rtl,
               child: pw.Text(
-                'المسند إليه - Assignee: $selectedAssignee',
+                'المسند إليه : $selectedAssignee',
                 style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
               ),
             ),
@@ -180,15 +181,19 @@ Future<void> generatePDF({
                       cellPadding,
                       headerTextStyle,
                     ),
+                    headerCellBilingual(
+                      'ملاحظات',
+                      cellPadding,
+                      headerTextStyle,
+                    ),
                   ],
                 ),
                 ...filteredData.map((task) {
                   String date = DateFormat('yyyy-MM-dd').format(task.createdAt);
                   String statusArabic =
                       task.taskStatus ? 'قيد الانتظار' : 'مكتمل';
-                  String statusEnglish =
-                      task.taskStatus ? 'Pending' : 'Completed';
-                  String status = '$statusArabic\n$statusEnglish';
+
+                  String status = '$statusArabic';
 
                   return pw.TableRow(
                     children: [
@@ -230,18 +235,18 @@ Future<void> generatePDF({
                       ),
                       contentCellBilingual(
                         cellPadding,
-                        (task.isRemote ?? false)
-                            ? 'Remote\nRemote'
-                            : 'Onsite\nOnsite',
+                        (task.isRemote ?? false) ? 'عن بعد' : 'موقع',
                         contentTextStyle,
                       ),
                       contentCellBilingual(
                         cellPadding,
-                        task.coOperator
-                            .toString()
-                            .replaceAll('[', '')
-                            .replaceAll(']', '')
-                            .trim(),
+                        task.coOperator.isEmpty
+                            ? 'لايوجد'
+                            : task.coOperator
+                                .toString()
+                                .replaceAll('[', '')
+                                .replaceAll(']', '')
+                                .trim(),
                         contentTextStyle,
                       ),
                       contentCellBilingual(
@@ -249,6 +254,11 @@ Future<void> generatePDF({
                         DateFormat(
                           'yyyy-MM-dd',
                         ).format(task.expectedCompletionDate),
+                        contentTextStyle,
+                      ),
+                      contentCellBilingual(
+                        cellPadding,
+                        task.taskNote ?? 'لايوجد ملاحظات',
                         contentTextStyle,
                       ),
                     ],
@@ -261,7 +271,7 @@ Future<void> generatePDF({
           pw.Directionality(
             textDirection: pw.TextDirection.rtl,
             child: pw.Text(
-              'إجمالي السجلات - Total Records: ${filteredData.length}',
+              'إجمالي السجلات - : ${filteredData.length}',
               style: pw.TextStyle(
                 fontSize: 12,
                 fontWeight: pw.FontWeight.bold,
