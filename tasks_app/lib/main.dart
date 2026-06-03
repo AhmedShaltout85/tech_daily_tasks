@@ -8,6 +8,7 @@ import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/controller/place_name_provider.dart';
 import 'package:tasks_app/controller/daily_task_provider.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
+import 'package:tasks_app/newtork_repos/remote_repo/api_repos/dio_client.dart';
 import 'package:tasks_app/screens/about_app/manage_about_app_screen.dart';
 import 'package:tasks_app/screens/auth/auth_wrapper.dart';
 import 'package:tasks_app/screens/login/login_screen.dart';
@@ -25,10 +26,18 @@ import 'package:tasks_app/screens/task/user_task_screen.dart';
 import 'package:tasks_app/utils/app_route.dart';
 import 'package:tasks_app/utils/app_theme.dart';
 
+//✅ Add this at the top (global)
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CacheHelper.init();
-
+  // ✅ Set the callback here
+  DioClient.onUnauthorized = () {
+    navigatorKey.currentState?.pushNamedAndRemoveUntil(
+      AppRoute.loginRouteName,
+      (route) => false,
+    );
+  };
   runApp(
     MultiProvider(
       providers: [
