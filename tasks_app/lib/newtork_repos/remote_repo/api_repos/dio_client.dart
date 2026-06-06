@@ -12,8 +12,7 @@ class DioClient {
   static final DioClient instance = DioClient._();
   late final Dio _dio;
   String? _token;
-  // ✅ ADD THIS
-  static VoidCallback? onUnauthorized;
+ 
 
   DioClient._() {
     _dio = Dio(BaseOptions(
@@ -41,12 +40,7 @@ class DioClient {
       onError: (error, handler) {
         log('ERROR: ${error.response?.statusCode} ${error.requestOptions.path}');
         log('ERROR DATA: ${error.response?.data}');
-        // ✅ ADD THIS
-        if (error.response?.statusCode == 403) {
-          log('TOKEN EXPIRED - Clearing token');
-          clearToken();
-          onUnauthorized?.call(); // ✅ أبسط وأنظف
-        }
+       
 
         return handler.next(error);
       },

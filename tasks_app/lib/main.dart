@@ -26,18 +26,11 @@ import 'package:tasks_app/screens/task/user_task_screen.dart';
 import 'package:tasks_app/utils/app_route.dart';
 import 'package:tasks_app/utils/app_theme.dart';
 
-//✅ Add this at the top (global)
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CacheHelper.init();
-  // ✅ Set the callback here
-  DioClient.onUnauthorized = () {
-    navigatorKey.currentState?.pushNamedAndRemoveUntil(
-      AppRoute.loginRouteName,
-      (route) => false,
-    );
-  };
+
   runApp(
     MultiProvider(
       providers: [
