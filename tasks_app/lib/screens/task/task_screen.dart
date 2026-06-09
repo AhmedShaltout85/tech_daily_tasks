@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:js_interop';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks_app/common_widgets/custom_widgets/custom_drawer.dart';
 import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
@@ -803,6 +805,15 @@ class _TaskScreenState extends State<TaskScreen> {
                     Colors.orange,
                   ),
                 ],
+                const SizedBox(height: 8),
+                _buildDetailRow(
+                  Icons.date_range,
+                  'تاريخ المهمة',
+                  task.expectedCompletionDate != null
+                      ? DateFormat('yyyy-MM-dd').format(task.expectedCompletionDate)
+                      : '',
+                  Colors.green,
+                ),
                 const SizedBox(height: 8),
                 _buildDetailRow(
                   Icons.group,
