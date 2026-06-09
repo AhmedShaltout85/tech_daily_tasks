@@ -299,7 +299,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
                     placeNames.isNotEmpty ? placeNames.first : null,
                 initialSubPlace: 'لايوجد',
                 initialIsRemote: false,
-                initialCoOperatorUsers: employeeNames,
+                initialCoOperatorUsers: [],
                 onSubmitTask: (values) async {
                   // Handle the submitted values
 
