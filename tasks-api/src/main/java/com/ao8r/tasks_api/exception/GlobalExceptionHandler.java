@@ -1,5 +1,6 @@
 package com.ao8r.tasks_api.exception;
 
+import com.ao8r.tasks_api.exception.RefreshTokenException;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -64,6 +65,13 @@ public class GlobalExceptionHandler {
         log.error("JWT error: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Invalid or expired token"));
+    }
+
+    @ExceptionHandler(RefreshTokenException.class)
+    public ResponseEntity<Map<String, String>> handleRefreshTokenException(RefreshTokenException ex) {
+        log.error("Refresh token error: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Refresh token is invalid or expired"));
     }
 
     @ExceptionHandler(RuntimeException.class)

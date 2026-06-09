@@ -50,6 +50,14 @@ public class AboutAppServiceImpl implements AboutAppService {
     }
 
     @Override
+    public List<AboutAppResponse> getAllAppsByDepartment(String department) {
+        return aboutAppRepository.findAll().stream()
+                .filter(aboutApp -> aboutApp.getDepartment().equals(department))
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public AboutAppResponse getAppById(Long id) {
         log.debug("Fetching about app by id: {}", id);
         AboutApp aboutApp = aboutAppRepository.findById(id)

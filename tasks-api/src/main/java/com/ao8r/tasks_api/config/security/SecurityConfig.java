@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse; // [2026-06-07] Added for custom AuthenticationEntryPoint
 
 @Configuration
 @EnableWebSecurity
@@ -55,6 +56,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/test/user").hasAnyRole("USER", "MANAGER", "GENERAL_MANAGER", "SECTOR_MANAGER", "ADMIN")
                         .requestMatchers("/api/test/admin").hasRole("ADMIN")
                         .anyRequest().authenticated()
+                )
+                // [2026-06-07] Custom AuthenticationEntryPoint to return 401 instead of default 403
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\": \"Unauthorized\"}");
+                        })
                 );
 
         http.authenticationProvider(authenticationProvider());

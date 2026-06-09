@@ -44,8 +44,9 @@ mvn package -DskipTests
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
 | POST | `/api/auth/signup` | Register new user | No |
-| POST | `/api/auth/signin` | Login, get JWT | No |
-| POST | `/api/auth/signout` | Logout, clear security context | AUTHENTICATED |
+| POST | `/api/auth/signin` | Login, get JWT + refresh token | No |
+| POST | `/api/auth/refresh-token` | Exchange refresh token for new access token | No |
+| POST | `/api/auth/signout` | Logout, revoke refresh tokens + clear context | AUTHENTICATED |
 
 ### Test Controller (`/api/test`)
 | Method | Endpoint | Description | Required Role |
@@ -202,7 +203,9 @@ mvn package -DskipTests
 
 ### JWT Token
 - Secret key: minimum 512 bits (for HS512), stored in `application.properties`
-- Token expiration: 24 hours (86400000 ms)
+- Access token expiration: 24 hours (86400000 ms)
+- Refresh token expiration: 7 days (604800000 ms), stored in-memory (ConcurrentHashMap)
+- Refresh token format: UUID v4 string (not a JWT)
 - Include claims: `username` and `roles`
 - Use "Bearer " prefix in Authorization header
 - Prefix roles with "ROLE_" in authorities (e.g., "ROLE_ADMIN")
@@ -342,7 +345,9 @@ mvn package -DskipTests
 ### DTOs
 - `SignupRequest`: displayName, username, password, role, department
 - `SigninRequest`: username, password
-- `JwtResponse`: token, type, id, username, displayName, role, department
+- `JwtResponse`: token, type, refreshToken, id, username, displayName, role, department
+- `RefreshTokenRequest`: refreshToken
+- `TokenRefreshResponse`: accessToken, tokenType, refreshToken
 - `MessageResponse`: message
 - `AppsNameRequest`: appName
 - `AppsNameResponse`: id, appName

@@ -5,6 +5,8 @@ import 'package:dio/dio.dart';
 
 import '../models/user_model.dart';
 import '../newtork_repos/remote_repo/api_repos/api_network_user_repos_impl.dart';
+// [REFRESH_TOKEN] Import DioClient to access refresh token callbacks
+import '../newtork_repos/remote_repo/api_repos/dio_client.dart';
 import 'local_control/cache_helper.dart';
 
 class UserProvider with ChangeNotifier {
@@ -17,6 +19,8 @@ class UserProvider with ChangeNotifier {
   bool _isUsersLoading = false;
   String? _error;
   String? _token;
+  // [REFRESH_TOKEN] Stores the refresh token used to obtain new access tokens
+  String? _refreshToken;
 
   UserProvider() {
     _init();
@@ -25,10 +29,34 @@ class UserProvider with ChangeNotifier {
   bool get isInitializing => _isInitializing;
 
   Future<void> _init() async {
+    // [REFRESH_TOKEN] Register DioClient callbacks before loading cached tokens
+    _setupDioCallbacks();
     await _loadTokenFromCache();
     _isInitializing = false;
     log('UserProvider init complete - user: ${_currentUser?.username}, role: ${_currentUser?.role}');
     notifyListeners();
+  }
+
+  // [REFRESH_TOKEN] Registers callbacks on DioClient to handle token refresh and session expiry
+  void _setupDioCallbacks() {
+    final dioClient = DioClient();
+    // [REFRESH_TOKEN] Called by DioClient after successful refresh — updates local state and cache
+    dioClient.onTokensRefreshed = (newAccessToken, newRefreshToken) {
+      _token = newAccessToken;
+      _refreshToken = newRefreshToken;
+      _saveTokenToCache(newAccessToken);
+      _saveRefreshTokenToCache(newRefreshToken);
+      notifyListeners();
+    };
+    // [REFRESH_TOKEN] Called by DioClient when refresh fails — clears all auth state, forces re-login
+    dioClient.onSessionExpired = () {
+      _token = null;
+      _refreshToken = null;
+      _currentUser = null;
+      _users = [];
+      _clearTokenFromCache();
+      notifyListeners();
+    };
   }
 
   Future<void> _loadTokenFromCache() async {
@@ -39,6 +67,14 @@ class UserProvider with ChangeNotifier {
       _api.setToken(_token!);
       log('Token loaded from cache');
 
+      // [REFRESH_TOKEN] Load persisted refresh token from SharedPreferences
+      final savedRefreshToken = CacheHelper.getData(key: 'refresh_token');
+      if (savedRefreshToken != null) {
+        _refreshToken = savedRefreshToken as String;
+        DioClient().setRefreshToken(_refreshToken!);
+        log('Refresh token loaded from cache');
+      }
+
       final savedUserData = CacheHelper.getData(key: 'current_user');
       if (savedUserData != null) {
         try {
@@ -48,12 +84,18 @@ class UserProvider with ChangeNotifier {
         } catch (e) {
           log('Failed to parse cached user data: $e');
           _token = null;
+          // [REFRESH_TOKEN] Clear refresh token on parse failure
+          _refreshToken = null;
           _api.clearToken();
+          DioClient().clearRefreshToken();
           await _clearTokenFromCache();
         }
       } else {
         _token = null;
+        // [REFRESH_TOKEN] Clear refresh token when no user data found
+        _refreshToken = null;
         _api.clearToken();
+        DioClient().clearRefreshToken();
         await _clearTokenFromCache();
         log('No cached user data found, cleared token');
       }
@@ -66,6 +108,11 @@ class UserProvider with ChangeNotifier {
     await CacheHelper.saveData(key: 'auth_token', value: token);
   }
 
+  // [REFRESH_TOKEN] Persists refresh token to SharedPreferences
+  Future<void> _saveRefreshTokenToCache(String refreshToken) async {
+    await CacheHelper.saveData(key: 'refresh_token', value: refreshToken);
+  }
+
   Future<void> _saveUserToCache(UserModel user) async {
     await CacheHelper.saveData(
         key: 'current_user', value: jsonEncode(user.toJson()));
@@ -73,25 +120,42 @@ class UserProvider with ChangeNotifier {
 
   Future<void> _clearTokenFromCache() async {
     await CacheHelper.removeData(key: 'auth_token');
+    // [REFRESH_TOKEN] Also clear refresh token from cache
+    await CacheHelper.removeData(key: 'refresh_token');
     await CacheHelper.removeData(key: 'current_user');
   }
 
   UserModel? get currentUser => _currentUser;
   List<UserModel> get users => _users;
-  bool get isLoading => _isLoading; // For login/signup operations
-  bool get isUsersLoading => _isUsersLoading; // For fetching user lists
-  bool get isAnyLoading =>
-      _isLoading || _isUsersLoading; // Combined for AuthWrapper
+  bool get isLoading => _isLoading;
+  bool get isUsersLoading => _isUsersLoading;
+  bool get isAnyLoading => _isLoading || _isUsersLoading;
   String? get error => _error;
   String? get token => _token;
+  // [REFRESH_TOKEN] Exposes refresh token to callers (e.g., sign-out sends it to server)
+  String? get refreshToken => _refreshToken;
 
+  // [REFRESH_TOKEN] Clears all auth state including refresh token — used for local sign-out
   void clearUserData() async {
     _token = null;
+    _refreshToken = null;
     _currentUser = null;
     _users = [];
     _error = null;
     _api.clearToken();
+    DioClient().clearRefreshToken();
     await _clearTokenFromCache();
+    notifyListeners();
+  }
+
+  // [REFRESH_TOKEN] Updates both access and refresh tokens — called by DioClient after successful refresh
+  void updateTokens(String newAccessToken, String newRefreshToken) {
+    _token = newAccessToken;
+    _refreshToken = newRefreshToken;
+    _api.setToken(newAccessToken);
+    DioClient().setRefreshToken(newRefreshToken);
+    _saveTokenToCache(newAccessToken);
+    _saveRefreshTokenToCache(newRefreshToken);
     notifyListeners();
   }
 
@@ -118,10 +182,8 @@ class UserProvider with ChangeNotifier {
         _api.setToken(_token!);
       }
       _error = null;
-      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      // notifyListeners();
     } finally {
       _setLoading(false);
       notifyListeners();
@@ -144,11 +206,18 @@ class UserProvider with ChangeNotifier {
       _token = response['token'];
       _api.setToken(_token!);
       await _saveTokenToCache(_token!);
+
+      // [REFRESH_TOKEN] Extract and persist refresh token from sign-in response
+      if (response['refreshToken'] != null) {
+        _refreshToken = response['refreshToken'];
+        DioClient().setRefreshToken(_refreshToken!);
+        await _saveRefreshTokenToCache(_refreshToken!);
+      }
+
       _currentUser = UserModel.fromJson(response);
       await _saveUserToCache(_currentUser!);
       log('Current user set: ${_currentUser?.displayName}, role: ${_currentUser?.role}, department: ${_currentUser?.department}');
       _error = null;
-      // notifyListeners();
     } on DioException catch (e) {
       log('SignIn error: ${e.response?.statusCode} - ${e.response?.data}');
       if (e.response?.statusCode == 401) {
@@ -157,28 +226,31 @@ class UserProvider with ChangeNotifier {
       } else {
         _error = e.message ?? 'Login failed';
       }
-      // notifyListeners();
     } catch (e) {
       log('SignIn error: $e');
       _error = e.toString();
-      // notifyListeners();
     } finally {
       _setLoading(false);
       notifyListeners();
     }
   }
 
+  // [REFRESH_TOKEN] Signs out: sends refresh token to server for revocation, clears all local state
   Future<void> signOut() async {
     try {
-      await _api.signOut();
+      // [REFRESH_TOKEN] Pass refresh token to API so server can revoke it
+      await _api.signOut(refreshToken: _refreshToken);
       _api.clearToken();
+      DioClient().clearRefreshToken();
     } catch (e) {
       // Ignore signout API error
     }
     _token = null;
+    _refreshToken = null;
     _currentUser = null;
     _users = [];
     _error = null;
+    await _clearTokenFromCache();
     notifyListeners();
   }
 
@@ -189,10 +261,8 @@ class UserProvider with ChangeNotifier {
     try {
       _users = await _api.getAllUsers();
       _error = null;
-      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      // notifyListeners();
     } finally {
       _setUsersLoading(false);
       notifyListeners();
@@ -206,10 +276,8 @@ class UserProvider with ChangeNotifier {
     try {
       _currentUser = await _api.getUserById(id);
       _error = null;
-      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      // notifyListeners();
     } finally {
       _setUsersLoading(false);
       notifyListeners();
@@ -223,10 +291,8 @@ class UserProvider with ChangeNotifier {
     try {
       _users = await _api.getUsersByDepartment(department);
       _error = null;
-      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      // notifyListeners();
     } finally {
       _setUsersLoading(false);
       notifyListeners();
@@ -240,22 +306,19 @@ class UserProvider with ChangeNotifier {
     try {
       _users = await _api.getUsersByRole(role);
       _error = null;
-      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      // notifyListeners();
     } finally {
-      notifyListeners();
-
       _setUsersLoading(false);
+      notifyListeners();
     }
   }
 
   Future<void> fetchEnabledUsersByRole(String role, bool enabled) async {
     log('fetchEnabledUsersByRole called - role: $role, enabled: $enabled');
 
-    _isUsersLoading = true; // set directly, no notify
-    notifyListeners(); // single notify for loading start
+    _isUsersLoading = true;
+    notifyListeners();
 
     try {
       _users = await _api.getEnabledUsersByRole(role, enabled);
@@ -265,8 +328,8 @@ class UserProvider with ChangeNotifier {
       log('Error fetching users: $e');
       _error = e.toString();
     } finally {
-      _isUsersLoading = false; // set directly, no notify
-      notifyListeners(); // single notify for everything at the end
+      _isUsersLoading = false;
+      notifyListeners();
     }
   }
 
@@ -277,7 +340,7 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      await _api.setUserEnabled(id, enabled); // don't parse response
+      await _api.setUserEnabled(id, enabled);
 
       final index = _users.indexWhere((u) => u.id == id);
       log('Index found: $index');
@@ -308,10 +371,8 @@ class UserProvider with ChangeNotifier {
       await _api.deleteUser(id);
       _users.removeWhere((u) => u.id == id);
       _error = null;
-      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      // notifyListeners();
     } finally {
       _setLoading(false);
       notifyListeners();
@@ -331,10 +392,8 @@ class UserProvider with ChangeNotifier {
         newPassword: newPassword,
       );
       _error = null;
-      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      // notifyListeners();
     } finally {
       _setLoading(false);
       notifyListeners();
@@ -354,7 +413,6 @@ class UserProvider with ChangeNotifier {
         newPassword: newPassword,
       );
       _error = null;
-      // notifyListeners();
     } on DioException catch (e) {
       if (e.response?.statusCode == 404 || e.response?.statusCode == 400) {
         final data = e.response?.data;
@@ -362,10 +420,8 @@ class UserProvider with ChangeNotifier {
       } else {
         _error = e.message ?? 'Failed to reset password';
       }
-      // notifyListeners();
     } catch (e) {
       _error = e.toString();
-      // notifyListeners();
     } finally {
       _setLoading(false);
       notifyListeners();
@@ -374,12 +430,10 @@ class UserProvider with ChangeNotifier {
 
   void _setLoading(bool value) {
     _isLoading = value;
-    // notifyListeners();
   }
 
   void _setUsersLoading(bool value) {
     _isUsersLoading = value;
-    // notifyListeners();
   }
 
   void clearError() {

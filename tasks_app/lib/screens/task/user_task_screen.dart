@@ -251,6 +251,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
         title: Text(
             '${userProvider.currentUser?.username}' + ' - ' + 'المهام اليومية', style: TextStyle(
             fontFamily: 'Cairo',
+            fontSize: 13,
           ),),
         actions: [
           Stack(

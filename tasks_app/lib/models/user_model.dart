@@ -6,6 +6,8 @@ class UserModel {
   final String? role;
   final String? department;
   final String? token;
+  // [REFRESH_TOKEN] The refresh token used to obtain new access tokens without re-login.
+  final String? refreshToken;
   final bool? enabled;
 
 //Constructor
@@ -17,6 +19,7 @@ class UserModel {
     this.role,
     this.department,
     this.token,
+    this.refreshToken,
     this.enabled,
   });
 
@@ -30,6 +33,8 @@ class UserModel {
       role: json['role'],
       department: json['department'],
       token: json['token'],
+      // [REFRESH_TOKEN] Parse refresh token from JSON response
+      refreshToken: json['refreshToken'],
       enabled: json['enabled'],
     );
   }
@@ -43,6 +48,8 @@ class UserModel {
       'role': role,
       'department': department,
       'token': token,
+      // [REFRESH_TOKEN] Include refresh token in JSON serialization
+      'refreshToken': refreshToken,
       'enabled': enabled,
     };
   }
@@ -56,6 +63,8 @@ class UserModel {
     String? role,
     String? department,
     String? token,
+    // [REFRESH_TOKEN] Accept refreshToken parameter in copyWith
+    String? refreshToken,
     bool? enabled,
   }) {
     return UserModel(
@@ -66,6 +75,7 @@ class UserModel {
       role: role ?? this.role,
       department: department ?? this.department,
       token: token ?? this.token,
+      refreshToken: refreshToken ?? this.refreshToken,
       enabled: enabled ?? this.enabled,
     );
   }

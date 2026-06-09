@@ -11,6 +11,8 @@ public interface AboutAppService {
     AboutAppResponse createApp(AboutAppRequest request);
 
     List<AboutAppResponse> getAllApps();
+    List<AboutAppResponse> getAllAppsByDepartment(String department);
+
 
     AboutAppResponse getAppById(Long id);
 

@@ -14,7 +14,11 @@ abstract class ApiNetworkUserRepos {
     required String password,
   });
 
-  Future<void> signOut();
+  // [REFRESH_TOKEN] Updated to accept optional refreshToken for server-side revocation on sign-out
+  Future<void> signOut({String? refreshToken});
+
+  // [REFRESH_TOKEN] Exchanges a valid refresh token for a new access token + refresh token pair
+  Future<Map<String, dynamic>> refreshToken({required String refreshToken});
 
   Future<List<UserModel>> getAllUsers();
 
@@ -27,7 +31,6 @@ abstract class ApiNetworkUserRepos {
   Future<List<UserModel>> getEnabledUsersByRole(String role, bool enabled);
 
   Future<void> setUserEnabled(int id, bool enabled);
-  // Future<UserModel> setUserEnabled(int id, bool enabled);
 
   Future<void> deleteUser(int id);
 

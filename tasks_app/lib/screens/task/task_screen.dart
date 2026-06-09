@@ -790,7 +790,7 @@ class _TaskScreenState extends State<TaskScreen> {
                 const SizedBox(height: 8),
                 _buildDetailRow(
                   Icons.location_on,
-                  'مكان الرئيسى',
+                  'المكان الرئيسى',
                   task.visitPlace ?? '',
                   Colors.red,
                 ),
@@ -806,7 +806,7 @@ class _TaskScreenState extends State<TaskScreen> {
                 const SizedBox(height: 8),
                 _buildDetailRow(
                   Icons.group,
-                  'الشركاء',
+                  'زملاء متعاونين',
                   task.coOperator != null && task.coOperator.isNotEmpty
                       ? task.coOperator.join(', ')
                       : 'لا يوجد شركاء',

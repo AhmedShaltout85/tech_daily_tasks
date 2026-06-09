@@ -44,17 +44,38 @@ class ApiNetworkUserReposImpl implements ApiNetworkUserRepos {
       'password': password,
     });
     if (response.data['token'] != null) {
-      log(response.data['token']);
+      log("USER_TOKEN: ==>"+response.data['token']);
+      log("USER_REFRESH_TOKEN: ==>"+response.data['refreshToken']);
+
 
       _client.setToken(response.data['token']);
+    }
+    // [REFRESH_TOKEN] Also extract and set the refresh token from sign-in response
+    if (response.data['refreshToken'] != null) {
+      _client.setRefreshToken(response.data['refreshToken']);
     }
     return response.data;
   }
 
+  // [REFRESH_TOKEN] Sends refresh token to server for revocation, then clears local tokens
   @override
-  Future<void> signOut() async {
-    await _client.dio.post('/auth/signout');
+  Future<void> signOut({String? refreshToken}) async {
+    await _client.dio.post('/auth/signout', data: {
+      // [REFRESH_TOKEN] Include refresh token in request body so server can revoke it
+      if (refreshToken != null) 'refreshToken': refreshToken,
+    });
     _client.clearToken();
+    _client.clearRefreshToken();
+  }
+
+  // [REFRESH_TOKEN] Calls POST /auth/refresh-token to exchange refresh token for new access token
+  @override
+  Future<Map<String, dynamic>> refreshToken(
+      {required String refreshToken}) async {
+    final response = await _client.dio.post('/auth/refresh-token', data: {
+      'refreshToken': refreshToken,
+    });
+    return response.data;
   }
 
   @override
@@ -97,11 +118,9 @@ class ApiNetworkUserReposImpl implements ApiNetworkUserRepos {
         .toList();
   }
 
-
   @override
   Future<void> setUserEnabled(int id, bool enabled) async {
     await _client.dio.put('/users/$id/enable?enabled=$enabled');
-    // no parsing — backend returns partial object without id
   }
 
   @override

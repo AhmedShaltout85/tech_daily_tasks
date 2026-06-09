@@ -37,6 +37,14 @@ public class AboutAppController {
         return ResponseEntity.ok(apps);
     }
 
+    @GetMapping("/department/{department}")
+    public ResponseEntity<List<AboutAppResponse>> getAllAppsByDepartment(@PathVariable String department ) {
+        log.debug("Fetching all about apps");
+        List<AboutAppResponse> apps = aboutAppService.getAllApps();
+        return ResponseEntity.ok(apps);
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<AboutAppResponse> getAppById(@PathVariable Long id) {
         log.debug("Fetching about app by id: {}", id);
