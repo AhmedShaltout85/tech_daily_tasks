@@ -1,0 +1,192 @@
+# Employee Complaint API - RESTful Client Tests
+# Copy this file to IntelliJ and run as HTTP Client, or import to Postman
+# Base URL: http://localhost:9999/tasks-complaint-emp
+
+### ======================================================
+### CRUD OPERATIONS
+### ======================================================
+
+### 1. Create Employee Complaint
+POST http://localhost:9999/tasks-complaint-emp/api/emp-complaints
+Content-Type: application/json
+
+{
+  "appName": "SAP",
+  "complaintName": "Login timeout error",
+  "placeName": "Main Office",
+  "department": "IT",
+  "subPlace": "Server Room",
+  "empName": "Ahmed Ali",
+  "empNumber": 10234,
+  "empMobile": 551234567,
+  "isEnable": true
+}
+
+### 2. Create Another Employee Complaint
+POST http://localhost:9999/tasks-complaint-emp/api/emp-complaints
+Content-Type: application/json
+
+{
+  "appName": "Oracle",
+  "complaintName": "Database connection failure",
+  "placeName": "Branch Office",
+  "department": "Finance",
+  "subPlace": "Data Center",
+  "empName": "Mohamed Hassan",
+  "empNumber": 10567,
+  "empMobile": 559876543,
+  "isEnable": true
+}
+
+### 3. Create Third Employee Complaint
+POST http://localhost:9999/tasks-complaint-emp/api/emp-complaints
+Content-Type: application/json
+
+{
+  "appName": "SAP",
+  "complaintName": "Report generation slow",
+  "placeName": "Main Office",
+  "department": "HR",
+  "subPlace": "none",
+  "empName": "Sara Ibrahim",
+  "empNumber": 10890,
+  "empMobile": 557654321,
+  "isEnable": false
+}
+
+### 4. Get All Employee Complaints
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints
+
+### 5. Get Employee Complaint by ID
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/1
+
+### 6. Update Employee Complaint
+PUT http://localhost:9999/tasks-complaint-emp/api/emp-complaints/1
+Content-Type: application/json
+
+{
+  "appName": "SAP",
+  "complaintName": "Login timeout resolved",
+  "placeName": "Main Office",
+  "department": "IT",
+  "subPlace": "Server Room",
+  "empName": "Ahmed Ali",
+  "empNumber": 10234,
+  "empMobile": 551234567,
+  "isEnable": false
+}
+
+### 7. Delete Employee Complaint
+DELETE http://localhost:9999/tasks-complaint-emp/api/emp-complaints/3
+
+### ======================================================
+### FILTER BY SINGLE FIELD
+### ======================================================
+
+### 8. Get By App Name - SAP
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/app/SAP
+
+### 9. Get By App Name - Oracle
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/app/Oracle
+
+### 10. Get By Complaint Name
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/complaint/Database%20connection%20failure
+
+### 11. Get By Place Name - Main Office
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/place/Main%20Office
+
+### 12. Get By Place Name - Branch Office
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/place/Branch%20Office
+
+### 13. Get By Department - IT
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/department/IT
+
+### 14. Get By Department - Finance
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/department/Finance
+
+### 15. Get By Sub Place - Server Room
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/sub-place/Server%20Room
+
+### 16. Get By Sub Place - Data Center
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/sub-place/Data%20Center
+
+### 17. Get By Sub Place - none
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/sub-place/none
+
+### 18. Get By Employee Name - Ahmed Ali
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/emp-name/Ahmed%20Ali
+
+### 19. Get By Employee Name - Mohamed Hassan
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/emp-name/Mohamed%20Hassan
+
+### 20. Get By Employee Number - 10234
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/emp-number/10234
+
+### 21. Get By Employee Number - 10567
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/emp-number/10567
+
+### 22. Get By Employee Mobile - 551234567
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/emp-mobile/551234567
+
+### 23. Get By Employee Mobile - 559876543
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/emp-mobile/559876543
+
+### 24. Get By Enabled Status - true
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/enable/true
+
+### 25. Get By Enabled Status - false
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/enable/false
+
+### ======================================================
+### FILTER BY COMBINED FIELDS
+### ======================================================
+
+### 26. Get By App Name and Department - SAP + IT
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/app/SAP/department/IT
+
+### 27. Get By App Name and Department - SAP + HR
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/app/SAP/department/HR
+
+### 28. Get By App Name and Place Name - SAP + Main Office
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/app/SAP/place/Main%20Office
+
+### 29. Get By App Name and Place Name - Oracle + Branch Office
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/app/Oracle/place/Branch%20Office
+
+### 30. Get By Department and Place Name - IT + Main Office
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/department/IT/place/Main%20Office
+
+### 31. Get By Department and Place Name - Finance + Branch Office
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/department/Finance/place/Branch%20Office
+
+### 32. Get By Employee Name and App Name - Ahmed Ali + SAP
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/emp-name/Ahmed%20Ali/app/SAP
+
+### 33. Get By Employee Name and App Name - Mohamed Hassan + Oracle
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/emp-name/Mohamed%20Hassan/app/Oracle
+
+### ======================================================
+### ERROR RESPONSES
+### ======================================================
+
+### 34. Get Non-Existent Complaint (Should return 404)
+GET http://localhost:9999/tasks-complaint-emp/api/emp-complaints/999
+
+### 35. Create Complaint with Missing Fields (Should return 400)
+POST http://localhost:9999/tasks-complaint-emp/api/emp-complaints
+Content-Type: application/json
+
+{
+  "appName": "",
+  "complaintName": ""
+}
+
+### 36. Delete Non-Existent Complaint (Should return 404)
+DELETE http://localhost:9999/tasks-complaint-emp/api/emp-complaints/999
+
+### ======================================================
+### RESPONSE EXAMPLES
+### ======================================================
+# Success (200/201): Full complaint object with all fields
+# Not Found (404): {"message": "Employee complaint not found with id: 999"}
+# Bad Request (400): {"appName": "App name is required", "complaintName": "Complaint name is required"}
