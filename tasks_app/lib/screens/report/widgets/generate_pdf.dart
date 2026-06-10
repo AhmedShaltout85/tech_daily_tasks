@@ -1,3 +1,4 @@
+
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -13,7 +14,7 @@ Future<void> generatePDF({
   String? selectedVisitPlace,
   String? selectedStatus,
   String? selectedIsRemote,
-  String? selectedTaskNote,
+  String? selectedComplaintType,
 }) async {
   final pdf = pw.Document();
 
@@ -21,9 +22,9 @@ Future<void> generatePDF({
   final fontArabic = await PdfGoogleFonts.cairoRegular();
   final fontArabicBold = await PdfGoogleFonts.cairoBold();
 
-  final double headerFontSize = 7;
-  final double contentFontSize = 5;
-  final double cellPadding = 3;
+  final double headerFontSize = 6;
+  final double contentFontSize = 4;
+  final double cellPadding = 2;
 
   pw.TextStyle headerTextStyle = pw.TextStyle(
     font: fontArabicBold,
@@ -77,11 +78,18 @@ Future<void> generatePDF({
                 style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
               ),
             ),
+          pw.Directionality(
+            textDirection: pw.TextDirection.rtl,
+            child: pw.Text(
+              'الادارة - : أدارة البرامج وصيانتها',
+              style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
+            ),
+          ),
           if (selectedAssignee != null && selectedAssignee != 'All')
             pw.Directionality(
               textDirection: pw.TextDirection.rtl,
               child: pw.Text(
-                'المسند إليه : $selectedAssignee',
+                'المسند إليه - : $selectedAssignee',
                 style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
               ),
             ),
@@ -117,11 +125,34 @@ Future<void> generatePDF({
                 style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
               ),
             ),
+          if (selectedComplaintType != null && selectedComplaintType != 'All')
+            pw.Directionality(
+              textDirection: pw.TextDirection.rtl,
+              child: pw.Text(
+                'نوع الشكوى : $selectedComplaintType',
+                style: pw.TextStyle(fontSize: headerFontSize, font: fontArabic),
+              ),
+            ),
           pw.SizedBox(height: 20),
           pw.Directionality(
             textDirection: pw.TextDirection.rtl,
             child: pw.Table(
               border: pw.TableBorder.all(color: PdfColors.grey400),
+              columnWidths: {
+                0: pw.FixedColumnWidth(30), // التاريخ
+                1: pw.FixedColumnWidth(45), // اسم المهمة
+                2: pw.FixedColumnWidth(35), // التطبيق
+                3: pw.FixedColumnWidth(35), // مخصصة لـ
+                4: pw.FixedColumnWidth(35), // مخصصة من
+                5: pw.FixedColumnWidth(35), // مكان الزيارة
+                6: pw.FixedColumnWidth(28), // الحالة
+                7: pw.FixedColumnWidth(30), // نوع الشكوى
+                8: pw.FixedColumnWidth(28), // الأولوية
+                9: pw.FixedColumnWidth(28), // نوع العمل
+                10: pw.FixedColumnWidth(35), // المشاركين
+                11: pw.FixedColumnWidth(30), // تاريخ الانتهاء
+                12: pw.FlexColumnWidth(1), // ملاحظات (flexible, wraps)
+              },
               children: [
                 pw.TableRow(
                   decoration: const pw.BoxDecoration(color: PdfColors.blue100),
@@ -137,7 +168,7 @@ Future<void> generatePDF({
                       headerTextStyle,
                     ),
                     headerCellBilingual(
-                      'اسم التطبيق',
+                      ' التطبيق',
                       cellPadding,
                       headerTextStyle,
                     ),
@@ -162,6 +193,11 @@ Future<void> generatePDF({
                       headerTextStyle,
                     ),
                     headerCellBilingual(
+                      'نوع الشكوى',
+                      cellPadding,
+                      headerTextStyle,
+                    ),
+                    headerCellBilingual(
                       'الأولوية',
                       cellPadding,
                       headerTextStyle,
@@ -172,12 +208,12 @@ Future<void> generatePDF({
                       headerTextStyle,
                     ),
                     headerCellBilingual(
-                      'الموظفين المتعاونين',
+                      ' المشاركين',
                       cellPadding,
                       headerTextStyle,
                     ),
                     headerCellBilingual(
-                      'تاريخ الاستحقاق',
+                      'تاريخ الانتهاء',
                       cellPadding,
                       headerTextStyle,
                     ),
@@ -230,6 +266,17 @@ Future<void> generatePDF({
                       ),
                       contentCellBilingual(
                         cellPadding,
+                        () {
+                          final note = task.taskNote ?? '';
+                          if (note.contains('شبكات')) return 'شبكات';
+                          if (note.contains('هاردوير')) return 'هاردوير';
+                          if (note.contains('سوفتوير')) return 'سوفتوير';
+                          return 'لا يوجد';
+                        }(),
+                        contentTextStyle,
+                      ),
+                      contentCellBilingual(
+                        cellPadding,
                         task.taskPriority,
                         contentTextStyle,
                       ),
@@ -241,7 +288,7 @@ Future<void> generatePDF({
                       contentCellBilingual(
                         cellPadding,
                         task.coOperator.isEmpty
-                            ? 'لايوجد'
+                            ? 'لا يوجد'
                             : task.coOperator
                                 .toString()
                                 .replaceAll('[', '')
@@ -258,7 +305,7 @@ Future<void> generatePDF({
                       ),
                       contentCellBilingual(
                         cellPadding,
-                        task.taskNote ?? 'لايوجد ملاحظات',
+                        task.taskNote ?? 'لا يوجد ملاحظات',
                         contentTextStyle,
                       ),
                     ],
