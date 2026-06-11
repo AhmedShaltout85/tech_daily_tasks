@@ -97,7 +97,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   //           username: _usernameController.text.trim(),
   //           password: _passwordController.text.trim(),
   //           role: '$_selectedRole',
-  //           department: 'ادراة البرامج وصيانتها',
+  //           department: 'ادارة البرامج وصيانتها',
   //         );
 
   //     if (mounted) {
@@ -166,7 +166,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             username: _usernameController.text.trim(),
             password: _passwordController.text.trim(),
             role: '$_selectedRole',
-            department: 'ادراة البرامج وصيانتها',
+            department: 'ادارة البرامج وصيانتها',
           );
 
       if (mounted) {

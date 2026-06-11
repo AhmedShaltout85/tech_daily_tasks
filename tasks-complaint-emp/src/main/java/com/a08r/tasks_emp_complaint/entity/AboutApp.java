@@ -1,0 +1,27 @@
+package com.a08r.tasks_emp_complaint.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "about_app")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class AboutApp implements java.io.Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "app_name", nullable = false)
+    private String appName;
+
+    @Column(name = "recommended")
+    private String recommended;
+
+    @Column(name = "department", nullable = false)
+    private String department;
+}

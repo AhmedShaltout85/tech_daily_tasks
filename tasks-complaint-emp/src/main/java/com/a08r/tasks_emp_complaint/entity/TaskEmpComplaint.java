@@ -38,10 +38,10 @@ public class TaskEmpComplaint implements java.io.Serializable {
     private String empName;
 
     @Column(name = "emp_number", nullable = false)
-    private Integer empNumber;
+    private String empNumber;
 
     @Column(name = "emp_mobile", nullable = false)
-    private Integer empMobile;
+    private String empMobile;
 
     @Column(name = "is_enable", nullable = false)
     private Boolean isEnable;

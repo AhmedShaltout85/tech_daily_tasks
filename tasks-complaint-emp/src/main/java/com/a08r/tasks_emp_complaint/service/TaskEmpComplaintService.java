@@ -30,9 +30,9 @@ public interface TaskEmpComplaintService {
 
     List<TaskEmpComplaintResponse> getByEmpName(String empName);
 
-    List<TaskEmpComplaintResponse> getByEmpNumber(Integer empNumber);
+    List<TaskEmpComplaintResponse> getByEmpNumber(String empNumber);
 
-    List<TaskEmpComplaintResponse> getByEmpMobile(Integer empMobile);
+    List<TaskEmpComplaintResponse> getByEmpMobile(String empMobile);
 
     List<TaskEmpComplaintResponse> getByIsEnable(Boolean isEnable);
 

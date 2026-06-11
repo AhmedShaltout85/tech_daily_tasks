@@ -140,14 +140,14 @@ public class TaskEmpComplaintServiceImpl implements TaskEmpComplaintService {
     }
 
     @Override
-    public List<TaskEmpComplaintResponse> getByEmpNumber(Integer empNumber) {
+    public List<TaskEmpComplaintResponse> getByEmpNumber(String empNumber) {
         return taskEmpComplaintRepository.findByEmpNumber(empNumber).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<TaskEmpComplaintResponse> getByEmpMobile(Integer empMobile) {
+    public List<TaskEmpComplaintResponse> getByEmpMobile(String empMobile) {
         return taskEmpComplaintRepository.findByEmpMobile(empMobile).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());

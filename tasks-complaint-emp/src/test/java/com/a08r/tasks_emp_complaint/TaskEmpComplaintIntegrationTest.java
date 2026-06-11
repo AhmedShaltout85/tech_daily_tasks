@@ -33,8 +33,8 @@ class TaskEmpComplaintIntegrationTest {
                 .department("Test Department")
                 .subPlace("Test Sub Place")
                 .empName("John Doe")
-                .empNumber(12345)
-                .empMobile(987654321)
+                .empNumber("12345")
+                .empMobile("987654321")
                 .isEnable(true)
                 .build();
 
@@ -47,7 +47,7 @@ class TaskEmpComplaintIntegrationTest {
         assertEquals("TestApp", response.getBody().getAppName());
         assertEquals("Test Complaint", response.getBody().getComplaintName());
         assertEquals("John Doe", response.getBody().getEmpName());
-        assertEquals(Integer.valueOf(12345), response.getBody().getEmpNumber());
+        assertEquals("12345", response.getBody().getEmpNumber());
 
         createdId = response.getBody().getId();
     }
@@ -85,8 +85,8 @@ class TaskEmpComplaintIntegrationTest {
                 .department("Updated Department")
                 .subPlace("Updated Sub Place")
                 .empName("Jane Doe")
-                .empNumber(67890)
-                .empMobile(123456789)
+                .empNumber("67890")
+                .empMobile("123456789")
                 .isEnable(false)
                 .build();
 
@@ -99,7 +99,7 @@ class TaskEmpComplaintIntegrationTest {
         assertEquals("UpdatedApp", response.getBody().getAppName());
         assertEquals("Updated Complaint", response.getBody().getComplaintName());
         assertEquals("Jane Doe", response.getBody().getEmpName());
-        assertEquals(Integer.valueOf(67890), response.getBody().getEmpNumber());
+        assertEquals("67890", response.getBody().getEmpNumber());
         assertFalse(response.getBody().getIsEnable());
     }
 

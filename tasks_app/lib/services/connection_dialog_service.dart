@@ -65,9 +65,11 @@ class ConnectionDialogService {
                   // Still no connection, show snackbar
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(
-                        'ما زال لا يوجد اتصال بالإنترنت',
-                        style: TextStyle(fontFamily: 'Cairo'),
+                      content: Center(
+                        child: Text(
+                          'ما زال لا يوجد اتصال بالإنترنت',
+                          style: TextStyle(fontFamily: 'Cairo'),
+                        ),
                       ),
                       backgroundColor: Colors.red,
                       duration: Duration(seconds: 3),

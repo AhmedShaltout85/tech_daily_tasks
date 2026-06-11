@@ -35,10 +35,10 @@ public class TaskEmpComplaintRequest {
     private String empName;
 
     @NotNull(message = "Employee number is required")
-    private Integer empNumber;
+    private String empNumber;
 
     @NotNull(message = "Employee mobile is required")
-    private Integer empMobile;
+    private String empMobile;
 
     @Builder.Default
     private Boolean isEnable = true;

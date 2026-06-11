@@ -16,8 +16,8 @@ public class TaskEmpComplaintResponse {
     private String department;
     private String subPlace;
     private String empName;
-    private Integer empNumber;
-    private Integer empMobile;
+    private String empNumber;
+    private String empMobile;
     private Boolean isEnable;
     private LocalDateTime createdAt;
 }

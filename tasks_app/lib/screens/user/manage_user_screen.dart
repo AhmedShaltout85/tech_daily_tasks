@@ -221,7 +221,7 @@ class _ManageUserScreenState extends State<ManageUserScreen>
                     usernameController.text.trim(),
                     passwordController.text.trim(),
                     selectedRole,
-                    department ?? 'ادراة البرامج وصيانتها',
+                    department ?? 'ادارة البرامج وصيانتها',
                   );
                 }
               },

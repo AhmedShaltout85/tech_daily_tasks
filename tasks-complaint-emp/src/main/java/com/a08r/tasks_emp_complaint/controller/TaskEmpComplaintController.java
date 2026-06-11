@@ -96,13 +96,13 @@ public class TaskEmpComplaintController {
     }
 
     @GetMapping("/emp-number/{empNumber}")
-    public ResponseEntity<List<TaskEmpComplaintResponse>> getByEmpNumber(@PathVariable Integer empNumber) {
+    public ResponseEntity<List<TaskEmpComplaintResponse>> getByEmpNumber(@PathVariable String empNumber) {
         log.debug("Fetching by employee number: {}", empNumber);
         return ResponseEntity.ok(taskEmpComplaintService.getByEmpNumber(empNumber));
     }
 
     @GetMapping("/emp-mobile/{empMobile}")
-    public ResponseEntity<List<TaskEmpComplaintResponse>> getByEmpMobile(@PathVariable Integer empMobile) {
+    public ResponseEntity<List<TaskEmpComplaintResponse>> getByEmpMobile(@PathVariable String empMobile) {
         log.debug("Fetching by employee mobile: {}", empMobile);
         return ResponseEntity.ok(taskEmpComplaintService.getByEmpMobile(empMobile));
     }

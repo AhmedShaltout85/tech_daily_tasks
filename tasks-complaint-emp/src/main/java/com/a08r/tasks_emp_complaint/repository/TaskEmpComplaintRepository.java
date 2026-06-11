@@ -21,9 +21,9 @@ public interface TaskEmpComplaintRepository extends JpaRepository<TaskEmpComplai
 
     List<TaskEmpComplaint> findByEmpName(String empName);
 
-    List<TaskEmpComplaint> findByEmpNumber(Integer empNumber);
+    List<TaskEmpComplaint> findByEmpNumber(String empNumber);
 
-    List<TaskEmpComplaint> findByEmpMobile(Integer empMobile);
+    List<TaskEmpComplaint> findByEmpMobile(String empMobile);
 
     List<TaskEmpComplaint> findByIsEnable(Boolean isEnable);
 
