@@ -54,6 +54,12 @@ class _HomeScreenState extends State<HomeScreen> {
       title: const Text('شكاوى الموظفين'),
       actions: [
         IconButton(
+          onPressed: () =>
+              Navigator.pushNamed(context, AppRoute.chatbotRoute),
+          icon: const Icon(Icons.chat_bubble_outline),
+          tooltip: 'شات بوت الدعم الفني',
+        ),
+        IconButton(
           onPressed: _showFilterBottomSheet,
           icon: const Icon(Icons.filter_list),
           tooltip: 'تصفية',
@@ -172,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 1.3,
+        childAspectRatio: 0.85,
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
       ),

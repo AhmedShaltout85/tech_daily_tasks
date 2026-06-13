@@ -17,30 +17,32 @@ class CustomComplaintCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      clipBehavior: Clip.hardEdge,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             _buildHeader(),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             _buildInfoRow(Icons.phone_android, complaint.appName),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             _buildInfoRow(Icons.report_problem, complaint.complaintName),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             _buildInfoRow(Icons.location_on, '${complaint.placeName}${complaint.subPlace != 'none' ? ' - ${complaint.subPlace}' : ''}'),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             _buildInfoRow(Icons.business, complaint.department),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             _buildInfoRow(Icons.person, '${complaint.empName} (${complaint.empNumber})'),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             _buildInfoRow(Icons.phone, complaint.empMobile.toString()),
             if (complaint.createdAt != null) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               _buildInfoRow(Icons.access_time, _formatDate(complaint.createdAt!)),
             ],
             if (onDelete != null) ...[
-              const Divider(height: 24),
+              const Divider(height: 16),
               _buildActions(),
             ],
           ],

@@ -3,12 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'controller/complaint_provider.dart';
 import 'controller/lookup_provider.dart';
+import 'controller/chatbot_provider.dart';
 import 'services/connectivity_service.dart';
 import 'utils/app_theme.dart';
 import 'utils/app_route.dart';
 import 'screens/splash/splash_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/add_complaint/add_complaint_screen.dart';
+import 'screens/chatbot/chatbot_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +20,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ComplaintProvider()),
         ChangeNotifierProvider(create: (_) => LookupProvider()),
+        ChangeNotifierProvider(create: (_) => ChatbotProvider()),
       ],
       child: const MyApp(),
     ),
@@ -32,7 +35,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final ConnectivityService _connectivityService = ConnectivityService.instance;
+  final ConnectivityService _connectivityService = ConnectivityService. instance;
 
   @override
   void initState() {
@@ -77,6 +80,7 @@ class _MyAppState extends State<MyApp> {
         AppRoute.splashRoute: (_) => const SplashScreen(),
         AppRoute.homeRoute: (_) => const HomeScreen(),
         AppRoute.addComplaintRoute: (_) => const AddComplaintScreen(),
+        AppRoute.chatbotRoute: (_) => const ChatbotScreen(),
       },
     );
   }
