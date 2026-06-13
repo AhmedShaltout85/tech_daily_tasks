@@ -256,6 +256,14 @@ class _TaskScreenState extends State<UserTaskScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: 'تحديث',
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              _hasFetchedData = false;
+              _fetchData();
+            },
+          ),
           Stack(
             children: [
               IconButton(

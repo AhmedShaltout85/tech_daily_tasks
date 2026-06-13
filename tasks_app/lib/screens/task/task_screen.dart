@@ -1233,11 +1233,9 @@ class _TaskScreenState extends State<TaskScreen> {
                           children: const [
                             Icon(Icons.check_circle, color: Colors.white),
                             SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'تم حذف المهمة بنجاح',
-                                style: TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Cairo',),
-                              ),
+                            Text(
+                              'تم حذف المهمة بنجاح',
+                              style: TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Cairo',),
                             ),
                           ],
                         ),
