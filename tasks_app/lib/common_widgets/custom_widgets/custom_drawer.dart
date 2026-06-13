@@ -4,6 +4,7 @@ import 'package:tasks_app/common_widgets/resuable_widgets/reusable_toast.dart';
 import 'package:tasks_app/controller/theme_provider.dart';
 import 'package:tasks_app/controller/user_provider.dart';
 import 'package:tasks_app/screens/about_app/manage_about_app_screen.dart';
+import 'package:tasks_app/screens/complaints/manage_complmaints_screen.dart';
 import 'package:tasks_app/screens/places/manage_place_screen.dart';
 import 'package:tasks_app/screens/preventive/preventive_item_screen.dart';
 import 'package:tasks_app/screens/report/preventive_maintenance_report_screen.dart';
@@ -196,6 +197,26 @@ class _CustomDrawerState extends State<CustomDrawer>
                           MaterialPageRoute(
                             builder: (context) =>
                                 const PreventiveMaintenanceReportScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      index: 8,
+                      icon: Icons.report_problem_outlined,
+                      title: 'شكاوى الموظفين',
+                      isDark: isDark,
+                      colorScheme: colorScheme,
+                      onTap: () {
+                        setState(() => _selectedIndex = 8);
+                        widget.onIndexChanged?.call(8);
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const ManageComplaintsScreen(),
                           ),
                         );
                       },

@@ -188,6 +188,13 @@ public class TaskEmpComplaintServiceImpl implements TaskEmpComplaintService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<TaskEmpComplaintResponse> getByDepartmentAndIsEnable(String department, Boolean isEnable) {
+        return taskEmpComplaintRepository.findByDepartmentAndIsEnable(department, isEnable).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
     private TaskEmpComplaintResponse mapToResponse(TaskEmpComplaint item) {
         return TaskEmpComplaintResponse.builder()
                 .id(item.getId())

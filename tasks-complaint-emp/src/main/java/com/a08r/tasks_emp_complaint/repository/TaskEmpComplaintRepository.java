@@ -34,4 +34,6 @@ public interface TaskEmpComplaintRepository extends JpaRepository<TaskEmpComplai
     List<TaskEmpComplaint> findByDepartmentAndPlaceName(String department, String placeName);
 
     List<TaskEmpComplaint> findByEmpNameAndAppName(String empName, String appName);
+
+    List<TaskEmpComplaint> findByDepartmentAndIsEnable(String department, Boolean isEnable);
 }

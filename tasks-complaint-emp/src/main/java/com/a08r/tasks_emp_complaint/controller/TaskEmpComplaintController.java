@@ -140,4 +140,11 @@ public class TaskEmpComplaintController {
         log.debug("Fetching by employee name and app name: {}, {}", empName, appName);
         return ResponseEntity.ok(taskEmpComplaintService.getByEmpNameAndAppName(empName, appName));
     }
+
+    @GetMapping("/department/{department}/enable/{isEnable}")
+    public ResponseEntity<List<TaskEmpComplaintResponse>> getByDepartmentAndIsEnable(
+            @PathVariable String department, @PathVariable Boolean isEnable) {
+        log.debug("Fetching by department and enabled status: {}, {}", department, isEnable);
+        return ResponseEntity.ok(taskEmpComplaintService.getByDepartmentAndIsEnable(department, isEnable));
+    }
 }

@@ -43,4 +43,6 @@ public interface TaskEmpComplaintService {
     List<TaskEmpComplaintResponse> getByDepartmentAndPlaceName(String department, String placeName);
 
     List<TaskEmpComplaintResponse> getByEmpNameAndAppName(String empName, String appName);
+
+    List<TaskEmpComplaintResponse> getByDepartmentAndIsEnable(String department, Boolean isEnable);
 }
