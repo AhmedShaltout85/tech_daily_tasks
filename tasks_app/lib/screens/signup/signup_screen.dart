@@ -30,7 +30,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   String _selectedRole = 'USER';
-  final ConnectivityService _connectivity = ConnectivityService();
+  final ConnectivityService _connectivity = ConnectivityService.instance;
 
   @override
   void dispose() {

@@ -17,7 +17,7 @@ class _ManagePlaceScreenState extends State<ManagePlaceScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  final ConnectivityService _connectivity = ConnectivityService();
+  final ConnectivityService _connectivity = ConnectivityService.instance;
 
   @override
   void initState() {

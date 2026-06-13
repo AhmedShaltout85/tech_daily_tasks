@@ -57,7 +57,7 @@ class ConnectionDialogService {
                 // Wait for dialog to close
                 await Future.delayed(const Duration(milliseconds: 100));
 
-                _connectivityService ??= ConnectivityService();
+                _connectivityService = ConnectivityService.instance;
                 final hasConnection =
                     await _connectivityService!.hasConnection();
 
@@ -102,7 +102,7 @@ class ConnectionDialogService {
   }) async {
     if (!context.mounted) return false;
 
-    _connectivityService ??= ConnectivityService();
+    _connectivityService = ConnectivityService.instance;
     final hasConnection = await _connectivityService!.hasConnection();
 
     if (!hasConnection && context.mounted) {

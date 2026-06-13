@@ -6,13 +6,15 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 
 class ConnectivityService {
-  final Connectivity _connectivity = Connectivity();
-  late StreamController<bool> _connectionController;
-
-  ConnectivityService() {
+  static final ConnectivityService instance = ConnectivityService._();
+  factory ConnectivityService() => instance;
+  ConnectivityService._() {
     _connectionController = StreamController<bool>();
     _initConnectivityMonitoring();
   }
+
+  final Connectivity _connectivity = Connectivity();
+  late StreamController<bool> _connectionController;
 
   void _initConnectivityMonitoring() {
     _connectivity.onConnectivityChanged

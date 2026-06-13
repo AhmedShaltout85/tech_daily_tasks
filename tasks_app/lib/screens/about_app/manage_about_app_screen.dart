@@ -20,7 +20,7 @@ class _ManageAboutAppScreenState extends State<ManageAboutAppScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  final ConnectivityService _connectivity = ConnectivityService();
+  final ConnectivityService _connectivity = ConnectivityService.instance;
   bool _isInitialized = false;
 
   @override

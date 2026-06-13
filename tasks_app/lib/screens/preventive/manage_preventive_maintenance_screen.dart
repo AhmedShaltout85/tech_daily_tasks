@@ -19,7 +19,7 @@ class ManagePreventiveMaintenanceScreen extends StatefulWidget {
 
 class _ManagePreventiveMaintenanceScreenState
     extends State<ManagePreventiveMaintenanceScreen> {
-  final ConnectivityService _connectivity = ConnectivityService();
+  final ConnectivityService _connectivity = ConnectivityService.instance;
   String? selectedPlaceName;
   String? selectedAppName;
   String? selectedAction;

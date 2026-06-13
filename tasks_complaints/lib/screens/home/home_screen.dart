@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ConnectivityService _connectivityService = ConnectivityService();
+  final ConnectivityService _connectivityService = ConnectivityService.instance;
 
   @override
   void initState() {

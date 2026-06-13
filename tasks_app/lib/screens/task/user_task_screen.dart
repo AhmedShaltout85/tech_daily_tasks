@@ -26,7 +26,7 @@ class _TaskScreenState extends State<UserTaskScreen> {
   String? selectedIsRemote;
   String? selectedPriority;
   bool showFilters = false;
-  final ConnectivityService _connectivity = ConnectivityService();
+  final ConnectivityService _connectivity = ConnectivityService.instance;
   int _selectedDrawerIndex = 0;
   bool _hasFetchedData = false;
   bool _initStateScheduled = false;

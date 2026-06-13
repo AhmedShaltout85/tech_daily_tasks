@@ -28,7 +28,7 @@ class PreventiveMaintenanceReportScreen extends StatefulWidget {
 class _PreventiveMaintenanceReportScreenState
     extends State<PreventiveMaintenanceReportScreen>
     with SingleTickerProviderStateMixin {
-  final ConnectivityService _connectivity = ConnectivityService();
+  final ConnectivityService _connectivity = ConnectivityService.instance;
 
   // ─── Filter state ─────────────────────────────────────────────────────────
   String? selectedUsername;

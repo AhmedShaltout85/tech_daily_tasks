@@ -32,7 +32,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final ConnectivityService _connectivityService = ConnectivityService();
+  final ConnectivityService _connectivityService = ConnectivityService.instance;
 
   @override
   void initState() {
@@ -53,7 +53,9 @@ class _MyAppState extends State<MyApp> {
     final scaffold = ScaffoldMessenger.of(context);
     scaffold.showSnackBar(
       const SnackBar(
-        content: Text('لا يوجد اتصال بالإنترنت'),
+        content: Center(
+          child: Text('لا يوجد اتصال بالإنترنت'),
+        ),
         backgroundColor: Colors.red,
         duration: Duration(seconds: 3),
       ),

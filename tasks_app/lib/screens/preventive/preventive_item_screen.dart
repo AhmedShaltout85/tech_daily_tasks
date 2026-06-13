@@ -16,7 +16,7 @@ class PreventiveItemScreen extends StatefulWidget {
 }
 
 class _PreventiveItemScreenState extends State<PreventiveItemScreen> {
-  final ConnectivityService _connectivity = ConnectivityService();
+  final ConnectivityService _connectivity = ConnectivityService.instance;
   final TextEditingController _actionController = TextEditingController();
   bool _isLoading = false;
   String? _selectedAppName;

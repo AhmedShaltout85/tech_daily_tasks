@@ -29,7 +29,7 @@ class _AppRecommendedDetailsScreenState
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  final ConnectivityService _connectivity = ConnectivityService();
+  final ConnectivityService _connectivity = ConnectivityService.instance;
   List<RecommendedItem> _recommendedItems = [];
 
   @override

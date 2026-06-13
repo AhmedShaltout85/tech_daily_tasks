@@ -27,7 +27,7 @@ class _TaskScreenState extends State<TaskScreen> {
   String? selectedApp;
   bool? isActiveFilter;
   bool showFilters = false;
-  final ConnectivityService _connectivity = ConnectivityService();
+  final ConnectivityService _connectivity = ConnectivityService.instance;
   int _selectedDrawerIndex = 1;
   bool _hasFetchedData = false;
   bool _initStateScheduled = false;
