@@ -1185,6 +1185,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   const SnackBar(
                     content: Center(
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
                             width: 20,
@@ -1228,6 +1229,7 @@ class _TaskScreenState extends State<TaskScreen> {
                     SnackBar(
                       content: Center(
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
                             Icon(Icons.check_circle, color: Colors.white),
                             SizedBox(width: 12),
