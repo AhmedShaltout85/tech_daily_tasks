@@ -85,3 +85,26 @@ class DioClient {
     }
   }
 }
+
+class ChatbotDioClient {
+  static final ChatbotDioClient instance = ChatbotDioClient._();
+  factory ChatbotDioClient() => instance;
+
+  late final Dio _dio;
+
+  static const String _baseUrl = 'http://41.33.226.211:8099/tasks-chatbot-qa';
+
+  ChatbotDioClient._() {
+    _dio = Dio(BaseOptions(
+      baseUrl: _baseUrl,
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    ));
+  }
+
+  Dio get dio => _dio;
+}

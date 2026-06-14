@@ -1,3 +1,6 @@
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controller/chatbot_provider.dart';
@@ -18,10 +21,19 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final ConnectivityService _connectivityService = ConnectivityService.instance;
   final Set<int> _expandedItems = {};
 
+  // Controller for the horizontal category chips list
+  final ScrollController _categoryScrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _categoryScrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -48,6 +60,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       title: const Text('شات بوت الدعم الفني'),
+      automaticallyImplyLeading: !kIsWeb,
       actions: [
         IconButton(
           onPressed: _loadData,
@@ -121,11 +134,45 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
     return SizedBox(
       height: 60,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Row(
-          children: allChips,
+      // 1) ScrollConfiguration lets mouse-drag scroll the list on web/desktop
+      //    (by default, only touch/stylus devices can drag a scrollable).
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+            PointerDeviceKind.stylus,
+            PointerDeviceKind.trackpad,
+          },
+        ),
+        // 2) Listener intercepts mouse-wheel / trackpad scroll events
+        //    (which arrive as a vertical delta) and applies that delta
+        //    to the horizontal scroll position.
+        child: Listener(
+          onPointerSignal: (pointerSignal) {
+            if (pointerSignal is PointerScrollEvent) {
+              final position = _categoryScrollController.position;
+              final delta = pointerSignal.scrollDelta.dy != 0
+                  ? pointerSignal.scrollDelta.dy
+                  : pointerSignal.scrollDelta.dx;
+
+              final newOffset = (position.pixels + delta).clamp(
+                position.minScrollExtent,
+                position.maxScrollExtent,
+              );
+
+              _categoryScrollController.jumpTo(newOffset);
+            }
+          },
+          child: SingleChildScrollView(
+            controller: _categoryScrollController,
+            scrollDirection: Axis.horizontal,
+            physics: const ClampingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              children: allChips,
+            ),
+          ),
         ),
       ),
     );
@@ -194,7 +241,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         borderRadius: BorderRadius.circular(12),
         side: isExpanded
             ? const BorderSide(color: AppColors.primary, width: 2)
-            : BorderSide(color: AppColors.border, width: 0.5),
+            : const BorderSide(color: AppColors.border, width: 0.5),
       ),
       child: InkWell(
         onTap: question.id == null

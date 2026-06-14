@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -99,6 +100,7 @@ class _AddComplaintScreenState extends State<AddComplaintScreen>
     return AppBar(
       title: const Text('إضافة شكوى جديدة'),
       centerTitle: true,
+      automaticallyImplyLeading: !kIsWeb,
       elevation: 0,
       flexibleSpace: Container(
         decoration: const BoxDecoration(
