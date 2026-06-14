@@ -9,7 +9,6 @@ import 'package:tasks_app/controller/place_name_provider.dart';
 import 'package:tasks_app/controller/daily_task_provider.dart';
 import 'package:tasks_app/controller/about_app_provider.dart';
 import 'package:tasks_app/controller/complaint_provider.dart';
-import 'package:tasks_app/newtork_repos/remote_repo/api_repos/dio_client.dart';
 import 'package:tasks_app/screens/about_app/manage_about_app_screen.dart';
 import 'package:tasks_app/screens/auth/auth_wrapper.dart';
 import 'package:tasks_app/screens/complaints/manage_complmaints_screen.dart';

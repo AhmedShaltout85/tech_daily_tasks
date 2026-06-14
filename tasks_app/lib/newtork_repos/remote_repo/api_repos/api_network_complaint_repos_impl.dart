@@ -13,7 +13,7 @@ class ComplaintDioClient {
 
   ComplaintDioClient._() {
     _dio = Dio(BaseOptions(
-      baseUrl: 'http://localhost:9999/tasks-complaint-emp',
+      baseUrl: 'http://41.33.226.211:8099/tasks-complaint-emp',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
       headers: {

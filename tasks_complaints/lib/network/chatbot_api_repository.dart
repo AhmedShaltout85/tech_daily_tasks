@@ -7,7 +7,7 @@ class ChatbotDioClient {
 
   late final Dio _dio;
 
-  static const String _baseUrl = 'http://10.170.0.190:8080/tasks-chatbot-qa';
+  static const String _baseUrl = 'http://41.33.226.211:8099/tasks-chatbot-qa';
 
   ChatbotDioClient._() {
     _dio = Dio(BaseOptions(

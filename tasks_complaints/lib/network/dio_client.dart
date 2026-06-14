@@ -8,7 +8,7 @@ class DioClient {
 
   late final Dio _dio;
 
-  static const String _baseUrl = 'http://10.170.0.190:9999/tasks-complaint-emp';
+  static const String _baseUrl = 'http://41.33.226.211:8099/tasks-complaint-emp';
 
   DioClient._() {
     _dio = Dio(BaseOptions(

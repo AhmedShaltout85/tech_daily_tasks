@@ -48,7 +48,11 @@ class _TaskScreenState extends State<TaskScreen> {
   Future<void> _fetchData() async {
     if (!mounted) return;
     // Already checked in initState callback
-    await _fetchDataImpl();
+    try {
+      await _fetchDataImpl();
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> _fetchDataImpl() async {
@@ -167,8 +171,6 @@ class _TaskScreenState extends State<TaskScreen> {
     }
   }
 
-
-
   List<dynamic> getFilteredTasks(List<dynamic> tasks) {
     return tasks.where((task) {
       try {
@@ -218,7 +220,9 @@ class _TaskScreenState extends State<TaskScreen> {
 
     //Filter out the admin
     List<String> employeeNames = userProvider.users
-        .map((u) => u.role == 'USER' && u.enabled == true || u.role == 'MANAGER' || u.role == 'ADMIN'
+        .map((u) => u.role == 'USER' && u.enabled == true ||
+                u.role == 'MANAGER' ||
+                u.role == 'ADMIN'
             ? u.username
             : 'admin')
         .where((username) => username != 'admin' || username != 'manager')
@@ -242,7 +246,8 @@ class _TaskScreenState extends State<TaskScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('المهام اليومية', style: TextStyle(
+        title: const Text('المهام اليومية',
+            style: TextStyle(
               fontFamily: 'Cairo',
             )),
         actions: [
@@ -341,7 +346,9 @@ class _TaskScreenState extends State<TaskScreen> {
                                 ),
                                 label: Text(
                                   'حدف المخصصات',
-                                  style: TextStyle(color: colorScheme.primary, fontFamily: 'Cairo',
+                                  style: TextStyle(
+                                    color: colorScheme.primary,
+                                    fontFamily: 'Cairo',
                                   ),
                                 ),
                               ),
@@ -537,7 +544,12 @@ class _TaskScreenState extends State<TaskScreen> {
                           onPressed: () {
                             provider.fetchAllTasks();
                           },
-                          child: const Text('اعادة المحاولة', style: TextStyle(fontFamily: 'Cairo',),),
+                          child: const Text(
+                            'اعادة المحاولة',
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -650,7 +662,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         ),
                       Expanded(
                         child: ListView.builder(
-                          reverse: true ,
+                          reverse: true,
                           itemCount: filteredTasks.length,
                           itemBuilder: (context, index) {
                             final task = filteredTasks[index];
@@ -809,7 +821,8 @@ class _TaskScreenState extends State<TaskScreen> {
                   Icons.date_range,
                   'تاريخ المهمة',
                   task.expectedCompletionDate != null
-                      ? DateFormat('yyyy-MM-dd').format(task.expectedCompletionDate)
+                      ? DateFormat('yyyy-MM-dd')
+                          .format(task.expectedCompletionDate)
                       : '',
                   Colors.green,
                 ),
@@ -965,11 +978,11 @@ class _TaskScreenState extends State<TaskScreen> {
           const SizedBox(width: 4),
           Text(
             priority.toUpperCase(),
-            style: TextStyle(fontFamily: 'Cairo',
+            style: TextStyle(
+              fontFamily: 'Cairo',
               fontSize: 12,
               fontWeight: FontWeight.bold,
               color: textColor,
-              
             ),
           ),
         ],
@@ -1068,8 +1081,12 @@ class _TaskScreenState extends State<TaskScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    task.taskStatus ? 'تم الانتهااء من المهمة' : 'تم تفعيل المهمه',
-                    style: const TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Cairo',
+                    task.taskStatus
+                        ? 'تم الانتهااء من المهمة'
+                        : 'تم تفعيل المهمه',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Cairo',
                     ),
                   ),
                 ),
@@ -1093,7 +1110,13 @@ class _TaskScreenState extends State<TaskScreen> {
                 children: [
                   const Icon(Icons.error_outline, color: Colors.white),
                   const SizedBox(width: 12),
-                  Expanded(child: Text('Error updating task: ${e.toString()}', style: const TextStyle(fontFamily: 'Cairo',),)),
+                  Expanded(
+                      child: Text(
+                    'Error updating task: ${e.toString()}',
+                    style: const TextStyle(
+                      fontFamily: 'Cairo',
+                    ),
+                  )),
                 ],
               ),
             ),
@@ -1118,7 +1141,12 @@ class _TaskScreenState extends State<TaskScreen> {
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700),
             const SizedBox(width: 12),
-            const Text('حذف المهمة', style: TextStyle(fontFamily: 'Cairo',),),
+            const Text(
+              'حذف المهمة',
+              style: TextStyle(
+                fontFamily: 'Cairo',
+              ),
+            ),
           ],
         ),
         content: Column(
@@ -1127,7 +1155,10 @@ class _TaskScreenState extends State<TaskScreen> {
           children: [
             const Text(
               'هل أنت متأكد من حذف هذه المهمة؟',
-              style: TextStyle(fontSize: 16, fontFamily: 'Cairo',),
+              style: TextStyle(
+                fontSize: 16,
+                fontFamily: 'Cairo',
+              ),
             ),
             const SizedBox(height: 12),
             Container(
@@ -1164,7 +1195,13 @@ class _TaskScreenState extends State<TaskScreen> {
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
-            child: const Text('الغاء', style: TextStyle(fontSize: 16, fontFamily: 'Cairo',),),
+            child: const Text(
+              'الغاء',
+              style: TextStyle(
+                fontSize: 16,
+                fontFamily: 'Cairo',
+              ),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -1235,7 +1272,10 @@ class _TaskScreenState extends State<TaskScreen> {
                             SizedBox(width: 12),
                             Text(
                               'تم حذف المهمة بنجاح',
-                              style: TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Cairo',),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Cairo',
+                              ),
                             ),
                           ],
                         ),
@@ -1256,11 +1296,16 @@ class _TaskScreenState extends State<TaskScreen> {
                       content: Center(
                         child: Row(
                           children: [
-                            const Icon(Icons.error_outline, color: Colors.white),
+                            const Icon(Icons.error_outline,
+                                color: Colors.white),
                             const SizedBox(width: 12),
                             Expanded(
-                                child:
-                                    Text('Error deleting task: ${e.toString()}', style: const TextStyle(fontFamily: 'Cairo',),)),
+                                child: Text(
+                              'Error deleting task: ${e.toString()}',
+                              style: const TextStyle(
+                                fontFamily: 'Cairo',
+                              ),
+                            )),
                           ],
                         ),
                       ),
