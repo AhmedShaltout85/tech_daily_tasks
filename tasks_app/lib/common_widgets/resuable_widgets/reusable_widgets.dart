@@ -89,6 +89,7 @@ Widget _buildBottomSheetContent({
       key: 'اسم المهمة',
       label: 'اسم المهم',
       hint: 'ادخل اسم المهمة',
+      maxLines: 2,
       icon: Icons.title,
       validator: (value) {
         if (value == null || value.isEmpty) {

@@ -897,6 +897,7 @@ Widget _buildBottomSheetContent({
       key: 'task_title',
       label: 'اسم المهمة',
       hint: 'ادخل اسم المهمة',
+      maxLines: 2,
       icon: Icons.title,
       initialValue: initialTaskTitle,
       validator: (value) {
