@@ -281,6 +281,7 @@ class _AddComplaintScreenState extends State<AddComplaintScreen>
     return CustomTextField(
       label: 'اسم الشكوى',
       hint: 'أدخل وصف الشكوى',
+      maxLines: 2,
       controller: _complaintNameController,
       validator: (value) {
         if (value == null || value.trim().isEmpty) return 'أدخل اسم الشكوى';
@@ -339,7 +340,7 @@ class _AddComplaintScreenState extends State<AddComplaintScreen>
 
   Widget _buildEmpNumberField() {
     return CustomTextField(
-      label: 'رقم الموظف',
+      label: 'الرقم الوظيفى',
       hint: '5 أرقام',
       controller: _empNumberController,
       keyboardType: TextInputType.number,
@@ -358,7 +359,7 @@ class _AddComplaintScreenState extends State<AddComplaintScreen>
 
   Widget _buildEmpMobileField() {
     return CustomTextField(
-      label: 'موبايل الموظف',
+      label: 'رقم موبايل الموظف',
       hint: '11 رقم',
       controller: _empMobileController,
       keyboardType: TextInputType.number,
@@ -423,7 +424,7 @@ class _AddComplaintScreenState extends State<AddComplaintScreen>
                         'حفظ الشكوى',
                         style: TextStyle(
                           fontFamily: 'Cairo',
-                          fontSize: 17,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
