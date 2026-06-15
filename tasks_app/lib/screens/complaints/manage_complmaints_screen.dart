@@ -285,6 +285,9 @@ class _ManageComplaintsScreenState extends State<ManageComplaintsScreen> {
     String selectedPriority = 'MEDIUM';
     List<String> selectedCoOperators = [];
     DateTime expectedDate = DateTime.now().add(const Duration(days: 1));
+    final notesController = TextEditingController(
+      text: '${complaint.empMobile} - ${complaint.empName} - سوفتير',
+    );
 
     showModalBottomSheet(
       context: context,
@@ -299,6 +302,7 @@ class _ManageComplaintsScreenState extends State<ManageComplaintsScreen> {
             selectedPriority: selectedPriority,
             selectedCoOperators: selectedCoOperators,
             expectedDate: expectedDate,
+            notesController: notesController,
             onAssignedToChanged: (value) =>
                 setModalState(() => selectedAssignedTo = value),
             onPriorityChanged: (value) =>
@@ -314,11 +318,12 @@ class _ManageComplaintsScreenState extends State<ManageComplaintsScreen> {
               priority: selectedPriority,
               coOperators: selectedCoOperators,
               expectedDate: expectedDate,
+              taskNote: notesController.text.trim(),
             ),
           );
         },
       ),
-    );
+    ).then((_) => notesController.dispose());
   }
 
   Widget _buildCreateTaskContent({
@@ -329,6 +334,7 @@ class _ManageComplaintsScreenState extends State<ManageComplaintsScreen> {
     required String selectedPriority,
     required List<String> selectedCoOperators,
     required DateTime expectedDate,
+    required TextEditingController notesController,
     required ValueChanged<String?> onAssignedToChanged,
     required ValueChanged<String?> onPriorityChanged,
     required ValueChanged<List<String>> onCoOperatorsChanged,
@@ -371,8 +377,19 @@ class _ManageComplaintsScreenState extends State<ManageComplaintsScreen> {
                     ? complaint.subPlace
                     : 'لا يوجد'),
             const SizedBox(height: 8),
-            _buildReadOnlyField(
-                'ملاحظات', '${complaint.empMobile} - ${complaint.empName} - سوفتير'),
+
+            // Notes editable field
+            TextField(
+              controller: notesController,
+              maxLines: 2,
+              decoration: InputDecoration(
+                labelText: 'ملاحظات',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                prefixIcon: const Icon(Icons.note_alt_outlined),
+              ),
+            ),
             const SizedBox(height: 16),
 
             // Assigned To dropdown (USER role in department)
@@ -457,7 +474,7 @@ class _ManageComplaintsScreenState extends State<ManageComplaintsScreen> {
                                 final isSelected = selectedCoOperators
                                     .contains(user.displayName);
                                 return FilterChip(
-                                  padding: EdgeInsets.all(8),
+                                  padding: EdgeInsets.all(10),
                                   label: Text(user.displayName),
                                   selected: isSelected,
                                   onSelected: (selected) {
@@ -568,6 +585,7 @@ class _ManageComplaintsScreenState extends State<ManageComplaintsScreen> {
     required String priority,
     required List<String> coOperators,
     required DateTime expectedDate,
+    required String taskNote,
   }) async {
     if (assignedTo == null || assignedTo.isEmpty) {
       ReusableToast.showToast(
@@ -592,7 +610,7 @@ class _ManageComplaintsScreenState extends State<ManageComplaintsScreen> {
       coOperator: coOperators,
       expectedCompletionDate: expectedDate,
       taskPriority: priority,
-      taskNote: '${complaint.empMobile} - ${complaint.empName} - سوفتير',
+      taskNote: taskNote,
       isRemote: false,
       createdAt: DateTime.now(),
     );

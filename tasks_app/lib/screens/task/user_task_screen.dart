@@ -1279,21 +1279,20 @@ class _TaskScreenState extends State<UserTaskScreen> {
           SnackBar(
             content: Center(
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     task.taskStatus ? Icons.check_circle : Icons.info,
                     color: Colors.white,
                   ),
                   const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      task.taskStatus
-                          ? 'تم إنهاء المهمة'
-                          : 'المهمة قيد التنفيذ',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'Cairo',
-                      ),
+                  Text(
+                    task.taskStatus
+                        ? 'تم إنهاء المهمة'
+                        : 'المهمة قيد التنفيذ',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Cairo',
                     ),
                   ),
                 ],
