@@ -351,7 +351,8 @@ class _ManageComplaintsScreenState extends State<ManageComplaintsScreen> {
               text: 'إنشاء مهمة من الشكوى',
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: AppColors.blackColor87,
+              color: AppColors.primaryColor,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
 
@@ -456,6 +457,7 @@ class _ManageComplaintsScreenState extends State<ManageComplaintsScreen> {
                                 final isSelected = selectedCoOperators
                                     .contains(user.displayName);
                                 return FilterChip(
+                                  padding: EdgeInsets.all(8),
                                   label: Text(user.displayName),
                                   selected: isSelected,
                                   onSelected: (selected) {
@@ -692,11 +694,12 @@ class _ManageComplaintsScreenState extends State<ManageComplaintsScreen> {
             text: 'تصفية الشكاوى',
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppColors.blackColor87,
+            color: AppColors.primaryColor,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           CustomDropdown(
-            label: 'تطبيق/نظام',
+            label: 'المنظومة',
             hint: 'اختر التطبيق',
             items: ['الكل', ...provider.getUniqueAppNames()],
             value: selectedApp ?? 'الكل',
