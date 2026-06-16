@@ -190,3 +190,125 @@ DELETE http://localhost:9999/tasks-complaint-emp/api/emp-complaints/999
 # Success (200/201): Full complaint object with all fields
 # Not Found (404): {"message": "Employee complaint not found with id: 999"}
 # Bad Request (400): {"appName": "App name is required", "complaintName": "Complaint name is required"}
+
+
+### ######################################################
+### RETRIEVE EMP DATA API
+### ######################################################
+### Base URL: http://localhost:9999/tasks-complaint-emp
+
+### 37. Create RetrieveEmpData
+POST http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data
+Content-Type: application/json
+
+{
+  "empId": 1001,
+  "empName": "أحمد محمد",
+  "empType": "permanent",
+  "empJob": "Engineer",
+  "empDegree": "Senior",
+  "empLocation": "Cairo",
+  "empDept": "IT",
+  "empAdmin": "Admin1",
+  "empSector": "Sector1"
+}
+
+### 38. Create Another RetrieveEmpData
+POST http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data
+Content-Type: application/json
+
+{
+  "empId": 1002,
+  "empName": "محمد علي",
+  "empType": "contractor",
+  "empJob": "Developer",
+  "empDegree": "Junior",
+  "empLocation": "Alexandria",
+  "empDept": "IT",
+  "empAdmin": "Admin1",
+  "empSector": "Sector2"
+}
+
+### 39. Get All RetrieveEmpData
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data
+
+### 40. Get RetrieveEmpData by ID
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/1
+
+### 41. Update RetrieveEmpData
+PUT http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/1
+Content-Type: application/json
+
+{
+  "empId": 1001,
+  "empName": "أحمد محمد (محدث)",
+  "empType": "permanent",
+  "empJob": "Senior Engineer",
+  "empDegree": "Lead",
+  "empLocation": "Alexandria",
+  "empDept": "IT",
+  "empAdmin": "Admin2",
+  "empSector": "Sector2"
+}
+
+### 42. Delete RetrieveEmpData
+DELETE http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/2
+
+### ======================================================
+### FILTER BY SINGLE FIELD
+### ======================================================
+
+### 43. Get By EmpId
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/emp-id/1001
+
+### 44. Get By EmpName
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/emp-name/أحمد%20محمد
+
+### 45. Get By EmpType
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/emp-type/permanent
+
+### 46. Get By EmpJob
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/emp-job/Engineer
+
+### 47. Get By EmpDegree
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/emp-degree/Senior
+
+### 48. Get By EmpLocation
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/emp-location/Cairo
+
+### 49. Get By EmpDept
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/emp-dept/IT
+
+### 50. Get By EmpAdmin
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/emp-admin/Admin1
+
+### 51. Get By EmpSector
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/emp-sector/Sector1
+
+### ======================================================
+### FILTER BY COMBINED FIELDS
+### ======================================================
+
+### 52. Get By EmpId and EmpDept
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/emp-id/1001/emp-dept/IT
+
+### 53. Get By EmpDept and EmpLocation
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/emp-dept/IT/emp-location/Cairo
+
+### 54. Get By EmpId and EmpLocation
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/emp-id/1001/emp-location/Alexandria
+
+### ======================================================
+### ERROR RESPONSES
+### ======================================================
+
+### 55. Get Non-Existent Record (Should return 404)
+GET http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data/999
+
+### 56. Create with Missing Fields (Should return 400)
+POST http://localhost:9999/tasks-complaint-emp/api/retrieve-emp-data
+Content-Type: application/json
+
+{
+  "empName": ""
+}
