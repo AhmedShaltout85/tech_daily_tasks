@@ -198,9 +198,9 @@ class _AddComplaintScreenState extends State<AddComplaintScreen>
           _buildCard(
             child: Column(
               children: [
-                _buildEmpNameField(),
-                const SizedBox(height: 14),
                 _buildEmpNumberField(),
+                const SizedBox(height: 14),
+                _buildEmpNameField(),
                 const SizedBox(height: 14),
                 _buildEmpMobileField(),
               ],
