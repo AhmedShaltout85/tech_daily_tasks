@@ -4,6 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'controller/complaint_provider.dart';
 import 'controller/lookup_provider.dart';
 import 'controller/chatbot_provider.dart';
+import 'controller/retrieve_emp_data_provider.dart';
 import 'services/connectivity_service.dart';
 import 'utils/app_theme.dart';
 import 'utils/app_route.dart';
@@ -21,6 +22,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ComplaintProvider()),
         ChangeNotifierProvider(create: (_) => LookupProvider()),
         ChangeNotifierProvider(create: (_) => ChatbotProvider()),
+        ChangeNotifierProvider(create: (_) => RetrieveEmpDataProvider()),
       ],
       child: const MyApp(),
     ),

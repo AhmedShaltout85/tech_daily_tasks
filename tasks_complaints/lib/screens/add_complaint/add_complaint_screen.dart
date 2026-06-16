@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import '../../services/connection_dialog_service.dart';
 import '../../controller/complaint_provider.dart';
 import '../../controller/lookup_provider.dart';
+import '../../controller/retrieve_emp_data_provider.dart';
 import '../../models/complaint_model.dart';
 import '../../utils/app_colors.dart';
 import '../../common_widgets/custom_widgets/custom_text_field.dart';
@@ -339,22 +340,93 @@ class _AddComplaintScreenState extends State<AddComplaintScreen>
   }
 
   Widget _buildEmpNumberField() {
-    return CustomTextField(
-      label: 'الرقم الوظيفى',
-      hint: '5 أرقام',
-      controller: _empNumberController,
-      keyboardType: TextInputType.number,
-      inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly,
-        LengthLimitingTextInputFormatter(5),
-      ],
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) return 'أدخل رقم الموظف';
-        if (value.trim().length != 5) return 'رقم الموظف يجب أن يكون 5 أرقام';
-        return null;
+    return Consumer<RetrieveEmpDataProvider>(
+      builder: (context, empProvider, _) {
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 5,
+              child: CustomTextField(
+                label: 'الرقم الوظيفى',
+                hint: '5 أرقام',
+                controller: _empNumberController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(5),
+                ],
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'أدخل رقم الموظف';
+                  }
+                  if (value.trim().length != 5) {
+                    return 'رقم الموظف يجب أن يكون 5 أرقام';
+                  }
+                  return null;
+                },
+                icon: Icons.badge_rounded,
+              ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 50,
+              height: 50,
+              child: IconButton(
+                onPressed: empProvider.isLoading
+                    ? null
+                    : () => _fetchEmpName(empProvider),
+                icon: empProvider.isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.search, color: AppColors.primary),
+                tooltip: 'بحث عن اسم الموظف',
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.primary.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
       },
-      icon: Icons.badge_rounded,
     );
+  }
+
+  void _fetchEmpName(RetrieveEmpDataProvider provider) async {
+    final empNumber = _empNumberController.text.trim();
+    if (empNumber.length != 5) {
+      Fluttertoast.showToast(
+        msg: 'أدخل رقم وظيفى صحيح (5 أرقام)',
+        backgroundColor: AppColors.warning,
+        textColor: Colors.white,
+      );
+      return;
+    }
+
+    await provider.fetchEmpByEmpId(int.parse(empNumber));
+
+    if (!mounted) return;
+
+    if (provider.empData != null) {
+      _empNameController.text = provider.empData!.empName;
+      Fluttertoast.showToast(
+        msg: 'تم العثور على: ${provider.empData!.empName}',
+        backgroundColor: AppColors.success,
+        textColor: Colors.white,
+      );
+    } else if (provider.error != null) {
+      Fluttertoast.showToast(
+        msg: provider.error!,
+        backgroundColor: AppColors.error,
+        textColor: Colors.white,
+      );
+    }
   }
 
   Widget _buildEmpMobileField() {
