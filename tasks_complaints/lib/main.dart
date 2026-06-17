@@ -13,6 +13,7 @@ import 'screens/home/home_screen.dart';
 import 'screens/add_complaint/add_complaint_screen.dart';
 import 'screens/chatbot/chatbot_screen.dart';
 import 'screens/chatbot/chatbot_chat_screen.dart';
+import 'screens/chatbot/chatbot_chat_two_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -85,6 +86,7 @@ class _MyAppState extends State<MyApp> {
         AppRoute.addComplaintRoute: (_) => const AddComplaintScreen(),
         AppRoute.chatbotRoute: (_) => const ChatbotScreen(),
         AppRoute.chatbotChatRoute: (_) => const ChatbotChatScreen(),
+        AppRoute.chatbotChatTwoRoute: (_) => const ChatbotChatTwoScreen(),
       },
     );
   }

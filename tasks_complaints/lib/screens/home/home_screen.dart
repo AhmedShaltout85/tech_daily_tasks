@@ -113,17 +113,29 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        Row(children: [
-          Expanded(
-            child: _buildNavCard(
-              context,
-              icon: Icons.smart_toy_outlined,
-              title: 'تشات بوت',
-              subtitle: 'تحدث مع البوت',
-              route: AppRoute.chatbotChatRoute,
+        Row(
+          children: [
+            Expanded(
+              child: _buildNavCard(
+                context,
+                icon: Icons.smart_toy_outlined,
+                title: 'تشات بوت',
+                subtitle: 'تحدث مع البوت',
+                route: AppRoute.chatbotChatRoute,
+              ),
             ),
-          ),
-        ])
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildNavCard(
+                context,
+                icon: Icons.smart_toy_outlined,
+                title: '2تشات بوت',
+                subtitle: 'تفاعل مع البوت',
+                route: AppRoute.chatbotChatTwoRoute,
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -141,6 +153,16 @@ class HomeScreen extends StatelessWidget {
                 title: 'تشات بوت',
                 subtitle: 'تحدث مع البوت',
                 route: AppRoute.chatbotChatRoute,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildNavCard(
+                context,
+                icon: Icons.smart_toy_outlined,
+                title: '2تشات بوت',
+                subtitle: 'تفاعل مع البوت',
+                route: AppRoute.chatbotChatTwoRoute,
               ),
             ),
             const SizedBox(width: 16),

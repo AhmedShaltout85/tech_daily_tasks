@@ -6,4 +6,5 @@ class AppRoute {
   static const String addComplaintRoute = '/add-complaint';
   static const String chatbotRoute = '/chatbot';
   static const String chatbotChatRoute = '/chatbot-chat';
+  static const String chatbotChatTwoRoute = '/chatbot-chat-two';
 }
