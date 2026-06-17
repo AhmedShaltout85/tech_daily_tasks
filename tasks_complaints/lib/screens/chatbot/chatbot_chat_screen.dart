@@ -62,7 +62,7 @@ class _ChatbotChatScreenState extends State<ChatbotChatScreen> {
     if (!_greetingAdded && !_messages.isNotEmpty) {
       _messages.add(const _ChatMessage(
         role: 'bot',
-        text: 'مرحباً! أنا بوت الدعم الفني. كيف أقدر أساعدك؟ اختر سؤالاً من الأسفل:',
+        text: 'مرحباً! أنا بوت الدعم الفني. كيف أقدر أساعدك؟ اختر المنظومة من أعلى.^ ثم اختر سؤالاً من الأسفل:',
       ));
       _greetingAdded = true;
     }

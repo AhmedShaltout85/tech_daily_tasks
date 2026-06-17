@@ -87,37 +87,43 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildMobileGrid(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: _buildNavCard(
-            context,
-            icon: Icons.smart_toy_outlined,
-            title: 'تشات بوت',
-            subtitle: 'تحدث مع البوت',
-            route: AppRoute.chatbotChatRoute,
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: _buildNavCard(
+                context,
+                icon: Icons.chat_bubble_outline,
+                title: 'شات بوت الدعم الفني',
+                subtitle: 'اسأل الأسئلة الشائعة',
+                route: AppRoute.chatbotRoute,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildNavCard(
+                context,
+                icon: Icons.add_circle_outline,
+                title: 'إضافة شكوى',
+                subtitle: 'تقديم شكوى جديدة',
+                route: AppRoute.addComplaintRoute,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildNavCard(
-            context,
-            icon: Icons.chat_bubble_outline,
-            title: 'شات بوت الدعم الفني',
-            subtitle: 'اسأل الأسئلة الشائعة',
-            route: AppRoute.chatbotRoute,
+        const SizedBox(height: 12),
+        Row(children: [
+          Expanded(
+            child: _buildNavCard(
+              context,
+              icon: Icons.smart_toy_outlined,
+              title: 'تشات بوت',
+              subtitle: 'تحدث مع البوت',
+              route: AppRoute.chatbotChatRoute,
+            ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildNavCard(
-            context,
-            icon: Icons.add_circle_outline,
-            title: 'إضافة شكوى',
-            subtitle: 'تقديم شكوى جديدة',
-            route: AppRoute.addComplaintRoute,
-          ),
-        ),
+        ])
       ],
     );
   }

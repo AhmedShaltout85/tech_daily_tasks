@@ -211,8 +211,9 @@ class _SplashScreenState extends State<SplashScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              '2026شركة مياه الشرب بالإسكندرية. جميع الحقوق محفوظة',
+              'جميع الحقوق محفوظة. شركة مياه الشرب بالإسكندرية',
               textAlign: TextAlign.center,
+              textDirection: TextDirection.rtl,
               style: TextStyle(
                 fontFamily: 'Cairo',
                 fontSize: 11,
