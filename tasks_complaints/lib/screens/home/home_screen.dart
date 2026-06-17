@@ -92,6 +92,16 @@ class HomeScreen extends StatelessWidget {
         Expanded(
           child: _buildNavCard(
             context,
+            icon: Icons.smart_toy_outlined,
+            title: 'تشات بوت',
+            subtitle: 'تحدث مع البوت',
+            route: AppRoute.chatbotChatRoute,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildNavCard(
+            context,
             icon: Icons.chat_bubble_outline,
             title: 'شات بوت الدعم الفني',
             subtitle: 'اسأل الأسئلة الشائعة',
@@ -115,9 +125,19 @@ class HomeScreen extends StatelessWidget {
   Widget _buildDesktopGrid(BuildContext context) {
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 800),
+        constraints: const BoxConstraints(maxWidth: 1000),
         child: Row(
           children: [
+            Expanded(
+              child: _buildNavCard(
+                context,
+                icon: Icons.smart_toy_outlined,
+                title: 'تشات بوت',
+                subtitle: 'تحدث مع البوت',
+                route: AppRoute.chatbotChatRoute,
+              ),
+            ),
+            const SizedBox(width: 16),
             Expanded(
               child: _buildNavCard(
                 context,
