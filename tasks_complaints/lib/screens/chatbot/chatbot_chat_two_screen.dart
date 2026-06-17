@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controller/chatbot_provider.dart';
@@ -30,7 +29,6 @@ class _ChatbotChatTwoScreenState extends State<ChatbotChatTwoScreen> {
       ConnectivityService.instance;
   final List<_ChatMessage> _messages = [];
   final ScrollController _scrollController = ScrollController();
-  final ScrollController _quickReplyScrollController = ScrollController();
   final TextEditingController _textController = TextEditingController();
   final FocusNode _textFocusNode = FocusNode();
 
@@ -47,7 +45,6 @@ class _ChatbotChatTwoScreenState extends State<ChatbotChatTwoScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _quickReplyScrollController.dispose();
     _textController.dispose();
     _textFocusNode.dispose();
     super.dispose();
@@ -78,6 +75,9 @@ class _ChatbotChatTwoScreenState extends State<ChatbotChatTwoScreen> {
 
   void _addGreetingAndApps(ChatbotProvider provider) {
     if (_greetingAdded) return;
+
+    if (provider.categories.isEmpty) return;
+
     _greetingAdded = true;
 
     _messages.add(const _ChatMessage(
@@ -86,17 +86,17 @@ class _ChatbotChatTwoScreenState extends State<ChatbotChatTwoScreen> {
     ));
 
     final categories = provider.categories;
-    if (categories.isNotEmpty) {
-      final numberedApps = categories
-          .asMap()
-          .entries
-          .map((e) => '${e.key + 1}. ${e.value}')
-          .join('\n');
-      _messages.add(_ChatMessage(
-        role: 'bot',
-        text: numberedApps,
-      ));
-    }
+    final numberedApps = categories
+        .asMap()
+        .entries
+        .map((e) => '${e.key + 1}. ${e.value}')
+        .join('\n');
+    _messages.add(_ChatMessage(
+      role: 'bot',
+      text: numberedApps,
+    ));
+
+    _scrollToBottom();
   }
 
   void _onAppNumberTapped(int number, ChatbotProvider provider) {
@@ -286,7 +286,6 @@ class _ChatbotChatTwoScreenState extends State<ChatbotChatTwoScreen> {
                 child: Column(
                   children: [
                     Expanded(child: _buildChatArea()),
-                    _buildQuickReplyArea(provider),
                     _buildTextInputArea(),
                   ],
                 ),
@@ -435,131 +434,6 @@ class _ChatbotChatTwoScreenState extends State<ChatbotChatTwoScreen> {
     );
   }
 
-  Widget _buildQuickReplyArea(ChatbotProvider provider) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isWide = constraints.maxWidth > 600;
-
-        List<Widget> buttons = [];
-
-        if (_currentStep == _ChatStep.selectApp) {
-          final categories = provider.categories;
-          buttons = List.generate(categories.length, (index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: ActionChip(
-                label: Text(
-                  '${index + 1}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: isWide ? 14 : 12,
-                  ),
-                ),
-                onPressed: () =>
-                    _onAppNumberTapped(index + 1, provider),
-                backgroundColor: AppColors.primary,
-                side: const BorderSide(color: AppColors.primaryDark),
-                avatar: null,
-              ),
-            );
-          });
-        } else if (_currentStep == _ChatStep.selectQuestion) {
-          buttons = List.generate(_filteredQuestions.length, (index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: ActionChip(
-                label: Text(
-                  '${index + 1}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: isWide ? 14 : 12,
-                  ),
-                ),
-                onPressed: () => _onQuestionNumberTapped(index + 1),
-                backgroundColor: AppColors.primary,
-                side: const BorderSide(color: AppColors.primaryDark),
-                avatar: null,
-              ),
-            );
-          });
-
-          buttons.add(
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: ActionChip(
-                label: Text(
-                  'رجوع',
-                  style: TextStyle(
-                    color: AppColors.error,
-                    fontWeight: FontWeight.bold,
-                    fontSize: isWide ? 14 : 12,
-                  ),
-                ),
-                onPressed: _onBackToApps,
-                backgroundColor: AppColors.card,
-                side: const BorderSide(color: AppColors.error),
-                avatar: const Icon(
-                  Icons.arrow_forward,
-                  size: 16,
-                  color: AppColors.error,
-                ),
-              ),
-            ),
-          );
-        }
-
-        return Container(
-          height: isWide ? 70 : 60,
-          decoration: const BoxDecoration(
-            color: AppColors.background,
-            border: Border(
-              top: BorderSide(color: AppColors.border, width: 0.5),
-            ),
-          ),
-          child: ScrollConfiguration(
-            behavior: ScrollConfiguration.of(context).copyWith(
-              dragDevices: {
-                PointerDeviceKind.touch,
-                PointerDeviceKind.mouse,
-                PointerDeviceKind.stylus,
-                PointerDeviceKind.trackpad,
-              },
-            ),
-            child: Listener(
-              onPointerSignal: (pointerSignal) {
-                if (pointerSignal is PointerScrollEvent) {
-                  final position =
-                      _quickReplyScrollController.position;
-                  final delta = pointerSignal.scrollDelta.dy != 0
-                      ? pointerSignal.scrollDelta.dy
-                      : pointerSignal.scrollDelta.dx;
-
-                  final newOffset = (position.pixels + delta).clamp(
-                    position.minScrollExtent,
-                    position.maxScrollExtent,
-                  );
-
-                  _quickReplyScrollController.jumpTo(newOffset);
-                }
-              },
-              child: ListView(
-                controller: _quickReplyScrollController,
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(
-                  horizontal: isWide ? 16 : 8,
-                  vertical: 8,
-                ),
-                children: buttons,
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildTextInputArea() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -571,63 +445,93 @@ class _ChatbotChatTwoScreenState extends State<ChatbotChatTwoScreen> {
       ),
       child: SafeArea(
         top: false,
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: TextField(
-                controller: _textController,
-                focusNode: _textFocusNode,
-                keyboardType: TextInputType.number,
-                textInputAction: TextInputAction.send,
-                onSubmitted: _onTextSubmitted,
-                decoration: InputDecoration(
-                  hintText: _currentStep == _ChatStep.selectApp
-                      ? 'اكتب رقم المنظومة...'
-                      : 'اكتب رقم السؤال...',
-                  hintStyle: const TextStyle(
-                    color: AppColors.textHint,
-                    fontSize: 14,
+            if (_currentStep == _ChatStep.selectQuestion)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: ActionChip(
+                  label: const Text(
+                    'رجوع للقائمة',
+                    style: TextStyle(
+                      color: AppColors.error,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
                   ),
-                  filled: true,
-                  fillColor: AppColors.background,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(
-                        color: AppColors.primary, width: 2),
+                  onPressed: _onBackToApps,
+                  backgroundColor: AppColors.card,
+                  side: const BorderSide(color: AppColors.error),
+                  avatar: const Icon(
+                    Icons.arrow_forward,
+                    size: 16,
+                    color: AppColors.error,
                   ),
                 ),
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
+              ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _textController,
+                    focusNode: _textFocusNode,
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: _onTextSubmitted,
+                    decoration: InputDecoration(
+                      hintText: _currentStep == _ChatStep.selectApp
+                          ? 'اكتب رقم المنظومة...'
+                          : 'اكتب رقم السؤال...',
+                      hintStyle: const TextStyle(
+                        color: AppColors.textHint,
+                        fontSize: 14,
+                      ),
+                      filled: true,
+                      fillColor: AppColors.background,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide:
+                            const BorderSide(color: AppColors.border),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide:
+                            const BorderSide(color: AppColors.border),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: const BorderSide(
+                            color: AppColors.primary, width: 2),
+                      ),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              decoration: const BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                onPressed: () => _onTextSubmitted(_textController.text),
-                icon: const Icon(
-                  Icons.send,
-                  color: Colors.white,
-                  size: 20,
+                const SizedBox(width: 8),
+                Container(
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    onPressed: () =>
+                        _onTextSubmitted(_textController.text),
+                    icon: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         ),
@@ -693,7 +597,7 @@ class _ChatbotChatTwoScreenState extends State<ChatbotChatTwoScreen> {
               ),
               const SizedBox(height: 8),
               const CustomText(
-                text: 'اختر منظومة من الأسفل للبدء',
+                text: 'اكتب رقم المنظومة للبدء',
                 fontSize: 14,
                 color: AppColors.textHint,
               ),
